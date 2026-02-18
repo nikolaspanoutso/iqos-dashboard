@@ -43,7 +43,9 @@ export default function Drawer({ isOpen, onClose, data }: DrawerProps) {
     }
   };
   
-  const storeComments = comments.filter(c => c.storeId === data?.id).sort((a,b) => b.timestamp - a.timestamp);
+  const storeComments = comments
+    .filter(c => c.storeId === data?.id)
+    .sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
   // If user is Specialist, show Sales Entry. Everyone sees Notes.
   const canEdit = user?.role === 'specialist' || user?.role === 'admin';
