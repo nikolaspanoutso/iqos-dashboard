@@ -37,6 +37,7 @@ export default function Map() {
   useEffect(() => {
     // Import Leaflet dynamically to avoid SSR window error
     (async function initLeaflet() {
+       // @ts-ignore
        const L = (await import('leaflet')).default;
        
        const icon = L.icon({
