@@ -170,6 +170,10 @@ export function SalesProvider({ children }: { children: React.ReactNode }) {
       historyEdits: {}, // No longer needed as separate state
       updateDailySales
     }}>
+      <div style={{ border: '5px solid green', padding: '10px', height: '100%', boxSizing: 'border-box' }}>
+         <div style={{ color: 'green', fontWeight: 'bold' }}>DEBUG: SalesProvider Rendered</div>
+         {children}
+      </div>
     </SalesContext.Provider>
   );
 }

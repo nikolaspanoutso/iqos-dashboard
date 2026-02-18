@@ -71,7 +71,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider value={{ user, login, logout, users: usersList }}>
-      {children}
+      <div style={{ border: '5px solid blue', padding: '10px', height: '100vh', boxSizing: 'border-box' }}>
+        <div style={{ color: 'blue', fontWeight: 'bold' }}>DEBUG: AuthProvider Rendered</div>
+        {children}
+      </div>
     </AuthContext.Provider>
   );
 }
