@@ -8,6 +8,7 @@ export async function GET() {
     // frontend will handle empty list.
     return NextResponse.json(users);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed' }, { status: 500 });
+    console.error("Database Error:", error);
+    return NextResponse.json({ error: 'Failed to fetch users', details: String(error) }, { status: 500 });
   }
 }
