@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Sidebar from "@/components/Layout/Sidebar";
-import Map from "@/components/Map/Map";
+const Map = dynamic(() => import("@/components/Map/Map"), { ssr: false });
 import Drawer from "@/components/UI/Drawer";
 import HistoryModal from "@/components/UI/HistoryModal";
 import { History } from "lucide-react";
