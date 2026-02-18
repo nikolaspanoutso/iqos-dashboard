@@ -19,9 +19,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div style={{ position: 'fixed', top: 0, left: 0, zIndex: 9999, background: 'red', color: 'white', padding: '4px' }}>
-          DEBUG: App Loaded
-        </div>
         <AuthProvider>
           <SalesProvider>
             <LoginOverlay />

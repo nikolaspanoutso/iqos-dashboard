@@ -7,8 +7,6 @@ export default function LoginOverlay() {
   const { user, login, users } = useAuth();
   const [selectedId, setSelectedId] = useState('');
 
-  console.log("LoginOverlay Render:", { user, usersCount: users?.length });
-
   if (user) return null;
   
   // If users list is empty (loading or failed), show loading state or fallback
