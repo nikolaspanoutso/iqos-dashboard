@@ -4,10 +4,13 @@ import { useAuth, USERS } from '@/context/AuthContext';
 import { Lock, User as UserIcon } from 'lucide-react';
 
 export default function LoginOverlay() {
-  const { user, login } = useAuth();
+  const { user, login, users } = useAuth();
   const [selectedId, setSelectedId] = useState('');
 
   if (user) return null;
+  
+  // If users list is empty (loading or failed), show loading state or fallback
+  const isLoading = users.length === 0;
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,8 +45,10 @@ export default function LoginOverlay() {
                 className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-shadow"
                 required
               >
-                <option value="" disabled>Select your name...</option>
-                {USERS.map(u => (
+                <option value="" disabled>
+                   {isLoading ? "Loading users..." : "Select your name..."}
+                </option>
+                {users.map(u => (
                   <option key={u.id} value={u.id}>
                     {u.name} ({u.role.toUpperCase()})
                   </option>
