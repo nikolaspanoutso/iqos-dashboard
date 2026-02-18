@@ -5,12 +5,6 @@ import 'leaflet/dist/leaflet.css';
 import Drawer from '../UI/Drawer';
 import { useAuth } from '@/context/AuthContext';
 
-// We do NOT import L from 'leaflet' at top level to avoid SSR issues if possible.
-// Or we just guard the icon creation.
-import L from 'leaflet';
-
-// Move default Icon fixes inside component or check window
-
 const MARKERS_DATA = [
   {
     id: 1,
@@ -41,9 +35,11 @@ export default function Map() {
   const [customIcon, setCustomIcon] = useState<any>(null);
 
   useEffect(() => {
-    // Initialize Icon purely on client side
-    if (typeof window !== 'undefined') {
-      const icon = L.icon({
+    // Import Leaflet dynamically to avoid SSR window error
+    (async function initLeaflet() {
+       const L = (await import('leaflet')).default;
+       
+       const icon = L.icon({
         iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
         iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
         shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
@@ -53,18 +49,20 @@ export default function Map() {
         shadowSize: [41, 41]
       });
       setCustomIcon(icon);
-    }
+    })();
   }, []);
 
-  // ... (filtering logic)
+  // Center map between the two points
   const centerPosition: [number, number] = [37.98912, 23.76390];
 
   useEffect(() => {
-      // ... same filtering logic
-       if (!user) return;
+    if (!user) return;
+
     if (user.role === 'admin' || user.role === 'activator') {
+      // Admins and Activators see everything
       setVisibleMarkers(MARKERS_DATA);
     } else {
+      // Specialists only see their assigned stores
       const filtered = MARKERS_DATA.filter(m => 
         m.assignedTo.includes(user.id) || m.assignedTo.includes(user.name)
       );
@@ -75,20 +73,45 @@ export default function Map() {
   if (!customIcon) return null; // Don't render map until icon is ready (Client side)
 
   return (
-     // ... same JSX
-     <MapContainer center={centerPosition} zoom={15} style={{ height: '100%', width: '100%' }} zoomControl={false}>
-        <TileLayer ... />
-        {visibleMarkers.map(marker => (
-           <Marker 
-             key={marker.id} 
-             position={[marker.lat, marker.lng]} 
-             icon={customIcon} // Use state icon
-             eventHandlers={{ click: () => setSelectedMarker(marker) }}
-           >
-             <Popup>...</Popup>
-           </Marker>
+    <div className="relative w-full h-full z-0">
+      <MapContainer 
+        center={centerPosition} 
+        zoom={15} 
+        style={{ height: '100%', width: '100%' }}
+        zoomControl={false}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        
+        {visibleMarkers.map((marker) => (
+          <Marker 
+            key={marker.id} 
+            position={[marker.lat, marker.lng]} 
+            icon={customIcon}
+            eventHandlers={{
+              click: () => {
+                setSelectedMarker(marker);
+              },
+            }}
+          >
+           <Popup>
+             <div className="font-sans">
+               <strong className="block text-sm text-primary">{marker.name}</strong>
+               <span className="text-xs text-gray-500">{marker.address}</span>
+             </div>
+           </Popup>
+          </Marker>
         ))}
-     </MapContainer>
-     // ...
+      </MapContainer>
+
+      {/* Drawer */}
+      <Drawer 
+        isOpen={!!selectedMarker} 
+        onClose={() => setSelectedMarker(null)} 
+        data={selectedMarker} 
+      />
+    </div>
   );
 }
