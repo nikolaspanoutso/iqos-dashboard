@@ -8,19 +8,34 @@ interface TeamPerformanceModalProps {
 }
 
 export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalProps) {
-  const { totals, loading } = useSales();
+  const { totals, loading: salesLoading } = useSales(); // Renamed to avoid specific loading conflict if needed
   const [rainTimestamp, setRainTimestamp] = useState<number | null>(null);
+  const [storeTotal, setStoreTotal] = useState(0); // Holds the sum of 'Total Acquisitions' from stores
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+     fetch('/api/stores')
+        .then(res => res.json())
+        .then(data => {
+           if (Array.isArray(data)) {
+              // Sum up totalAcquisition from all stores
+              const sum = data.reduce((acc, store) => acc + (store.totalAcquisition || 0), 0);
+              setStoreTotal(sum);
+           }
+        })
+        .finally(() => setLoading(false));
+  }, []);
 
   const triggerRain = () => {
     setRainTimestamp(Date.now());
   };
 
-  if (loading) {
+  if (loading || salesLoading) {
     return (
       <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/50 backdrop-blur-sm">
         <div className="bg-white p-6 rounded shadow-lg flex flex-col items-center">
           <Loader2 className="animate-spin text-teal-600 mb-2" size={32} />
-          <span>Loading Data...</span>
+          <span>Loading Performance Data...</span>
         </div>
       </div>
     );
@@ -31,6 +46,9 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
   const totalP4 = Object.values(totals).reduce((acc: number, curr: any) => acc + curr.acquisitionP4, 0);
   const totalP5 = Object.values(totals).reduce((acc: number, curr: any) => acc + curr.offtakeP5, 0);
   
+  // Overall Progress against Market Potential (Store Total)
+  const marketPenetration = storeTotal > 0 ? ((totalP1 + totalP4) / storeTotal) * 100 : 0;
+
   return (
     <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
       <div className="bg-white rounded-lg shadow-2xl w-full max-w-6xl h-[95vh] flex flex-col overflow-hidden relative">
@@ -57,6 +75,18 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-8 bg-gray-50/50">
           
+          {/* Market Potential Banner */}
+          <div className="bg-gradient-to-r from-indigo-900 to-indigo-700 text-white p-6 rounded-xl shadow-lg mb-8 flex items-center justify-between">
+              <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider opacity-80 mb-1">Total Market Potential</h3>
+                  <div className="text-3xl font-bold">{storeTotal} <span className="text-sm font-normal opacity-70">registered users</span></div>
+              </div>
+              <div className="text-right">
+                  <h3 className="text-sm font-bold uppercase tracking-wider opacity-80 mb-1">Market Penetration</h3>
+                  <div className="text-3xl font-bold text-green-400">{marketPenetration.toFixed(1)}%</div>
+              </div>
+          </div>
+
           {/* Team Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             <SummaryCard 

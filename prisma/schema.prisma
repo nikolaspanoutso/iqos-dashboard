@@ -20,6 +20,7 @@ model User {
   sales     Sale[]
   comments  Comment[]
   dailyStats DailyStat[]
+  schedules Schedule[]
 }
 
 model Store {
@@ -73,4 +74,18 @@ model DailyStat {
   user          User     @relation(fields: [userId], references: [name])
 
   @@unique([date, userId]) // Ensure one record per user per day
+}
+
+model Schedule {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime
+  status    String   // 'Work', 'Off', 'Leave', 'Sick'
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [name])
+
+  @@unique([userId, date])
 }
