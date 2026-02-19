@@ -41,13 +41,16 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
     setTempValue(currentValue.toString());
   };
 
-  const handleSaveEdit = (date: string, field: 'p1' | 'p4', otherFieldVal: number) => {
+  const handleSaveEdit = (date: string, field: 'p1' | 'p4' | 'p5', stats: any) => {
     const val = parseInt(tempValue);
     if (!isNaN(val)) {
+        // Ensure we pass all 3 values to the update function to preserve existing data
       if (field === 'p1') {
-        updateDailySales(date, viewedUser, val, otherFieldVal);
+        updateDailySales(date, viewedUser, val, stats.p4, stats.p5);
+      } else if (field === 'p4') {
+        updateDailySales(date, viewedUser, stats.p1, val, stats.p5);
       } else {
-        updateDailySales(date, viewedUser, otherFieldVal, val);
+        updateDailySales(date, viewedUser, stats.p1, stats.p4, val);
       }
     }
     setEditingCell(null);
@@ -63,7 +66,7 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
 
   return (
     <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
-      <div className="bg-white rounded-lg shadow-2xl w-full max-w-2xl h-[85vh] flex flex-col overflow-hidden relative border border-gray-300">
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-3xl h-[85vh] flex flex-col overflow-hidden relative border border-gray-300">
         
         {/* Header */}
         <div className="flex justify-between items-center p-4 border-b bg-gray-50">
@@ -119,9 +122,10 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
           <table className="w-full text-left border-collapse text-sm">
             <thead className="bg-gray-50 sticky top-0 z-10">
               <tr>
-                <th className="p-2 border border-gray-300 font-semibold text-gray-700 w-1/3 bg-gray-100">Date</th>
-                <th className="p-2 border border-gray-300 font-semibold text-gray-700 text-center w-1/3 bg-gray-100">P1</th>
-                <th className="p-2 border border-gray-300 font-semibold text-gray-700 text-center w-1/3 bg-gray-100">P4</th>
+                <th className="p-2 border border-gray-300 font-semibold text-gray-700 w-1/4 bg-gray-100">Date</th>
+                <th className="p-2 border border-gray-300 font-semibold text-gray-700 text-center w-1/4 bg-gray-100">P1</th>
+                <th className="p-2 border border-gray-300 font-semibold text-gray-700 text-center w-1/4 bg-gray-100">P4</th>
+                 <th className="p-2 border border-gray-300 font-semibold text-purple-700 text-center w-1/4 bg-gray-100">P5 Offtake</th>
               </tr>
             </thead>
             <tbody>
@@ -129,7 +133,8 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
                  // Direct data from API which is already truth
                  const currentStats = {  
                    p1: row.acquisitionP1, 
-                   p4: row.acquisitionP4 
+                   p4: row.acquisitionP4,
+                   p5: row.offtakeP5
                  };
 
                  return (
@@ -144,8 +149,8 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
                           type="number" 
                           value={tempValue}
                           onChange={(e) => setTempValue(e.target.value)}
-                          onBlur={() => handleSaveEdit(row.date, 'p1', currentStats.p4)}
-                          onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(row.date, 'p1', currentStats.p4)}
+                          onBlur={() => handleSaveEdit(row.date, 'p1', currentStats)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(row.date, 'p1', currentStats)}
                           className="w-full h-full text-center focus:bg-blue-50 focus:ring-2 focus:ring-blue-500 outline-none font-medium"
                         />
                       ) : (
@@ -166,8 +171,8 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
                           type="number" 
                           value={tempValue}
                           onChange={(e) => setTempValue(e.target.value)}
-                          onBlur={() => handleSaveEdit(row.date, 'p4', currentStats.p1)}
-                          onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(row.date, 'p4', currentStats.p1)}
+                          onBlur={() => handleSaveEdit(row.date, 'p4', currentStats)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(row.date, 'p4', currentStats)}
                           className="w-full h-full text-center focus:bg-blue-50 focus:ring-2 focus:ring-blue-500 outline-none font-medium"
                         />
                       ) : (
@@ -176,6 +181,28 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
                           className={`w-full h-full flex items-center justify-center ${isEditable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
                         >
                            {currentStats.p4}
+                        </div>
+                      )}
+                    </td>
+
+                    {/* P5 Cell */}
+                    <td className="p-0 border border-gray-300 text-center relative h-10 align-middle">
+                      {editingCell === `${row.date}_${viewedUser}_p5` ? (
+                        <input 
+                          autoFocus
+                          type="number" 
+                          value={tempValue}
+                          onChange={(e) => setTempValue(e.target.value)}
+                          onBlur={() => handleSaveEdit(row.date, 'p5', currentStats)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(row.date, 'p5', currentStats)}
+                          className="w-full h-full text-center focus:bg-purple-50 focus:ring-2 focus:ring-purple-500 outline-none font-medium text-purple-700"
+                        />
+                      ) : (
+                        <div 
+                          onClick={() => isEditable && handleStartEdit(`${row.date}_${viewedUser}_p5`, currentStats.p5)}
+                          className={`w-full h-full flex items-center justify-center text-purple-700 ${isEditable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
+                        >
+                           {currentStats.p5}
                         </div>
                       )}
                     </td>

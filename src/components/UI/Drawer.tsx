@@ -17,23 +17,20 @@ export default function Drawer({ isOpen, onClose, data }: DrawerProps) {
   const [activeTab, setActiveTab] = useState('stock');
   const [commentText, setCommentText] = useState('');
   
-  // Local state for the widget before saving? 
-  // Getting live updates from context is safer for persistence
+  // Local state for the widget
   const [p1Count, setP1Count] = useState(0);
   const [p4Count, setP4Count] = useState(0);
+  const [p5Count, setP5Count] = useState(0);
 
-  // When opening a store, reset counts or load today's? 
-  // For this demo, let's keep it simple: Adding *new* sales in this session.
-  // Or showing the total added today? 
-  // Let's show "Session Adds"
-  
   const handleSaveSales = () => {
     if (p1Count !== 0) addSale(data.id, 'P1', p1Count);
     if (p4Count !== 0) addSale(data.id, 'P4', p4Count);
+    if (p5Count !== 0) addSale(data.id, 'P5', p5Count);
     
     // Reset after save
     setP1Count(0);
     setP4Count(0);
+    setP5Count(0);
   };
 
   const handleSaveComment = () => {
@@ -124,7 +121,7 @@ export default function Drawer({ isOpen, onClose, data }: DrawerProps) {
                   </div>
 
                   {/* P4 Widget */}
-                  <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center justify-between mb-4">
                     <span className="font-bold text-gray-800">Acquisition P4</span>
                     <div className="flex items-center gap-3">
                       <button onClick={() => setP4Count(p => p - 1)} className="p-1 rounded bg-gray-200 hover:bg-gray-300"><Minus size={16} /></button>
@@ -132,10 +129,20 @@ export default function Drawer({ isOpen, onClose, data }: DrawerProps) {
                       <button onClick={() => setP4Count(p => p + 1)} className="p-1 rounded bg-teal-100 text-teal-700 hover:bg-teal-200"><Plus size={16} /></button>
                     </div>
                   </div>
+                  
+                  {/* P5 Widget (Offtake) */}
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="font-bold text-purple-800">Offtake P5</span>
+                    <div className="flex items-center gap-3">
+                      <button onClick={() => setP5Count(p => p - 1)} className="p-1 rounded bg-gray-200 hover:bg-gray-300"><Minus size={16} /></button>
+                      <span className={`font-mono font-bold w-8 text-center ${p5Count !== 0 ? 'text-purple-600' : 'text-gray-400'}`}>{p5Count > 0 ? `+${p5Count}` : p5Count}</span>
+                      <button onClick={() => setP5Count(p => p + 1)} className="p-1 rounded bg-purple-100 text-purple-700 hover:bg-purple-200"><Plus size={16} /></button>
+                    </div>
+                  </div>
 
                   <button 
                     onClick={handleSaveSales}
-                    disabled={p1Count === 0 && p4Count === 0}
+                    disabled={p1Count === 0 && p4Count === 0 && p5Count === 0}
                     className="w-full flex items-center justify-center gap-2 bg-teal-600 text-white p-2 rounded hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     <Save size={16} />

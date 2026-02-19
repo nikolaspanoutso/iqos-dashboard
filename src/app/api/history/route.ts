@@ -5,9 +5,9 @@ import prisma from '@/lib/prisma';
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { date, userId, p1, p4 } = body;
+    const { date, userId, p1, p4, p5 } = body;
 
-    if (!date || !userId || p1 === undefined || p4 === undefined) {
+    if (!date || !userId || p1 === undefined || p4 === undefined || p5 === undefined) {
       return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
     }
 
@@ -21,13 +21,15 @@ export async function PUT(request: Request) {
       },
       update: {
         acquisitionP1: p1,
-        acquisitionP4: p4
+        acquisitionP4: p4,
+        offtakeP5: p5
       },
       create: {
         date,
         userId,
         acquisitionP1: p1,
         acquisitionP4: p4,
+        offtakeP5: p5,
         workingDays: 1 // Default if creating new
       }
     });

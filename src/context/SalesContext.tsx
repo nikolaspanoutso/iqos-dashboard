@@ -29,11 +29,11 @@ interface SalesContextType {
   data: SalesData[];
   totals: any;
   loading: boolean;
-  addSale: (storeId: string, type: 'P1' | 'P4', count: number) => void;
+  addSale: (storeId: string, type: 'P1' | 'P4' | 'P5', count: number) => void;
   comments: StoreComment[];
   addComment: (storeId: string, text: string) => void;
   historyEdits: any; // Deprecated, but kept for type compat if needed (though we move logic to DB)
-  updateDailySales: (date: string, userId: string, p1: number, p4: number) => void;
+  updateDailySales: (date: string, userId: string, p1: number, p4: number, p5: number) => void;
   getStoreSales: (storeId: string) => { p1: number, p4: number };
 }
 
@@ -97,7 +97,7 @@ export function SalesProvider({ children }: { children: React.ReactNode }) {
     refreshData();
   }, []);
 
-  const addSale = async (storeId: string, type: 'P1' | 'P4', count: number) => {
+  const addSale = async (storeId: string, type: 'P1' | 'P4' | 'P5', count: number) => {
     if (!user) return;
     
     // Optimistic UI update (optional, skipping for simplicity/reliability first)
@@ -109,7 +109,7 @@ export function SalesProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({
           userId: user.name,
           storeId,
-          type,
+          type, // Now supports 'P5'
           count
         })
       });
@@ -137,12 +137,12 @@ export function SalesProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const updateDailySales = async (date: string, userId: string, p1: number, p4: number) => {
+  const updateDailySales = async (date: string, userId: string, p1: number, p4: number, p5: number) => {
     try {
       await fetch('/api/history', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ date, userId, p1, p4 })
+        body: JSON.stringify({ date, userId, p1, p4, p5 })
       });
       refreshData();
     } catch (e) {

@@ -74,7 +74,10 @@ export async function POST(request: Request) {
     const today = new Date().toLocaleDateString('en-GB'); // DD/MM/YYYY
 
     // Upsert DailyStat for this user/today
-    const updateData = type === 'P1' ? { acquisitionP1: { increment: count } } : { acquisitionP4: { increment: count } };
+    let updateData = {};
+    if (type === 'P1') updateData = { acquisitionP1: { increment: count } };
+    else if (type === 'P4') updateData = { acquisitionP4: { increment: count } };
+    else if (type === 'P5') updateData = { offtakeP5: { increment: count } };
     
     await prisma.dailyStat.upsert({
       where: {
@@ -89,7 +92,7 @@ export async function POST(request: Request) {
         userId: userId,
         acquisitionP1: type === 'P1' ? count : 0,
         acquisitionP4: type === 'P4' ? count : 0,
-        offtakeP5: 0,
+        offtakeP5: type === 'P5' ? count : 0,
         workingDays: 1 // Assume working if selling
       }
     });
