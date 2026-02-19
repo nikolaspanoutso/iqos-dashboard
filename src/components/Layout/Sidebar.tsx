@@ -1,14 +1,13 @@
 "use client";
 import React, { useState } from 'react';
-import { Users, Calendar, Phone, MessageSquare, Menu, X, ChevronRight, Store, LogOut } from 'lucide-react';
+import { Users, Calendar, Phone, MessageSquare, Menu, X, ChevronRight, LogOut } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { schedule } from '@/data/mockData';
 import TeamPerformanceModal from '@/components/UI/TeamPerformanceModal';
 import ScheduleModal from '@/components/UI/ScheduleModal';
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
-  const [activeTab, setActiveTab] = useState('stores'); 
+  const [activeTab, setActiveTab] = useState('phones'); 
   const [showPerformanceModal, setShowPerformanceModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
 
@@ -60,12 +59,7 @@ export default function Sidebar() {
               isActive={showScheduleModal} 
               onClick={() => handleNavClick('schedule')} 
             />
-            <NavItem 
-              icon={<Store size={20} />} 
-              label="Stores" 
-              isActive={activeTab === 'stores'} 
-              onClick={() => handleNavClick('stores')} 
-            />
+            {/* Stores tab removed as per request */}
             <NavItem 
               icon={<Phone size={20} />} 
               label="Support Directory" 
@@ -82,7 +76,6 @@ export default function Sidebar() {
 
           {/* Dynamic Content */}
           <div className="mt-4">
-            {activeTab === 'stores' && <StoresView />}
             {activeTab === 'phones' && <DirectoryView />}
             {activeTab === 'chat' && <ChatView />}
           </div>
@@ -120,25 +113,6 @@ const NavItem = ({ icon, label, isActive, onClick }: any) => (
     <span className="font-medium">{label}</span>
     {isActive && <ChevronRight size={16} className="ml-auto" />}
   </button>
-);
-
-const StoresView = () => (
-  <div className="space-y-3 animate-fade-in">
-    <div className="p-3 bg-white border rounded shadow-sm">
-      <div className="font-bold text-gray-800">Pick it</div>
-      <div className="text-sm text-gray-600 mt-1">Lamias 23, Athens 115 23</div>
-      <a href="tel:+302100000000" className="text-xs text-teal-600 block mt-1 font-medium hover:underline">
-        +30 210 000 0000
-      </a>
-    </div>
-    <div className="p-3 bg-white border rounded shadow-sm">
-      <div className="font-bold text-gray-800">PAPAZIKOS</div>
-      <div className="text-sm text-gray-600 mt-1">Dimitsanas 54, Ampelokipoi, 115 22</div>
-      <a href="tel:+302106423224" className="text-xs text-teal-600 block mt-1 font-medium hover:underline">
-        +30 210 6423224
-      </a>
-    </div>
-  </div>
 );
 
 const DirectoryView = () => (

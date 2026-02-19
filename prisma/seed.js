@@ -29,9 +29,6 @@ async function parseCSV(filePath) {
     for (let i = 2; i < lines.length; i++) {
         const line = lines[i];
 
-        // CSV regex split to handle quotes if any, purely for robust parsing
-        // But here simple split is likely enough as numbers don't have commas usually in this format
-        // except averages? The user data seemed simple.
         const cols = line.split(',');
 
         const date = cols[0];
@@ -79,8 +76,42 @@ async function parseCSV(filePath) {
     return dataEntries;
 }
 
+// Real Geocoding using OpenStreetMap Nominatim API
+const getCoordinates = async (address, area, zip) => {
+    try {
+        // Construct query: Address + Area helps accuracy
+        // Clean address: keep it simple
+        const cleanAddress = address.replace(/"/g, '').trim();
+        const cleanArea = area.replace(/"/g, '').trim();
+
+        // Prefer "Address, Area" format
+        const query = `${cleanAddress}, ${cleanArea}, Greece`;
+        console.log(`Geocoding: ${query}`);
+
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
+
+        const response = await fetch(url, {
+            headers: {
+                'User-Agent': 'IQOS_Dashboard_Seed_Script/1.0'
+            }
+        });
+
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+            return {
+                lat: parseFloat(data[0].lat),
+                lng: parseFloat(data[0].lon)
+            };
+        }
+    } catch (e) {
+        console.warn(`Geocode error for ${address}:`, e.message);
+    }
+    return null;
+};
+
 async function main() {
-    console.log('Start seeding from CSVs...');
+    console.log('Start seeding...');
 
     // 1. Ensure Users Exist
     const predefinedUsers = [
@@ -101,9 +132,7 @@ async function main() {
     }
     console.log('Users synced.');
 
-    // 2. Clear old stats
-    // await prisma.dailyStat.deleteMany({}); // Optional: clear or keep? User might want to refresh.
-    // Let's clear to be safe with duplicates.
+    // 2. Clear old stats (Optional, but safe for dev)
     await prisma.dailyStat.deleteMany({});
     console.log('Old stats cleared.');
 
@@ -147,7 +176,7 @@ async function main() {
 
         const storeEntries = [];
 
-        // Basic Geocoding Fallback
+        // Fallback centers just in case API fails completely
         const cityCenters = {
             'Athina': { lat: 37.9838, lng: 23.7275 },
             'Zografou': { lat: 37.9715, lng: 23.7610 },
@@ -159,17 +188,11 @@ async function main() {
             'Menemeni': { lat: 40.6558, lng: 22.9095 }
         };
 
-        const getLatLang = (city) => {
-            const center = cityCenters[city] || cityCenters['Athina'];
-            const jitter = () => (Math.random() - 0.5) * 0.01;
-            return {
-                lat: center.lat + jitter(),
-                lng: center.lng + jitter()
-            };
-        };
+        // Skip header (i=1)
+        console.log(`Found ${lines.length - 1} stores to process. Starting Geocoding (this will take time)...`);
 
         for (let i = 1; i < lines.length; i++) {
-            // Regex for CSV split handling quotes
+            // Regex for CSV split
             const cols = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
 
             if (cols.length < 5) continue;
@@ -182,7 +205,26 @@ async function main() {
             const totalAcqStr = cols[5]?.trim();
             const totalAcq = parseInt(totalAcqStr) || 0;
 
-            const { lat, lng } = getLatLang(area);
+            // GEOLOCATION CALL
+            let lat, lng;
+
+            // Wait 1.1 second to respect OSM rate limits (absolute requirement)
+            await new Promise(r => setTimeout(r, 1100));
+
+            const coords = await getCoordinates(address, area, zip);
+
+            if (coords) {
+                lat = coords.lat;
+                lng = coords.lng;
+                console.log(`✅ Found: ${name} -> ${lat}, ${lng}`);
+            } else {
+                // Fallback
+                const center = cityCenters[area] || cityCenters['Athina'];
+                // Tiny jitter
+                lat = center.lat + (Math.random() - 0.5) * 0.005;
+                lng = center.lng + (Math.random() - 0.5) * 0.005;
+                console.log(`⚠️ Fallback: ${name} -> ${lat}, ${lng} (Could not find address)`);
+            }
 
             storeEntries.push({
                 name,
@@ -197,7 +239,7 @@ async function main() {
             });
         }
 
-        console.log(`Found ${storeEntries.length} stores. Upserting...`);
+        console.log(`Geocoding finished. Upserting ${storeEntries.length} stores...`);
 
         for (const s of storeEntries) {
             const existing = await prisma.store.findFirst({ where: { name: s.name } });
