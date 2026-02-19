@@ -41,13 +41,14 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
     );
   }
 
-  // Calculate grand totals for summary
+  // Calculate grand totals from individual sales entries (if needed separately)
   const totalP1 = Object.values(totals).reduce((acc: number, curr: any) => acc + curr.acquisitionP1, 0);
   const totalP4 = Object.values(totals).reduce((acc: number, curr: any) => acc + curr.acquisitionP4, 0);
   const totalP5 = Object.values(totals).reduce((acc: number, curr: any) => acc + curr.offtakeP5, 0);
   
-  // Overall Progress against Market Potential (Store Total)
-  const marketPenetration = storeTotal > 0 ? ((totalP1 + totalP4) / storeTotal) * 100 : 0;
+  // The user stated "Team Total is 750" and "Do not calculate them again" (meaning don't add sales to store total).
+  // storeTotal (from DB stores) already includes these sales.
+  // So we just display storeTotal.
 
   return (
     <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
@@ -61,7 +62,7 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
           <div>
             <h2 className="text-2xl font-bold text-primary">Team Performance Overview</h2>
             <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-              <span>Sales tracking for Jan & Feb</span>
+              <span>Sales & Acquisitions Dashboard</span>
             </div>
           </div>
           <button 
@@ -75,20 +76,19 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-8 bg-gray-50/50">
           
-          {/* Market Potential Banner */}
-          <div className="bg-gradient-to-r from-indigo-900 to-indigo-700 text-white p-6 rounded-xl shadow-lg mb-8 flex items-center justify-between">
+          {/* Main Metric Banner */}
+          <div className="bg-gradient-to-r from-teal-800 to-teal-600 text-white p-8 rounded-xl shadow-lg mb-8 flex items-center justify-center text-center transform transition-transform hover:scale-[1.01]">
               <div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider opacity-80 mb-1">Total Market Potential</h3>
-                  <div className="text-3xl font-bold">{storeTotal} <span className="text-sm font-normal opacity-70">registered users</span></div>
-              </div>
-              <div className="text-right">
-                  <h3 className="text-sm font-bold uppercase tracking-wider opacity-80 mb-1">Market Penetration</h3>
-                  <div className="text-3xl font-bold text-green-400">{marketPenetration.toFixed(1)}%</div>
+                  <h3 className="text-sm font-bold uppercase tracking-widest opacity-80 mb-2">Total Team Acquisitions</h3>
+                  <div className="text-6xl font-black tracking-tight drop-shadow-lg">
+                    {storeTotal > 0 ? storeTotal : 'Loading...'}
+                  </div>
+                  <div className="text-xs opacity-60 mt-2 font-mono uppercase">Validated Store Data</div>
               </div>
           </div>
 
-          {/* Team Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          {/* Team Summary Breakdown (Derived from individual reports, just for info) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 opacity-70 hover:opacity-100 transition-opacity">
             <SummaryCard 
               title="Acquisition P1" 
               actual={totalP1} 
