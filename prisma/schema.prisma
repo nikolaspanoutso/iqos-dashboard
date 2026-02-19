@@ -23,15 +23,19 @@ model User {
 }
 
 model Store {
-  id        String   @id
-  name      String
-  type      String
-  lat       Float
-  lng       Float
-  address   String?
+  id               String    @id @default(cuid())
+  name             String
+  type             String
+  activatorName    String?
+  area             String?
+  address          String?
+  postCode         String?
+  totalAcquisition Int?
+  lat              Float?
+  lng              Float?
   
-  sales     Sale[]
-  comments  Comment[]
+  sales            Sale[]
+  comments         Comment[]
 }
 
 model Sale {
