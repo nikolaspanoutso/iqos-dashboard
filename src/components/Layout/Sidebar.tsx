@@ -1,29 +1,23 @@
 "use client";
 import React, { useState } from 'react';
-import { Users, Calendar, Phone, MessageSquare, Menu, X, ChevronRight, LogOut } from 'lucide-react';
+import { Users, Calendar, Map as MapIcon, List, Menu, X, ChevronRight, LogOut } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import TeamPerformanceModal from '@/components/UI/TeamPerformanceModal';
 import ScheduleModal from '@/components/UI/ScheduleModal';
 
-export default function Sidebar() {
+interface SidebarProps {
+  currentView: 'map' | 'list';
+  onViewChange: (view: 'map' | 'list') => void;
+}
+
+export default function Sidebar({ currentView, onViewChange }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(true);
-  const [activeTab, setActiveTab] = useState('phones'); 
   const [showPerformanceModal, setShowPerformanceModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
 
   const { logout, user } = useAuth();
 
   const toggleSidebar = () => setIsOpen(!isOpen);
-
-  const handleNavClick = (tab: string) => {
-    if (tab === 'performance') {
-      setShowPerformanceModal(true);
-    } else if (tab === 'schedule') {
-        setShowScheduleModal(true);
-    } else {
-      setActiveTab(tab);
-    }
-  };
 
   return (
     <>
@@ -47,38 +41,37 @@ export default function Sidebar() {
 
           {/* Navigation */}
           <nav className="flex flex-col gap-2 mb-8">
+            <div className="text-xs font-bold text-gray-400 uppercase mb-2 tracking-wider">Main Views</div>
+            
+            <NavItem 
+              icon={<MapIcon size={20} />} 
+              label="Map View" 
+              isActive={currentView === 'map'} 
+              onClick={() => onViewChange('map')} 
+            />
+            <NavItem 
+              icon={<List size={20} />} 
+              label="Stores List" 
+              isActive={currentView === 'list'} 
+              onClick={() => onViewChange('list')} 
+            />
+
+            <div className="text-xs font-bold text-gray-400 uppercase mb-2 mt-6 tracking-wider">Management</div>
+
             <NavItem 
               icon={<Users size={20} />} 
               label="Team Performance" 
               isActive={showPerformanceModal} 
-              onClick={() => handleNavClick('performance')} 
+              onClick={() => setShowPerformanceModal(true)} 
             />
             <NavItem 
               icon={<Calendar size={20} />} 
               label="Schedule" 
               isActive={showScheduleModal} 
-              onClick={() => handleNavClick('schedule')} 
-            />
-            {/* Stores tab removed as per request */}
-            <NavItem 
-              icon={<Phone size={20} />} 
-              label="Support Directory" 
-              isActive={activeTab === 'phones'} 
-              onClick={() => handleNavClick('phones')} 
-            />
-            <NavItem 
-              icon={<MessageSquare size={20} />} 
-              label="Group Chat" 
-              isActive={activeTab === 'chat'} 
-              onClick={() => handleNavClick('chat')} 
+              onClick={() => setShowScheduleModal(true)} 
             />
           </nav>
 
-          {/* Dynamic Content */}
-          <div className="mt-4">
-            {activeTab === 'phones' && <DirectoryView />}
-            {activeTab === 'chat' && <ChatView />}
-          </div>
         </div>
 
         {/* Footer / Logout */}
@@ -107,44 +100,10 @@ export default function Sidebar() {
 const NavItem = ({ icon, label, isActive, onClick }: any) => (
   <button 
     onClick={onClick}
-    className={`flex items-center gap-3 w-full p-3 rounded transition-colors ${isActive ? 'bg-indigo-50 text-indigo-700' : 'hover:bg-gray-100 text-gray-600'}`}
+    className={`flex items-center gap-3 w-full p-3 rounded-lg transition-all ${isActive ? 'bg-indigo-600 text-white shadow-md transform scale-102' : 'hover:bg-gray-100 text-gray-600'}`}
   >
     {icon}
     <span className="font-medium">{label}</span>
-    {isActive && <ChevronRight size={16} className="ml-auto" />}
+    {isActive && <ChevronRight size={16} className="ml-auto opacity-75" />}
   </button>
-);
-
-const DirectoryView = () => (
-  <div className="space-y-2 animate-fade-in">
-    <PhoneItem name="Area Manager" number="+30 690 000 0000" />
-    <PhoneItem name="IT Support" number="+30 210 000 0000" />
-    <PhoneItem name="Warehouse" number="+30 210 000 0001" />
-  </div>
-);
-
-const PhoneItem = ({ name, number }: any) => (
-  <div className="flex justify-between items-center p-2 border-b">
-    <span className="text-sm font-medium">{name}</span>
-    <a href={`tel:${number}`} className="text-teal-600 text-sm">{number}</a>
-  </div>
-);
-
-const ChatView = () => (
-  <div className="h-64 flex flex-col bg-gray-50 rounded border animate-fade-in">
-    <div className="flex-1 p-3 overflow-y-auto text-sm space-y-2">
-      <div className="bg-white p-2 rounded self-start max-w-[80%] shadow-sm">
-        <span className="text-xs font-bold block text-teal-600">Maria</span>
-        Anyone near Kolonaki? Need extra stock.
-      </div>
-      <div className="bg-blue-100 p-2 rounded self-end max-w-[80%] shadow-sm ml-auto">
-        <span className="text-xs font-bold block text-blue-800">Me</span>
-        I'll be there in 20.
-      </div>
-    </div>
-    <div className="p-2 border-t flex gap-2">
-      <input className="flex-1 text-sm p-1 border rounded" placeholder="Type..." />
-      <button className="bg-blue-600 text-white p-1 rounded px-3">Send</button>
-    </div>
-  </div>
 );
