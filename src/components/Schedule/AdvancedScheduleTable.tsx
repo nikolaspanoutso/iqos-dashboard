@@ -44,12 +44,21 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
   // Date Range (Default to current month)
   const [currentDate, setCurrentDate] = useState(new Date());
   
-  const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString();
-  const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString();
+  const startOfMonth = useMemo(() => {
+    const d = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    d.setHours(0, 0, 0, 0);
+    return d.toISOString();
+  }, [currentDate]);
+
+  const endOfMonth = useMemo(() => {
+    const d = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    d.setHours(23, 59, 59, 999);
+    return d.toISOString();
+  }, [currentDate]);
 
   // --- Fetch Data ---
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
         // Fetch Schedules
         // Use user.name for specialist filtering as the DB schema relates Schedule.userId to User.name
@@ -59,7 +68,7 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
         
         // Fetch Stores (for dropdown) - Only needed if Activator/Admin
         if (user?.role !== 'specialist') {
-            const resStores = await fetch('/api/stores'); // Assuming returns all stores
+            const resStores = await fetch('/api/stores');
             setStores(await resStores.json());
             
             const resUsers = await fetch('/api/users'); 
@@ -72,13 +81,22 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
     } catch (e) {
         console.error("Failed to load data", e);
     } finally {
-        setLoading(false);
+        if (!silent) setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (user) fetchData();
-  }, [user, currentDate]); // Reload when month changes
+    if (user) {
+        fetchData();
+        
+        // Polling for reactivity (refresh every 10 seconds silently)
+        const interval = setInterval(() => {
+            fetchData(true);
+        }, 10000);
+        
+        return () => clearInterval(interval);
+    }
+  }, [user, currentDate, startOfMonth, endOfMonth]); 
 
   // --- Update Handler ---
   const handleUpdate = async (rowIndex: number, columnId: string, value: any) => {

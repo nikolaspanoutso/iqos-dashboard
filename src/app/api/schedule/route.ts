@@ -7,22 +7,30 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const start = searchParams.get('start');
   const end = searchParams.get('end');
-  const userId = searchParams.get('userId'); // Logged in user
-  const role = searchParams.get('role');     // Logged in role
+  const userId = searchParams.get('userId'); // This might be ID or Name depending on caller
+  const role = searchParams.get('role');
 
   if (!start || !end) {
     return NextResponse.json({ error: 'Start and end dates are required' }, { status: 400 });
   }
 
   try {
+    // To handle date boundaries safely, we ensure we cover the full range of the requested dates
+    const startDate = new Date(start);
+    startDate.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(end);
+    endDate.setHours(23, 59, 59, 999);
+
     const whereClause: any = {
       date: {
-        gte: new Date(start),
-        lte: new Date(end),
+        gte: startDate,
+        lte: endDate,
       },
     };
 
-    // Specialist: Can only see their own schedule
+    // Specialist: Can only see their own schedule 
+    // Important: In the DB, Schedule.userId relates to User.name
     if (role === 'specialist' && userId) {
         whereClause.userId = userId;
     }
@@ -32,6 +40,9 @@ export async function GET(request: Request) {
       include: {
         user: { select: { name: true, role: true } },
         store: { select: { id: true, name: true } }
+      },
+      orderBy: {
+        date: 'asc'
       }
     });
 
