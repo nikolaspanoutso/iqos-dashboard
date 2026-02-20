@@ -325,15 +325,40 @@ async function main() {
                 isActive: true
             };
 
-            // Upsert Logic (Now using Name as unique key)
-            await prisma.store.upsert({
-                where: { name: name },
-                update: storeData,
-                create: {
-                    name,
-                    ...storeData
-                }
+            // 1. Check for exact match
+            let targetId = null;
+            const exactMatch = await prisma.store.findUnique({
+                where: { name: name }
             });
+
+            if (exactMatch) {
+                targetId = exactMatch.id;
+            } else {
+                // 2. Check for "Plain" version match (if current name is Promo)
+                // This prevents duplicates when a shop becomes Promo in the CSV
+                if (name.includes('*')) {
+                    const plainName = name.replace(/\*/g, '').trim();
+                    const plainMatch = await prisma.store.findUnique({
+                        where: { name: plainName }
+                    });
+                    if (plainMatch) {
+                        targetId = plainMatch.id;
+                        console.log(`🔄 Upgrading to Promo: ${plainName} -> ${name}`);
+                    }
+                }
+            }
+
+            // Upsert Logic 
+            if (targetId) {
+                await prisma.store.update({
+                    where: { id: targetId },
+                    data: { name, ...storeData }
+                });
+            } else {
+                await prisma.store.create({
+                    data: { name, ...storeData }
+                });
+            }
             process.stdout.write('.');
         }
         console.log('\nStores synced successfully.');
