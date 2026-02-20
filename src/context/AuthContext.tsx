@@ -14,6 +14,7 @@ interface AuthContextType {
   login: (userId: string) => void;
   logout: () => void;
   users: User[];
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,6 +27,7 @@ export const USERS: User[] = [
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [usersList, setUsersList] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Fetch users from DB
@@ -53,6 +55,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
            { id: 'admin', name: 'Admin (Team Leader)', role: 'admin' },
            { id: 'spec1', name: 'Maria Tasiou', role: 'specialist' },
         ]);
+      } finally {
+        setLoading(false);
       }
     }
     fetchUsers();
@@ -70,9 +74,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, users: usersList }}>
+  return (
+    <AuthContext.Provider value={{ user, login, logout, users: usersList, loading }}>
       {children}
     </AuthContext.Provider>
+  );
   );
 }
 
