@@ -15,7 +15,8 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-     fetch('/api/stores')
+     // Fetch ALL stores (including inactive) to get correct total performance
+     fetch('/api/stores?all=true')
         .then(res => res.json())
         .then(data => {
            if (Array.isArray(data)) {
@@ -77,7 +78,7 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
                   <div className="text-6xl font-black tracking-tight drop-shadow-lg">
                     {storeTotal}
                   </div>
-                  <div className="text-xs opacity-60 mt-2 font-mono uppercase">Total Performance (750)</div>
+                  <div className="text-xs opacity-60 mt-2 font-mono uppercase">Verified Store Performance</div>
               </div>
           </div>
 
