@@ -223,7 +223,7 @@ async function main() {
             if (cols.length < 5) continue;
 
             const ta = cols[0]?.trim();
-            const name = cols[1]?.trim().replace(/\*/g, '');
+            const name = cols[1]?.trim();
             const activatorId = userMapDB[ta] || null;
             let area = cols[2]?.trim();
             let address = cols[3]?.trim();
