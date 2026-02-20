@@ -6,10 +6,16 @@ export async function GET() {
   try {
     // In a real app, we would authenticate the user here
     
-    // Fetch all daily stats
-    const dailyStats = await prisma.dailyStat.findMany();
+    // Fetch daily stats ONLY for Trade Specialists
+    const dailyStats = await prisma.dailyStat.findMany({
+        where: {
+            user: {
+                role: 'specialist'
+            }
+        }
+    });
     
-    // Fetch recent sales (e.g., last 24h or just all for now to demo)
+    // Fetch recent sales (last 100)
     const recentSales = await prisma.sale.findMany({
       orderBy: { timestamp: 'desc' },
       take: 100
