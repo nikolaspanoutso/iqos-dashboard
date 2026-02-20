@@ -138,6 +138,51 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
             })}
           </div>
         </div>
+
+          {/* Specialist Leaderboard Table */}
+          <h3 className="text-xl font-bold text-gray-800 mb-4 mt-8">Specialist Leaderboard</h3>
+          <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-gray-100 text-gray-600 uppercase font-bold text-xs">
+                  <tr>
+                    <th className="p-3">Specialist</th>
+                    <th className="p-3 text-center">Days</th>
+                    <th className="p-3 text-right">Reg. Users</th>
+                    <th className="p-3 text-right text-teal-700">Acq. P1</th>
+                    <th className="p-3 text-right text-blue-700">Acq. P4</th>
+                    <th className="p-3 text-right text-purple-700">Offtake P5</th>
+                    <th className="p-3 text-right">Map Validated</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {Object.entries(totals)
+                    .sort(([, a]: any, [, b]: any) => (b.acquisitionP1 + b.acquisitionP4) - (a.acquisitionP1 + a.acquisitionP4))
+                    .map(([name, stats]: any) => (
+                    <tr key={name} className="hover:bg-gray-50 border-b last:border-0 transition-colors">
+                      <td className="p-3 font-bold text-gray-700">{name}</td>
+                      <td className="p-3 text-center text-gray-500">{stats.workingDays}</td>
+                      <td className="p-3 text-right font-medium">{stats.registeredUsers || 0}</td>
+                      <td className="p-3 text-right font-bold text-teal-700">{stats.acquisitionP1}</td>
+                      <td className="p-3 text-right font-bold text-blue-700">{stats.acquisitionP4}</td>
+                      <td className="p-3 text-right font-bold text-purple-700">{stats.offtakeP5}</td>
+                      <td className="p-3 text-right text-xs text-gray-400">
+                        {/* Cross reference with storesList if needed, derived from name? */}
+                        {/* For now just placeholder or remove col if not needed. Keeping simpler. */}
+                        -
+                      </td>
+                    </tr>
+                  ))}
+                  {Object.keys(totals).length === 0 && (
+                    <tr>
+                       <td className="p-4 text-center text-gray-400" colSpan={7}>No performance data available.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -276,43 +321,7 @@ const PersonStatsCard = ({ name, stats, workingDays, targets, onGoldHover }: any
         <span className="text-lg font-bold text-purple-800">{stats.offtakeP5}</span>
       </div>
 
-      {/* Specialist Leaderboard Table */}
-      <h3 className="text-xl font-bold text-gray-800 mb-4 mt-8">Specialist Leaderboard</h3>
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-gray-100 text-gray-600 uppercase font-bold text-xs">
-              <tr>
-                <th className="p-3">Specialist</th>
-                <th className="p-3 text-center">Days</th>
-                <th className="p-3 text-right">Reg. Users</th>
-                <th className="p-3 text-right text-teal-700">Acq. P1</th>
-                <th className="p-3 text-right text-blue-700">Acq. P4</th>
-                <th className="p-3 text-right text-purple-700">Offtake P5</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {Object.entries(totals)
-                .sort(([, a]: any, [, b]: any) => (b.acquisitionP1 + b.acquisitionP4) - (a.acquisitionP1 + a.acquisitionP4))
-                .map(([name, stats]: any) => (
-                <tr key={name} className="hover:bg-gray-50 border-b last:border-0 transition-colors">
-                  <td className="p-3 font-bold text-gray-700">{name}</td>
-                  <td className="p-3 text-center text-gray-500">{stats.workingDays}</td>
-                  <td className="p-3 text-right font-medium">{stats.registeredUsers || 0}</td>
-                  <td className="p-3 text-right font-bold text-teal-700">{stats.acquisitionP1}</td>
-                  <td className="p-3 text-right font-bold text-blue-700">{stats.acquisitionP4}</td>
-                  <td className="p-3 text-right font-bold text-purple-700">{stats.offtakeP5}</td>
-                </tr>
-              ))}
-              {Object.keys(totals).length === 0 && (
-                <tr>
-                   <td className="p-4 text-center text-gray-400" colSpan={6}>No performance data available.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+
 
     </div>
   );
