@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "import-csv": "node scripts/import_data.js"
   },
   "dependencies": {
     "@prisma/client": "^5.12.1",
