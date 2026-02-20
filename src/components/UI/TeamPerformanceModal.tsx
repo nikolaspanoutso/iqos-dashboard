@@ -19,7 +19,8 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
         .then(res => res.json())
         .then(data => {
            if (Array.isArray(data)) {
-              const sum = data.reduce((acc, store) => acc + (store.totalAcquisition || 0), 0);
+              // Fix for massive number: ensure totalAcquisition is treated as a number
+              const sum = data.reduce((acc, store) => acc + (parseInt(store.totalAcquisition) || 0), 0);
               setStoreTotal(sum);
               const sorted = data.sort((a, b) => (b.totalAcquisition || 0) - (a.totalAcquisition || 0));
               setStoresList(sorted);
