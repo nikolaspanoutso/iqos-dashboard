@@ -42,6 +42,7 @@ model Store {
 
   sales            Sale[]
   comments         Comment[]
+  schedules        Schedule[]
 }
 
 model Sale {

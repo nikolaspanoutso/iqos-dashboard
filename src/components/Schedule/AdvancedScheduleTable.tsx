@@ -119,16 +119,16 @@ export default function AdvancedScheduleTable() {
   const columns = useMemo(() => [
     columnHelper.accessor('date', {
         header: 'Date',
-        cell: info => new Date(info.getValue()).toLocaleDateString('el-GR', { weekday: 'short', day: '2-digit', month: '2-digit' }),
+        cell: (info: any) => new Date(info.getValue()).toLocaleDateString('el-GR', { weekday: 'short', day: '2-digit', month: '2-digit' }),
         enableSorting: true,
     }),
     columnHelper.accessor('user.name', {
         header: 'Specialist',
-        cell: info => <span className="font-medium text-gray-700">{info.getValue() || info.row.original.userId}</span>
+        cell: (info: any) => <span className="font-medium text-gray-700">{info.getValue() || info.row.original.userId}</span>
     }),
     columnHelper.accessor('storeId', {
         header: 'Store',
-        cell: ({ row, getValue }) => {
+        cell: ({ row, getValue }: any) => {
             const val = getValue();
             const isAdmin = user?.role !== 'specialist';
             
@@ -148,7 +148,7 @@ export default function AdvancedScheduleTable() {
     }),
     columnHelper.accessor('shift', {
         header: 'Shift',
-        cell: ({ row, getValue }) => {
+        cell: ({ row, getValue }: any) => {
             const val = getValue() || '';
             const isAdmin = user?.role !== 'specialist';
 
@@ -174,7 +174,7 @@ export default function AdvancedScheduleTable() {
     }),
     columnHelper.accessor('status', {
         header: 'Status',
-        cell: ({ row, getValue }) => {
+        cell: ({ row, getValue }: any) => {
             const val = getValue();
             // All roles can edit status (with different permissions enforced by API)
             
