@@ -86,6 +86,8 @@ function DashboardContent() {
 
   const canAddStore = user?.role === 'admin' || user?.role === 'activator';
 
+  const filteredStores = user?.role === 'specialist' ? stores.filter(s => isPromo(s.name)) : stores;
+
   return (
     <main className="flex h-screen w-screen overflow-hidden bg-gray-50">
       <Sidebar 
@@ -105,12 +107,12 @@ function DashboardContent() {
 
         {currentView === 'map' ? (
            <Map 
-             stores={user?.role === 'specialist' ? stores.filter(s => isPromo(s.name)) : stores} 
+             stores={filteredStores} 
              onSelectStore={setSelectedStore} 
            />
         ) : (
            <StoresList 
-                stores={stores} 
+                stores={filteredStores} 
                 onSelectStore={setSelectedStore} 
                 onAddStore={() => setShowAddStore(true)}
                 canAddStore={canAddStore}
