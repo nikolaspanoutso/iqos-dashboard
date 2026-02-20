@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { X, Save, MapPin } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
@@ -59,15 +59,7 @@ function DraggableMarker({ position, setPosition }: { position: any, setPosition
 }
 
 // Fix for icon
-import L from 'leaflet';
-const icon = L.icon({
-    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-    iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-});
-
+// Import L inside effect to avoid SSR issues
 
 export default function AddStoreModal({ onClose, onSave, activatorId }: AddStoreModalProps) {
   const [formData, setFormData] = useState({
@@ -78,6 +70,24 @@ export default function AddStoreModal({ onClose, onSave, activatorId }: AddStore
   });
   const [position, setPosition] = useState({ lat: 37.9838, lng: 23.7275 }); // Default Athens
   const [loading, setLoading] = useState(false);
+
+  // Fix Leaflet icons (SSR issue)
+  useEffect(() => {
+    (async function initLeaflet() {
+       // @ts-ignore
+       const L = (await import('leaflet')).default;
+       
+        // Fix default icon issue
+        // @ts-ignore
+        delete L.Icon.Default.prototype._getIconUrl;
+        // @ts-ignore
+        L.Icon.Default.mergeOptions({
+            iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+            iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+        });
+    })();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
