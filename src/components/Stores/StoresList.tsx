@@ -6,15 +6,29 @@ interface StoresListProps {
   onSelectStore: (store: any) => void;
 }
 
-export default function StoresList({ stores, onSelectStore }: StoresListProps) {
+export default function StoresList({ stores, onSelectStore, onAddStore, canAddStore }: { 
+  stores: any[], 
+  onSelectStore: (store: any) => void,
+  onAddStore?: () => void,
+  canAddStore?: boolean
+}) {
   return (
     <div className="h-full w-full bg-gray-50 p-6 overflow-y-auto pt-8 animate-fade-in">
       <div className="max-w-7xl mx-auto">
          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">
+            <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
               Registered Stores 
-              <span className="ml-2 text-sm font-normal text-gray-500 bg-gray-200 px-2 py-1 rounded-full">{stores.length}</span>
+              <span className="text-sm font-normal text-gray-500 bg-gray-200 px-2 py-1 rounded-full">{stores.length}</span>
             </h2>
+            
+            {canAddStore && (
+                <button 
+                    onClick={onAddStore}
+                    className="bg-primary text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-dark transition-colors shadow-sm text-sm font-medium"
+                >
+                    + Add Store
+                </button>
+            )}
          </div>
          
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

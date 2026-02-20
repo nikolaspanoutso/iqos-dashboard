@@ -8,6 +8,9 @@ import StoresList from "@/components/Stores/StoresList";
 import HistoryModal from "@/components/UI/HistoryModal";
 import { History } from "lucide-react";
 
+import { useAuth } from '@/context/AuthContext';
+import AddStoreModal from '@/components/Stores/AddStoreModal';
+
 export default function Home() {
   const [isClient, setIsClient] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -16,22 +19,58 @@ export default function Home() {
   const [currentView, setCurrentView] = useState<'map' | 'list'>('map');
   const [stores, setStores] = useState<any[]>([]);
   const [selectedStore, setSelectedStore] = useState<any>(null);
+  
+  const [showAddStore, setShowAddStore] = useState(false);
+  const { user } = useAuth(); // Get logged in user
+
+  // Function to fetch stores based on user role/id
+  const fetchStores = async () => {
+    if (!user) return; // Wait for user
+
+    const params = new URLSearchParams();
+    params.set('userId', user.id);
+    params.set('role', user.role);
+
+    try {
+        const res = await fetch(`/api/stores?${params.toString()}`);
+        const data = await res.json();
+        if (Array.isArray(data)) {
+            setStores(data);
+        }
+    } catch (err) {
+        console.error("Failed to load stores", err);
+    }
+  };
 
   useEffect(() => {
     setIsClient(true);
-    
-    // Fetch stores centrally
-    fetch('/api/stores')
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setStores(data);
+    if (user) {
+        fetchStores();
+    }
+  }, [user]); // Re-fetch when user changes
+
+  const handleSaveStore = async (newStoreData: any) => {
+    try {
+        const res = await fetch('/api/stores', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newStoreData)
+        });
+        if (res.ok) {
+            await fetchStores(); // Refresh list
+            setShowAddStore(false);
+        } else {
+            alert('Failed to save store');
         }
-      })
-      .catch(err => console.error("Failed to load stores", err));
-  }, []);
+    } catch (e) {
+        console.error(e);
+        alert('Error saving store');
+    }
+  };
 
   if (!isClient) return null;
+
+  const canAddStore = user?.role === 'admin' || user?.role === 'activator';
 
   return (
     <main className="flex h-screen w-screen overflow-hidden bg-gray-50">
@@ -53,7 +92,12 @@ export default function Home() {
         {currentView === 'map' ? (
            <Map stores={stores} onSelectStore={setSelectedStore} />
         ) : (
-           <StoresList stores={stores} onSelectStore={setSelectedStore} />
+           <StoresList 
+                stores={stores} 
+                onSelectStore={setSelectedStore} 
+                onAddStore={() => setShowAddStore(true)}
+                canAddStore={canAddStore}
+           />
         )}
 
         {/* Drawer is GLOBAL now - works for both views */}
@@ -62,6 +106,15 @@ export default function Home() {
           onClose={() => setSelectedStore(null)} 
           data={selectedStore}
         />
+        
+        {/* Add Store Modal */}
+        {showAddStore && (
+            <AddStoreModal 
+                onClose={() => setShowAddStore(false)}
+                onSave={handleSaveStore}
+                activatorId={user?.id}
+            />
+        )}
       </div>
 
       {showHistory && <HistoryModal onClose={() => setShowHistory(false)} />}

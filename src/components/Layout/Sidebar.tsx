@@ -15,7 +15,7 @@ export default function Sidebar({ currentView, onViewChange }: SidebarProps) {
   const [showPerformanceModal, setShowPerformanceModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
 
-  const { logout, user } = useAuth();
+  const { logout, user, login, users } = useAuth();
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
@@ -32,10 +32,24 @@ export default function Sidebar({ currentView, onViewChange }: SidebarProps) {
         <div className="p-6 mt-12 flex-1">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-primary">Sales Network</h2>
-            {user && (
+            {user ? (
               <div className="text-xs text-gray-500 mt-1">
                 Logged in as: <span className="font-semibold text-gray-700">{user.name}</span>
               </div>
+            ) : (
+                <div className="mt-2">
+                    <label className="text-xs font-bold text-gray-400 uppercase">Select User</label>
+                    <select 
+                        className="w-full border p-2 rounded mt-1 text-sm"
+                        onChange={(e) => login(e.target.value)}
+                        defaultValue=""
+                    >
+                        <option value="" disabled>Choose User...</option>
+                        {users.map(u => (
+                            <option key={u.id} value={u.id}>{u.name} ({u.role})</option>
+                        ))}
+                    </select>
+                </div>
             )}
           </div>
 

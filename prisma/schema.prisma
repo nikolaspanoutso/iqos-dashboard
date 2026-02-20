@@ -20,7 +20,8 @@ model User {
   sales     Sale[]
   comments  Comment[]
   dailyStats DailyStat[]
-  schedules Schedule[]
+  schedules  Schedule[]
+  stores     Store[]
 }
 
 model Store {
@@ -35,6 +36,9 @@ model Store {
   lat              Float?
   lng              Float?
   
+  activatorId      String?
+  activator        User?     @relation(fields: [activatorId], references: [id])
+
   sales            Sale[]
   comments         Comment[]
 }
