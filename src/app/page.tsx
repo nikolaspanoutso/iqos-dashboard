@@ -11,8 +11,9 @@ import { History } from "lucide-react";
 import { useAuth } from '@/context/AuthContext';
 import AddStoreModal from '@/components/Stores/AddStoreModal';
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-export default function Home() {
+function DashboardContent() {
   const [isClient, setIsClient] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   
@@ -132,5 +133,13 @@ export default function Home() {
 
       {showHistory && <HistoryModal onClose={() => setShowHistory(false)} />}
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="h-screen w-screen flex items-center justify-center bg-gray-50 text-teal-600 font-bold">Loading Dashboard...</div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }

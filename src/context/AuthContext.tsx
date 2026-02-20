@@ -35,26 +35,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const res = await fetch('/api/users');
         const data = await res.json();
+        let finalUsers: User[] = [];
         if (Array.isArray(data) && data.length > 0) {
-           setUsersList(data);
+            finalUsers = data;
         } else {
              // If DB is empty, use seed-like fallback for demo
-             setUsersList([
+             finalUsers = [
                 { id: 'admin', name: 'Admin (Team Leader)', role: 'admin' },
                 { id: 'spec1', name: 'Maria Tasiou', role: 'specialist' },
                 { id: 'spec2', name: 'Nikos Mousas', role: 'specialist' },
                 { id: 'spec3', name: 'Giwrgos Grimanis', role: 'specialist' },
                 { id: 'spec4', name: 'Nikolas Panoutsopoulos', role: 'specialist' },
                 { id: 'spec5', name: 'Nefeli Merko', role: 'specialist' },
-             ]);
+             ];
         }
+        setUsersList(finalUsers);
+
+        // PERSISTENCE: Check if we have a saved user
+        if (typeof window !== 'undefined') {
+          const savedUserId = localStorage.getItem('currentUserId');
+          if (savedUserId) {
+              const found = finalUsers.find(u => u.id === savedUserId);
+              if (found) setUser(found);
+          }
+        }
+
       } catch (e) {
         console.error("Failed to fetch users", e);
-        // Fallback
-        setUsersList([
+        const fallbackUsers: User[] = [
            { id: 'admin', name: 'Admin (Team Leader)', role: 'admin' },
            { id: 'spec1', name: 'Maria Tasiou', role: 'specialist' },
-        ]);
+        ];
+        setUsersList(fallbackUsers);
+        
+        if (typeof window !== 'undefined') {
+          const savedUserId = localStorage.getItem('currentUserId');
+          if (savedUserId) {
+              const found = fallbackUsers.find(u => u.id === savedUserId);
+              if (found) setUser(found);
+          }
+        }
       } finally {
         setLoading(false);
       }
@@ -66,11 +86,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const foundUser = usersList.find(u => u.id === userId);
     if (foundUser) {
       setUser(foundUser);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('currentUserId', userId);
+      }
     }
   };
 
   const logout = () => {
     setUser(null);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('currentUserId');
+    }
   };
 
   return (
