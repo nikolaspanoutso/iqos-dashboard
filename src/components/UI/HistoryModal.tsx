@@ -130,19 +130,25 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
             </thead>
             <tbody>
               {filteredRows.map((row: any, index: number) => {
-                 // Direct data from API which is already truth
                  const currentStats = {  
                    p1: row.acquisitionP1, 
                    p4: row.acquisitionP4,
                    p5: row.offtakeP5
                  };
 
+                 const isToday = row.date === new Date().toLocaleDateString('en-GB');
+
                  return (
-                  <tr key={row.date} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                    <td className="p-2 border border-gray-300 font-medium text-gray-600">{row.date}</td>
+                  <tr key={row.date} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} ${isToday ? 'border-l-4 border-l-teal-600' : ''}`}>
+                    <td className="p-3 border border-gray-300">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-gray-800">{row.date}</span>
+                        {isToday && <span className="text-[10px] text-teal-600 font-bold uppercase">Today</span>}
+                      </div>
+                    </td>
                     
                     {/* P1 Cell */}
-                    <td className="p-0 border border-gray-300 text-center relative h-10 align-middle">
+                    <td className="p-0 border border-gray-300 text-center relative h-12 align-middle">
                       {editingCell === `${row.date}_${viewedUser}_p1` ? (
                         <input 
                           autoFocus
@@ -151,12 +157,12 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
                           onChange={(e) => setTempValue(e.target.value)}
                           onBlur={() => handleSaveEdit(row.date, 'p1', currentStats)}
                           onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(row.date, 'p1', currentStats)}
-                          className="w-full h-full text-center focus:bg-blue-50 focus:ring-2 focus:ring-blue-500 outline-none font-medium"
+                          className="w-full h-full text-center focus:bg-blue-50 focus:ring-2 focus:ring-blue-500 outline-none font-bold text-lg"
                         />
                       ) : (
                         <div 
                           onClick={() => isEditable && handleStartEdit(`${row.date}_${viewedUser}_p1`, currentStats.p1)}
-                          className={`w-full h-full flex items-center justify-center ${isEditable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
+                          className={`w-full h-full flex items-center justify-center text-lg font-medium ${isEditable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
                         >
                            {currentStats.p1}
                         </div>
@@ -164,7 +170,7 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
                     </td>
 
                      {/* P4 Cell */}
-                    <td className="p-0 border border-gray-300 text-center relative h-10 align-middle">
+                    <td className="p-0 border border-gray-300 text-center relative h-12 align-middle">
                       {editingCell === `${row.date}_${viewedUser}_p4` ? (
                         <input 
                           autoFocus
@@ -173,12 +179,12 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
                           onChange={(e) => setTempValue(e.target.value)}
                           onBlur={() => handleSaveEdit(row.date, 'p4', currentStats)}
                           onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(row.date, 'p4', currentStats)}
-                          className="w-full h-full text-center focus:bg-blue-50 focus:ring-2 focus:ring-blue-500 outline-none font-medium"
+                          className="w-full h-full text-center focus:bg-blue-50 focus:ring-2 focus:ring-blue-500 outline-none font-bold text-lg"
                         />
                       ) : (
                         <div 
                           onClick={() => isEditable && handleStartEdit(`${row.date}_${viewedUser}_p4`, currentStats.p4)}
-                          className={`w-full h-full flex items-center justify-center ${isEditable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
+                          className={`w-full h-full flex items-center justify-center text-lg font-medium ${isEditable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
                         >
                            {currentStats.p4}
                         </div>
@@ -186,7 +192,7 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
                     </td>
 
                     {/* P5 Cell */}
-                    <td className="p-0 border border-gray-300 text-center relative h-10 align-middle">
+                    <td className="p-0 border border-gray-300 text-center relative h-12 align-middle">
                       {editingCell === `${row.date}_${viewedUser}_p5` ? (
                         <input 
                           autoFocus
@@ -195,12 +201,12 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
                           onChange={(e) => setTempValue(e.target.value)}
                           onBlur={() => handleSaveEdit(row.date, 'p5', currentStats)}
                           onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(row.date, 'p5', currentStats)}
-                          className="w-full h-full text-center focus:bg-purple-50 focus:ring-2 focus:ring-purple-500 outline-none font-medium text-purple-700"
+                          className="w-full h-full text-center focus:bg-purple-50 focus:ring-2 focus:ring-purple-500 outline-none font-bold text-lg text-purple-700"
                         />
                       ) : (
                         <div 
                           onClick={() => isEditable && handleStartEdit(`${row.date}_${viewedUser}_p5`, currentStats.p5)}
-                          className={`w-full h-full flex items-center justify-center text-purple-700 ${isEditable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
+                          className={`w-full h-full flex items-center justify-center text-lg font-medium text-purple-700 ${isEditable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
                         >
                            {currentStats.p5}
                         </div>

@@ -68,34 +68,51 @@ export async function POST(request: Request) {
       }
     });
     
-    // OPTIONAL: Update a "Today" DailyStat record immediately?
-    // Or just let the frontend sum it up?
-    // Let's update the DailyStat for today to keep totals in sync.
-    const today = new Date().toLocaleDateString('en-GB'); // DD/MM/YYYY
-
-    // Upsert DailyStat for this user/today
-    let updateData = {};
-    if (type === 'P1') updateData = { acquisitionP1: { increment: count } };
-    else if (type === 'P4') updateData = { acquisitionP4: { increment: count } };
-    else if (type === 'P5') updateData = { offtakeP5: { increment: count } };
-    
-    await prisma.dailyStat.upsert({
-      where: {
-        date_userId: {
-          date: today,
-          userId: userId
-        }
-      },
-      update: updateData,
-      create: {
-        date: today,
-        userId: userId,
-        acquisitionP1: type === 'P1' ? count : 0,
-        acquisitionP4: type === 'P4' ? count : 0,
-        offtakeP5: type === 'P5' ? count : 0,
-        workingDays: 1 // Assume working if selling
-      }
+    // 1. Fetch user role to determine if we update individual stats
+    const dbUser = await prisma.user.findUnique({
+      where: { name: userId },
+      select: { role: true }
     });
+
+    const isSpecialist = dbUser?.role === 'specialist';
+
+    // 2. ONLY update Store Totals for P1 (regardless of role)
+    if (type === 'P1') {
+        await prisma.store.update({
+            where: { id: storeId },
+            data: {
+                totalAcquisition: { increment: count }
+            }
+        });
+    }
+
+    // 3. ONLY update Individual Stats (DailyStat) for Specialists (for any type P1, P4, P5)
+    if (isSpecialist) {
+        const today = new Date().toLocaleDateString('en-GB'); // DD/MM/YYYY
+        
+        let updateData = {};
+        if (type === 'P1') updateData = { acquisitionP1: { increment: count } };
+        else if (type === 'P4') updateData = { acquisitionP4: { increment: count } };
+        else if (type === 'P5') updateData = { offtakeP5: { increment: count } };
+        
+        await prisma.dailyStat.upsert({
+          where: {
+            date_userId: {
+              date: today,
+              userId: userId
+            }
+          },
+          update: updateData,
+          create: {
+            date: today,
+            userId: userId,
+            acquisitionP1: type === 'P1' ? count : 0,
+            acquisitionP4: type === 'P4' ? count : 0,
+            offtakeP5: type === 'P5' ? count : 0,
+            workingDays: 1
+          }
+        });
+    }
 
     return NextResponse.json(sale);
   } catch (error) {
