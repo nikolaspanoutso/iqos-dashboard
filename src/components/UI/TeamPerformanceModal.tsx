@@ -11,7 +11,7 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
   const { totals, loading: salesLoading } = useSales();
   const [rainTimestamp, setRainTimestamp] = useState<number | null>(null);
   const [storeTotal, setStoreTotal] = useState(0);
-  const [storesList, setStoresList] = useState<any[]>([]); // Added state
+  const [storesList, setStoresList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,10 +19,8 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
         .then(res => res.json())
         .then(data => {
            if (Array.isArray(data)) {
-              // Sum up totalAcquisition
               const sum = data.reduce((acc, store) => acc + (store.totalAcquisition || 0), 0);
               setStoreTotal(sum);
-              // Sort by Performance
               const sorted = data.sort((a, b) => (b.totalAcquisition || 0) - (a.totalAcquisition || 0));
               setStoresList(sorted);
            }
@@ -45,23 +43,16 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
     );
   }
 
-  // Calculate grand totals from individual sales entries (if needed separately)
   const totalP1 = Object.values(totals).reduce((acc: number, curr: any) => acc + curr.acquisitionP1, 0);
   const totalP4 = Object.values(totals).reduce((acc: number, curr: any) => acc + curr.acquisitionP4, 0);
   const totalP5 = Object.values(totals).reduce((acc: number, curr: any) => acc + curr.offtakeP5, 0);
-  
-  // The user stated "Team Total is 750" and "Do not calculate them again" (meaning don't add sales to store total).
-  // storeTotal (from DB stores) already includes these sales.
-  // So we just display storeTotal.
 
   return (
     <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
       <div className="bg-white rounded-lg shadow-2xl w-full max-w-6xl h-[95vh] flex flex-col overflow-hidden relative">
         
-        {/* Money Rain Effect */}
         {rainTimestamp && <MoneyRain key={rainTimestamp} />}
 
-        {/* Header */}
         <div className="flex justify-between items-center p-6 border-b bg-gray-50">
           <div>
             <h2 className="text-2xl font-bold text-primary">Team Performance Overview</h2>
@@ -77,10 +68,8 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
           </button>
         </div>
 
-        {/* Content */}
         <div className="flex-1 overflow-y-auto p-8 bg-gray-50/50">
           
-          {/* Main Metric Banner */}
           <div className="bg-gradient-to-r from-teal-800 to-teal-600 text-white p-8 rounded-xl shadow-lg mb-8 flex items-center justify-center text-center transform transition-transform hover:scale-[1.01]">
               <div>
                   <h3 className="text-sm font-bold uppercase tracking-widest opacity-80 mb-2">Total Team Acquisitions</h3>
@@ -91,12 +80,10 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
               </div>
           </div>
 
-          {/* Team Summary Breakdown (Derived from individual reports, just for info) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 opacity-70 hover:opacity-100 transition-opacity">
             <SummaryCard 
               title="Acquisition P1" 
               actual={totalP1} 
-              // Sum of all individual targets
               target={Object.values(totals).reduce((acc: number, curr: any) => acc + (curr.workingDays * 1.7), 0)} 
               color="teal"
             />
@@ -113,7 +100,6 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
             />
           </div>
 
-          {/* Individual Stats Grid */}
           <h3 className="text-xl font-bold text-gray-800 mb-6">Individual Performance</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Object.entries(totals).map(([name, stats]: any) => {
@@ -137,9 +123,7 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
               );
             })}
           </div>
-        </div>
 
-          {/* Specialist Leaderboard Table */}
           <h3 className="text-xl font-bold text-gray-800 mb-4 mt-8">Specialist Leaderboard</h3>
           <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
             <div className="overflow-x-auto">
@@ -152,7 +136,6 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
                     <th className="p-3 text-right text-teal-700">Acq. P1</th>
                     <th className="p-3 text-right text-blue-700">Acq. P4</th>
                     <th className="p-3 text-right text-purple-700">Offtake P5</th>
-                    <th className="p-3 text-right">Map Validated</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -166,16 +149,11 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
                       <td className="p-3 text-right font-bold text-teal-700">{stats.acquisitionP1}</td>
                       <td className="p-3 text-right font-bold text-blue-700">{stats.acquisitionP4}</td>
                       <td className="p-3 text-right font-bold text-purple-700">{stats.offtakeP5}</td>
-                      <td className="p-3 text-right text-xs text-gray-400">
-                        {/* Cross reference with storesList if needed, derived from name? */}
-                        {/* For now just placeholder or remove col if not needed. Keeping simpler. */}
-                        -
-                      </td>
                     </tr>
                   ))}
                   {Object.keys(totals).length === 0 && (
                     <tr>
-                       <td className="p-4 text-center text-gray-400" colSpan={7}>No performance data available.</td>
+                       <td className="p-4 text-center text-gray-400" colSpan={6}>No performance data available.</td>
                     </tr>
                   )}
                 </tbody>
@@ -190,19 +168,14 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
 
 const PersonStatsCard = ({ name, stats, workingDays, targets, onGoldHover }: any) => {
   const { targetP1, overP1, targetP4, overP4 } = targets;
-  
-  // State to toggle which target is displayed in the fraction (Base vs Over)
-  // Default to Base Target (false)
   const [showP1Over, setShowP1Over] = useState(false);
   const [showP4Over, setShowP4Over] = useState(false);
 
-  // P1 Calculations
   const p1Progress = Math.min((stats.acquisitionP1 / targetP1) * 100, 100);
   const p1OverProgress = Math.min((stats.acquisitionP1 / overP1) * 100, 100);
   const isP1Over = stats.acquisitionP1 >= overP1;
   const isP1TargetMet = stats.acquisitionP1 >= targetP1;
 
-  // P4 Calculations
   const p4Progress = Math.min((stats.acquisitionP4 / targetP4) * 100, 100);
   const p4OverProgress = Math.min((stats.acquisitionP4 / overP4) * 100, 100);
   const isP4Over = stats.acquisitionP4 >= overP4;
@@ -228,13 +201,11 @@ const PersonStatsCard = ({ name, stats, workingDays, targets, onGoldHover }: any
         </div>
       </div>
       
-      {/* Registered Users */}
       <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-6">
          <span className="block text-xs uppercase tracking-wider text-blue-500 font-bold mb-1">Registered Users</span>
          <span className="text-2xl font-black text-blue-700">{stats.registeredUsers || 0}</span>
       </div>
 
-      {/* P1 Stats */}
       <div className="mb-6">
         <div className="flex justify-between items-end mb-1">
           <span className="font-bold text-sm text-gray-700">Acquisition P1</span>
@@ -244,7 +215,6 @@ const PersonStatsCard = ({ name, stats, workingDays, targets, onGoldHover }: any
           </div>
         </div>
         
-        {/* Primary Target Bar */}
         <div className="flex items-center gap-2 mb-2">
           <div 
             className="flex-1 bg-gray-100 rounded-full h-5 relative group cursor-pointer overflow-hidden"
@@ -253,12 +223,10 @@ const PersonStatsCard = ({ name, stats, workingDays, targets, onGoldHover }: any
             <div className={`h-full rounded-full flex items-center justify-end px-2 ${isP1TargetMet ? 'bg-green-500' : 'bg-teal-500'}`} style={{ width: `${p1Progress}%` }}>
               <span className="text-[10px] text-white font-bold drop-shadow-md">Target: {targetP1.toFixed(1)}</span>
             </div>
-             {/* If progress is low, show text outside or leave hidden - sticking to inside as requested */}
           </div>
           <span className="text-lg">{isP1TargetMet ? '✅' : '🔜'}</span>
         </div>
         
-        {/* Gold Overachievement Bar */}
         <div className="flex items-center gap-2">
           <div 
             className="flex-1 bg-yellow-50 rounded-full h-5 relative group cursor-pointer hover:bg-yellow-100 transition-colors overflow-hidden"
@@ -275,7 +243,6 @@ const PersonStatsCard = ({ name, stats, workingDays, targets, onGoldHover }: any
         </div>
       </div>
 
-      {/* P4 Stats */}
       <div className="mb-6">
         <div className="flex justify-between items-end mb-1">
           <span className="font-bold text-sm text-gray-700">Acquisition P4</span>
@@ -285,7 +252,6 @@ const PersonStatsCard = ({ name, stats, workingDays, targets, onGoldHover }: any
           </div>
         </div>
         
-        {/* Primary Target Bar */}
         <div className="flex items-center gap-2 mb-2">
           <div 
             className="flex-1 bg-gray-100 rounded-full h-5 relative group cursor-pointer overflow-hidden"
@@ -298,7 +264,6 @@ const PersonStatsCard = ({ name, stats, workingDays, targets, onGoldHover }: any
           <span className="text-lg">{isP4TargetMet ? '✅' : '🔜'}</span>
         </div>
 
-        {/* Gold Overachievement Bar */}
         <div className="flex items-center gap-2">
           <div 
             className="flex-1 bg-yellow-50 rounded-full h-5 relative group cursor-pointer hover:bg-yellow-100 transition-colors overflow-hidden"
@@ -315,14 +280,10 @@ const PersonStatsCard = ({ name, stats, workingDays, targets, onGoldHover }: any
         </div>
       </div>
 
-      {/* P5 Stat (Simple Box) */}
       <div className="bg-purple-50 p-2 rounded border border-purple-100 flex justify-between items-center">
         <span className="text-xs font-bold text-purple-700">Offtake P5</span>
         <span className="text-lg font-bold text-purple-800">{stats.offtakeP5}</span>
       </div>
-
-
-
     </div>
   );
 };
@@ -362,16 +323,15 @@ const SummaryCard = ({ title, actual, target, color }: any) => {
   );
 };
 
-// Money Rain Component
 const MoneyRain = () => {
   const [emojis, setEmojis] = useState<any[]>([]);
 
   useEffect(() => {
     const newEmojis = Array.from({ length: 20 }).map((_, i) => ({
       id: i,
-      left: Math.random() * 100, // Random horizontal position 0-100%
-      delay: Math.random() * 0.5, // Random delay
-      duration: 1 + Math.random(), // Random fall duration
+      left: Math.random() * 100, 
+      delay: Math.random() * 0.5, 
+      duration: 1 + Math.random(), 
       char: Math.random() > 0.5 ? '💲' : '💰'
     }));
     setEmojis(newEmojis);
