@@ -87,21 +87,23 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
               </div>
           </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 opacity-90 transition-opacity">
+          {/* Team Summary Breakdown (Derived from individual reports, just for info) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 opacity-70 hover:opacity-100 transition-opacity">
             <SummaryCard 
-              title="Registered Users" 
+              title="Acquisition P1" 
               actual={totalP1} 
-              // Removed target as per request
+              // Sum of all individual targets
+              target={Object.values(totals).reduce((acc: number, curr: any) => acc + (curr.workingDays * 1.7), 0)} 
               color="teal"
             />
             <SummaryCard 
-              title="Device Upgrades (P4)" 
+              title="Acquisition P4" 
               actual={totalP4} 
+              target={Object.values(totals).reduce((acc: number, curr: any) => acc + (curr.workingDays * 0.7), 0)} 
               color="blue"
             />
              <SummaryCard 
-              title="Consumables (P5)" 
+              title="Offtake P5" 
               actual={totalP5} 
               color="purple"
             />

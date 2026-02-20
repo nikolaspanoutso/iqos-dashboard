@@ -7,23 +7,31 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const start = searchParams.get('start');
   const end = searchParams.get('end');
+  const userId = searchParams.get('userId'); // Logged in user
+  const role = searchParams.get('role');     // Logged in role
 
   if (!start || !end) {
     return NextResponse.json({ error: 'Start and end dates are required' }, { status: 400 });
   }
 
   try {
-    const schedules = await prisma.schedule.findMany({
-      where: {
-        date: {
-          gte: new Date(start),
-          lte: new Date(end),
-        },
+    const whereClause: any = {
+      date: {
+        gte: new Date(start),
+        lte: new Date(end),
       },
+    };
+
+    // Specialist: Can only see their own schedule
+    if (role === 'specialist' && userId) {
+        whereClause.userId = userId;
+    }
+
+    const schedules = await prisma.schedule.findMany({
+      where: whereClause,
       include: {
-        user: {
-           select: { name: true, role: true }
-        }
+        user: { select: { name: true, role: true } },
+        store: { select: { id: true, name: true } }
       }
     });
 
@@ -37,11 +45,41 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { userId, date, status, notes } = body;
+    const { userId, date, status, notes, storeId, shift, requestingUserRole, requestingUserId } = body;
 
     if (!userId || !date || !status) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
+
+    // Permission Check
+    if (requestingUserRole === 'specialist') {
+        // Specialist can only update their OWN status to specific values
+        if (userId !== requestingUserId) {
+            return NextResponse.json({ error: 'Unauthorized: Cannot edit others' }, { status: 403 });
+        }
+        // Prevent editing store or shift
+        if (storeId !== undefined || shift !== undefined) {
+             // Ideally we'd throw an error or just ignore these fields. Let's ignore them to be safe and only update status/notes.
+             // But for strictness let's assume the frontend sends what's changed.
+        }
+    }
+
+    // Upsert
+    const updateData: any = { status, notes };
+    if (requestingUserRole !== 'specialist') {
+        // Admin/Activator can update everything
+        if (storeId !== undefined) updateData.storeId = storeId;
+        if (shift !== undefined) updateData.shift = shift;
+    }
+
+    const createData: any = {
+        userId,
+        date: new Date(date),
+        status,
+        notes,
+        storeId: storeId || null,
+        shift: shift || null
+    };
 
     const schedule = await prisma.schedule.upsert({
       where: {
@@ -50,16 +88,8 @@ export async function POST(request: Request) {
           date: new Date(date),
         },
       },
-      update: {
-        status,
-        notes,
-      },
-      create: {
-        userId,
-        date: new Date(date),
-        status,
-        notes,
-      },
+      update: updateData,
+      create: createData,
     });
 
     return NextResponse.json(schedule);

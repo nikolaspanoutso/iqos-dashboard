@@ -81,8 +81,8 @@ export default function Sidebar({ currentView, onViewChange }: SidebarProps) {
             <NavItem 
               icon={<Calendar size={20} />} 
               label="Schedule" 
-              isActive={showScheduleModal} 
-              onClick={() => setShowScheduleModal(true)} 
+              isActive={window.location.pathname === '/schedule'} 
+              onClick={() => window.location.href = '/schedule'} 
             />
           </nav>
 
