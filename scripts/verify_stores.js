@@ -7,26 +7,26 @@ async function main() {
     console.log(`Total Stores: ${stores.length}`);
 
     let total = 0;
-    let invalid = 0;
-
     stores.forEach(store => {
-        // Check type of totalAcquisition
         const val = store.totalAcquisition;
-        const type = typeof val;
-        console.log(`Store: ${store.name.substring(0, 20)}... | Val: ${val} | Type: ${type}`);
+
+        // Check specific stores user mentioned
+        if (store.name.includes('PICK IT') || store.name.includes('ΚΡΑΨΙΤΗΣ') || store.name.includes('ΠΑΠΑΖΙΚΟΣ')) {
+            console.log(`🎯 CHECK: ${store.name} | DB Value: ${val}`);
+        }
 
         if (typeof val === 'number') {
             total += val;
         } else {
-            invalid++;
-            // Try parsing
             const parsed = parseInt(val);
             if (!isNaN(parsed)) total += parsed;
         }
     });
 
-    console.log(`Calculated Total: ${total}`);
-    console.log(`Invalid Types: ${invalid}`);
+    console.log(`-----------------------------------------------`);
+    console.log(`🔢 TOTAL ACQUISITIONS IN DB: ${total}`);
+    console.log(`-----------------------------------------------`);
+    console.log(`Total Stores Counted: ${stores.length}`);
 }
 
 main()

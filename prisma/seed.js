@@ -228,7 +228,20 @@ async function main() {
             let area = cols[2]?.trim();
             let address = cols[3]?.trim();
             let zip = cols[4]?.trim();
+            // Inconsistent CSV: Some lines have City, some don't.
+            // If City is missing, TotalAcq might be in cols[4] instead of cols[5].
             let totalAcqStr = cols[5]?.trim();
+
+            // Check if cols[4] is the acquisition (small number) and cols[5] is the percentage (contains % or comma)
+            const col4Int = parseInt(cols[4]?.trim());
+            const col5IsPercent = cols[5]?.includes('%') || cols[5]?.includes('"') || cols[5]?.includes(',');
+
+            if (!isNaN(col4Int) && col5IsPercent) {
+                // Shift detected: City is missing
+                zip = ""; // Zip is likely mixed in address or missing
+                totalAcqStr = cols[4]?.trim();
+                // area/address adjustments might be needed but for now let's just get the acquisition right
+            }
 
             let lat = null;
             let lng = null;
