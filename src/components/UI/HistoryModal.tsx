@@ -29,14 +29,22 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
   // Helper to generate all days of the selected month
   const generateMonthDays = (month: string) => {
     const year = 2026; // Current operating year
+    const now = new Date();
+    const currentMonthNum = (now.getMonth() + 1).toString().padStart(2, '0');
+    
     const daysInMonth = new Date(year, parseInt(month), 0).getDate();
+    // If month is current, limit to current day
+    const limit = (month === currentMonthNum) ? now.getDate() : daysInMonth;
+
     const days = [];
-    for (let i = 1; i <= daysInMonth; i++) {
+    for (let i = 1; i <= limit; i++) {
         const dayStr = i.toString().padStart(2, '0');
         days.push(`${dayStr}/${month}/${year}`);
     }
     return days;
   };
+
+  const { schedules } = useSales();
 
   // Filter Data based on Month and User
   const allMonthDates = generateMonthDays(selectedMonth);
@@ -49,10 +57,32 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
       }
   });
 
+  // Schedule lookup map
+  const statusMap: Record<string, string> = {};
+  schedules?.forEach(s => {
+      if (s.userId === viewedUser) {
+          statusMap[s.date] = s.status;
+      }
+  });
+
+  const getStatusStyle = (status: string) => {
+      switch (status) {
+          case 'Work': return 'bg-teal-100 text-teal-800 border-teal-200';
+          case 'Sick': return 'bg-red-100 text-red-800 border-red-200';
+          case 'Off': return 'bg-gray-100 text-gray-800 border-gray-200';
+          case 'Leave': return 'bg-blue-100 text-blue-800 border-blue-200';
+          case 'Training': return 'bg-purple-100 text-purple-800 border-purple-200';
+          case 'AB': return 'bg-orange-100 text-orange-800 border-orange-200';
+          default: return 'bg-gray-50 text-gray-400 border-gray-100';
+      }
+  };
+
   const filteredRows = allMonthDates.map(date => {
     const stats = statsMap[date] || { acquisitionP1: 0, acquisitionP4: 0, offtakeP5: 0 };
+    const status = statusMap[date] || 'Off'; // Default to Off if no schedule
     return {
       date,
+      status,
       ...stats
     };
   });
@@ -87,9 +117,9 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
 
   return (
     <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
-      <div className="bg-white rounded-lg shadow-2xl w-full max-w-3xl h-[85vh] flex flex-col overflow-hidden relative border border-gray-300">
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl h-[85vh] flex flex-col overflow-hidden relative border border-gray-300">
         
-        {/* Header */}
+        {/* Header content ... */}
         <div className="flex justify-between items-center p-4 border-b bg-gray-50">
           <div className="flex items-center gap-4">
              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
@@ -144,10 +174,11 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
           <table className="w-full text-left border-collapse text-sm">
             <thead className="bg-gray-50 sticky top-0 z-10">
               <tr>
-                <th className="p-2 border border-gray-300 font-semibold text-gray-700 w-1/4 bg-gray-100">Date</th>
-                <th className="p-2 border border-gray-300 font-semibold text-gray-700 text-center w-1/4 bg-gray-100">P1</th>
-                <th className="p-2 border border-gray-300 font-semibold text-gray-700 text-center w-1/4 bg-gray-100">P4</th>
-                 <th className="p-2 border border-gray-300 font-semibold text-purple-700 text-center w-1/4 bg-gray-100">P5 Offtake</th>
+                <th className="p-2 border border-gray-300 font-semibold text-gray-700 w-[20%] bg-gray-100">Date</th>
+                <th className="p-2 border border-gray-300 font-semibold text-gray-700 text-center w-[15%] bg-gray-100">Status</th>
+                <th className="p-2 border border-gray-300 font-semibold text-gray-700 text-center w-[20%] bg-gray-100">P1</th>
+                <th className="p-2 border border-gray-300 font-semibold text-gray-700 text-center w-[20%] bg-gray-100">P4</th>
+                <th className="p-2 border border-gray-300 font-semibold text-purple-700 text-center w-[25%] bg-gray-100">P5 Offtake</th>
               </tr>
             </thead>
             <tbody>
@@ -167,6 +198,12 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
                         <span className="font-bold text-gray-800">{row.date}</span>
                         {isToday && <span className="text-[10px] text-teal-600 font-bold uppercase">Today</span>}
                       </div>
+                    </td>
+
+                    <td className="p-2 border border-gray-300 text-center">
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${getStatusStyle(row.status)}`}>
+                            {row.status.toUpperCase()}
+                        </span>
                     </td>
                     
                     {/* P1 Cell */}

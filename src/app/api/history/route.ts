@@ -5,11 +5,16 @@ import prisma from '@/lib/prisma';
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { date, userId, p1, p4, p5 } = body;
+    const { date, userId } = body;
+    const p1 = Number(body.p1);
+    const p4 = Number(body.p4);
+    const p5 = Number(body.p5);
 
-    if (!date || !userId || p1 === undefined || p4 === undefined || p5 === undefined) {
-      return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
+    if (!date || !userId || isNaN(p1) || isNaN(p4) || isNaN(p5)) {
+      return NextResponse.json({ error: 'Missing or invalid fields' }, { status: 400 });
     }
+
+    console.log(`[History Update] User: ${userId}, Date: ${date}, New P1: ${p1}`);
 
     // 1. Get current value to calculate delta for P1
     const currentStat = await prisma.dailyStat.findUnique({
@@ -62,12 +67,11 @@ export async function PUT(request: Request) {
                 data: {
                     name: 'System - Specialist Adjustments',
                     type: 'SYSTEM',
-                    city: 'Global',
-                    region: 'Global',
                     lat: 0,
                     lng: 0,
-                    totalAcquisition: deltaP1
-                } as any // Use any to bypass linting if schema is being tricky
+                    totalAcquisition: deltaP1,
+                    isActive: true
+                }
             });
         }
     }

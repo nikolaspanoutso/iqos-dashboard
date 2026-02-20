@@ -51,11 +51,28 @@ export async function GET() {
         select: { name: true }
     });
 
+    // Fetch schedules to show status (Work, Sick, etc.)
+    const schedules = await prisma.schedule.findMany({
+        where: {
+            user: { role: 'specialist' }
+        },
+        select: {
+            userId: true,
+            date: true,
+            status: true
+        }
+    });
+
     return NextResponse.json({ 
       dailyStats, 
       recentSales,
       aggregatedStats,
-      specialists: specialistsList.map(s => s.name)
+      specialists: specialistsList.map(s => s.name),
+      schedules: schedules.map(s => ({
+          userId: s.userId,
+          date: s.date.toLocaleDateString('en-GB'),
+          status: s.status
+      }))
     });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch sales data' }, { status: 500 });
