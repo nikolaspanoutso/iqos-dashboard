@@ -61,10 +61,12 @@ export async function PUT(request: Request) {
 
     // Case 2: Updating Status (Work, Sick, Off, etc.)
     if (status) {
-        // Parse date for Schedule model (it uses DateTime, not string)
+        // Parse date and normalize to UTC Midnight for consistency with Schedule table
         const [day, month, year] = date.split('/').map(Number);
-        const dateObj = new Date(year, month - 1, day, 12, 0, 0); // Noon to avoid TZ issues
+        const dateObj = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
         
+        console.log(`[Status Sync] User: ${userId}, Date: ${dateObj.toISOString()}, Status: ${status}`);
+
         await prisma.schedule.upsert({
             where: {
                 userId_date: {
@@ -76,15 +78,18 @@ export async function PUT(request: Request) {
             create: {
                 userId,
                 date: dateObj,
-                status,
-                storeId: "History Override" // Placeholder
+                status
             }
         });
     }
 
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Failed to update history' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[History API Error]', error);
+    return NextResponse.json({ 
+        error: 'Failed to update history', 
+        details: error.message,
+        code: error.code 
+    }, { status: 500 });
   }
 }
