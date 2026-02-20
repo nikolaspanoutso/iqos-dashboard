@@ -26,16 +26,33 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
     }
   }, [specialists, user, viewedUser]);
 
+  // Helper to generate all days of the selected month
+  const generateMonthDays = (month: string) => {
+    const year = 2026; // Current operating year
+    const daysInMonth = new Date(year, parseInt(month), 0).getDate();
+    const days = [];
+    for (let i = 1; i <= daysInMonth; i++) {
+        const dayStr = i.toString().padStart(2, '0');
+        days.push(`${dayStr}/${month}/${year}`);
+    }
+    return days;
+  };
+
   // Filter Data based on Month and User
-  const filteredRows = data.filter((day: any) => {
-    // Date format: DD/MM/YYYY. Extract MM.
-    const month = day.date.split('/')[1];
-    return month === selectedMonth;
-  }).map((day: any) => {
-     // Use viewedUser to extract stats from the daily data
-    const stats = day.people[viewedUser] || { acquisitionP1: 0, acquisitionP4: 0, offtakeP5: 0 };
+  const allMonthDates = generateMonthDays(selectedMonth);
+  
+  // Transform data into a lookup map for easy access
+  const statsMap: Record<string, any> = {};
+  data.forEach((day: any) => {
+      if (day.people[viewedUser]) {
+          statsMap[day.date] = day.people[viewedUser];
+      }
+  });
+
+  const filteredRows = allMonthDates.map(date => {
+    const stats = statsMap[date] || { acquisitionP1: 0, acquisitionP4: 0, offtakeP5: 0 };
     return {
-      date: day.date,
+      date,
       ...stats
     };
   });
