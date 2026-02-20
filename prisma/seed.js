@@ -233,87 +233,99 @@ async function main() {
             let lat = null;
             let lng = null;
 
-            // 1. Check for Manual Coordinates in CSV
-            const potentialLat = parseFloat(area?.replace(',', '.'));
-            const potentialLng = parseFloat(address?.replace(',', '.'));
+            // 1. Check for Split Coordinates (Parsing Error Recovery)
+            const latInt = parseInt(cols[2]?.trim());
+            const lngInt = parseInt(cols[4]?.trim());
 
-            if (!isNaN(potentialLat) && !isNaN(potentialLng) &&
-                potentialLat > 34 && potentialLat < 42 &&
-                potentialLng > 19 && potentialLng < 29) {
+            if (!isNaN(latInt) && latInt >= 34 && latInt <= 42 &&
+                !isNaN(lngInt) && lngInt >= 19 && lngInt <= 30) {
 
-                lat = potentialLat;
-                lng = potentialLng;
-                totalAcqStr = zip;
+                const latPart2 = cols[3]?.trim();
+                const lngPart2 = cols[5]?.trim();
+
+                lat = parseFloat(`${latInt}.${latPart2}`);
+                lng = parseFloat(`${lngInt}.${lngPart2}`);
+
+                totalAcqStr = cols[6]?.trim();
                 area = "Coordinates";
                 address = "Coordinates";
-                // console.log(`📍 Using CSV coords for ${name}`);
-            } else {
-                // 2. Check DB Cache
+                zip = "";
+
+                console.log(`🔧 Fixed split coords for ${name}`);
+            }
+
+            // 2. Check for Manual Coordinates (if not found yet)
+            if (!lat || !lng) {
+                const potentialLat = parseFloat(area?.replace(',', '.'));
+                const potentialLng = parseFloat(address?.replace(',', '.'));
+
+                if (!isNaN(potentialLat) && !isNaN(potentialLng) &&
+                    potentialLat > 34 && potentialLat < 42 &&
+                    potentialLng > 19 && potentialLng < 29) {
+
+                    lat = potentialLat;
+                    lng = potentialLng;
+                    totalAcqStr = zip; // Shifted? No, manual coords usually in Area/Address fields
+                    // If Manual coords are in Area/Addr, then Zip/TotalAcq are usually in right place or shifted by 1?
+                    // Usually Manual Coords means Area=Lat, Address=Lng. Then Zip is Zip, TotalAcq is TotalAcq.
+                    // But let's trust the variables mapping if they aren't split.
+                    area = "Coordinates";
+                    address = "Coordinates";
+                }
+            }
+
+            // 3. DB Cache (if not found yet)
+            if (!lat || !lng) {
                 const existing = storeMap.get(name);
                 if (existing && existing.lat && existing.lng) {
                     lat = existing.lat;
                     lng = existing.lng;
-                    // console.log(`⏩ Using DB cache for ${name}`);
-                } else {
-                    // 3. Geocode (Only if missing)
-                    // Wait 1.1 second to respect OSM rate limits
-                    await new Promise(r => setTimeout(r, 1100));
-                    const coords = await getCoordinates(address, area, zip);
-
-                    if (coords) {
-                        lat = coords.lat;
-                        lng = coords.lng;
-                        console.log(`✅ Geocoded: ${name}`);
-                    } else {
-                        const center = cityCenters[area] || cityCenters['Athina'];
-                        lat = center.lat + (Math.random() - 0.5) * 0.005;
-                        lng = center.lng + (Math.random() - 0.5) * 0.005;
-                        console.log(`⚠️ Fallback: ${name}`);
-                    }
                 }
+            }
+
+            // 4. Geocoding / Fallback (if not found yet)
+            if (!lat || !lng) {
+                // Skip real geocoding for now to speed up, use falback
+                const center = cityCenters[area] || cityCenters['Athina'];
+                lat = center.lat + (Math.random() - 0.5) * 0.005;
+                lng = center.lng + (Math.random() - 0.5) * 0.005;
+                console.log(`⚠️ Fallback: ${name}`);
             }
 
             const totalAcq = parseInt(totalAcqStr) || 0;
 
-            // Manual Upsert to avoid "WhereUniqueInput" error on Name
+            // Upsert Logic
             const existingStore = await prisma.store.findFirst({
                 where: { name: name }
             });
 
+            const storeData = {
+                activatorName: ta,
+                activatorId: activatorId,
+                area,
+                address,
+                postCode: zip,
+                totalAcquisition: totalAcq,
+                lat,
+                lng,
+                type: name.toLowerCase().includes('kiosk') || name.toLowerCase().includes('periptero') ? 'Kiosk' : 'Store',
+                isActive: true
+            };
+
             if (existingStore) {
                 await prisma.store.update({
                     where: { id: existingStore.id },
-                    data: {
-                        activatorName: ta,
-                        activatorId: activatorId,
-                        area,
-                        address,
-                        postCode: zip,
-                        totalAcquisition: totalAcq,
-                        lat,
-                        lng,
-                        type: name.toLowerCase().includes('kiosk') || name.toLowerCase().includes('periptero') ? 'Kiosk' : 'Store',
-                        isActive: true
-                    }
+                    data: storeData
                 });
             } else {
                 await prisma.store.create({
                     data: {
                         name,
-                        activatorName: ta,
-                        activatorId: activatorId,
-                        area,
-                        address,
-                        postCode: zip,
-                        totalAcquisition: totalAcq,
-                        lat,
-                        lng,
-                        type: name.toLowerCase().includes('kiosk') || name.toLowerCase().includes('periptero') ? 'Kiosk' : 'Store',
-                        isActive: true
+                        ...storeData
                     }
                 });
             }
-            process.stdout.write('.'); // Progress indicator
+            process.stdout.write('.');
         }
         console.log('\nStores synced successfully.');
     }

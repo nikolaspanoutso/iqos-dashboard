@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "import-csv": "node scripts/import_data.js"
+    "import-csv": "node scripts/import_data.js",
+    "verify-stores": "node scripts/verify_stores.js",
+    "debug-csv": "node scripts/debug_csv.js"
   },
   "dependencies": {
     "@prisma/client": "^5.12.1",

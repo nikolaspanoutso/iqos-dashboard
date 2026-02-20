@@ -1,0 +1,10 @@
+const fs = require('fs');
+const content = fs.readFileSync('shops.csv', 'utf-8');
+const lines = content.split('\n');
+const target = lines.find(l => l.includes('ΣΙΑΠΛΑΟΥΡΑΣ'));
+console.log('--- FOUND LINE ---');
+console.log(target);
+console.log('------------------');
+const parts = target.split(',');
+console.log('Parts length:', parts.length);
+parts.forEach((p, i) => console.log(`[${i}]: ${p}`));
