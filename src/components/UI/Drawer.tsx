@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { isPromo, togglePromoSuffix } from '@/lib/promo';
-import { X, User2, Package, Tag, MessageSquare, Plus, Minus, Save, ShoppingBag } from 'lucide-react';
+import { X, User2, Package, Tag, MessageSquare, Plus, Minus, Save, ShoppingBag, Check } from 'lucide-react';
 import { useSales } from '@/context/SalesContext';
 import { useAuth } from '@/context/AuthContext';
 
@@ -104,6 +104,37 @@ const storeSales = comments
     // For now, let's display the Total Acquisition from props
 ;
 
+  const [isEditingTotal, setIsEditingTotal] = useState(false);
+  const [tempTotal, setTempTotal] = useState('');
+
+  const handleSaveTotal = async () => {
+      const val = parseInt(tempTotal);
+      if (isNaN(val)) return;
+
+      try {
+          const res = await fetch('/api/stores', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: data.id, action: 'update', totalAcquisition: val })
+          });
+          
+          if (res.ok) {
+              setIsEditingTotal(false);
+              if (onStoreUpdate) onStoreUpdate();
+          } else {
+              alert('Failed to update total');
+          }
+      } catch (e) {
+          console.error(e);
+          alert('Error updating total');
+      }
+  };
+
+  const startEditingTotal = () => {
+      setTempTotal(data.totalAcquisition?.toString() || '0');
+      setIsEditingTotal(true);
+  };
+
   const totalAcquisition = data?.totalAcquisition || 0;
 
   return (
@@ -141,9 +172,38 @@ const storeSales = comments
 
               {/* METRICS BADGE */}
               <div className="flex gap-4 mt-2">
-                 <div className="bg-white/10 backdrop-blur-md rounded-lg p-2 pr-4 flex-1 border border-white/10">
+                 <div className="bg-white/10 backdrop-blur-md rounded-lg p-2 pr-4 flex-1 border border-white/10 group relative">
                     <span className="block text-[10px] uppercase tracking-wider opacity-70">Total Acquisitions</span>
-                    <span className="text-2xl font-bold">{totalAcquisition}</span>
+                    
+                    {isEditingTotal ? (
+                        <div className="flex items-center gap-2 mt-1">
+                            <input 
+                                autoFocus
+                                type="number"
+                                className="w-full bg-white/20 border-none text-white font-bold rounded px-1 focus:ring-1 focus:ring-white outline-none"
+                                value={tempTotal}
+                                onChange={e => setTempTotal(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && handleSaveTotal()}
+                            />
+                            <div className="flex gap-1">
+                                <button onClick={handleSaveTotal} className="p-1 hover:bg-green-500/50 rounded transition-colors text-white" title="Save"><Check size={14} /></button>
+                                <button onClick={() => setIsEditingTotal(false)} className="p-1 hover:bg-red-500/50 rounded transition-colors text-white" title="Cancel"><X size={14} /></button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-2xl font-bold">{totalAcquisition}</span>
+                            {isOwner && (
+                                <button 
+                                    onClick={startEditingTotal}
+                                    className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-white/10 rounded"
+                                    title="Edit Total"
+                                >
+                                    <Save size={12} className="rotate-0" />
+                                </button>
+                            )}
+                        </div>
+                    )}
                  </div>
                  
                  {/* Area or Remove Button */}

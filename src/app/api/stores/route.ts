@@ -57,6 +57,9 @@ export async function PATCH(request: Request) {
         if (action === 'update') {
             const updateData: any = {};
             if (name !== undefined) updateData.name = name;
+            if (body.totalAcquisition !== undefined) {
+                updateData.totalAcquisition = Number(body.totalAcquisition);
+            }
             
             const updated = await prisma.store.update({
                 where: { id },
