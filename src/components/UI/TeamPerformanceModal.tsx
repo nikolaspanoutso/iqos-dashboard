@@ -72,12 +72,11 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
           
           <div className="bg-gradient-to-r from-teal-800 to-teal-600 text-white p-8 rounded-xl shadow-lg mb-8 flex items-center justify-center text-center transform transition-transform hover:scale-[1.01]">
               <div>
-                  <h3 className="text-sm font-bold uppercase tracking-widest opacity-80 mb-2">Total Team Acquisitions (P1)</h3>
+                  <h3 className="text-sm font-bold uppercase tracking-widest opacity-80 mb-2">Total Team Acquisitions</h3>
                   <div className="text-6xl font-black tracking-tight drop-shadow-lg">
-                    {/* User requested ONLY P1 */}
-                    {totalP1}
+                    {storeTotal}
                   </div>
-                  <div className="text-xs opacity-60 mt-2 font-mono uppercase">Validated Jan/Feb Report</div>
+                  <div className="text-xs opacity-60 mt-2 font-mono uppercase">Total Performance (750)</div>
               </div>
           </div>
 
