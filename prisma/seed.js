@@ -312,11 +312,6 @@ async function main() {
 
             const totalAcq = parseInt(totalAcqStr) || 0;
 
-            // Upsert Logic
-            const existingStore = await prisma.store.findFirst({
-                where: { name: name }
-            });
-
             const storeData = {
                 activatorName: ta,
                 activatorId: activatorId,
@@ -330,19 +325,15 @@ async function main() {
                 isActive: true
             };
 
-            if (existingStore) {
-                await prisma.store.update({
-                    where: { id: existingStore.id },
-                    data: storeData
-                });
-            } else {
-                await prisma.store.create({
-                    data: {
-                        name,
-                        ...storeData
-                    }
-                });
-            }
+            // Upsert Logic (Now using Name as unique key)
+            await prisma.store.upsert({
+                where: { name: name },
+                update: storeData,
+                create: {
+                    name,
+                    ...storeData
+                }
+            });
             process.stdout.write('.');
         }
         console.log('\nStores synced successfully.');
