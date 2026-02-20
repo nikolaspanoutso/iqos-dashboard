@@ -151,6 +151,7 @@ const PersonStatsCard = ({ name, stats, workingDays, targets, onGoldHover }: any
   const currentTargetP4 = showP4Over ? overP4 : targetP4;
 
   return (
+    <div className="bg-white p-6 rounded-xl border shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold">
