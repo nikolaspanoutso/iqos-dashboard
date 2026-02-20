@@ -72,11 +72,12 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
           
           <div className="bg-gradient-to-r from-teal-800 to-teal-600 text-white p-8 rounded-xl shadow-lg mb-8 flex items-center justify-center text-center transform transition-transform hover:scale-[1.01]">
               <div>
-                  <h3 className="text-sm font-bold uppercase tracking-widest opacity-80 mb-2">Total Team Acquisitions</h3>
+                  <h3 className="text-sm font-bold uppercase tracking-widest opacity-80 mb-2">Total Team Acquisitions (P1)</h3>
                   <div className="text-6xl font-black tracking-tight drop-shadow-lg">
-                    {storeTotal > 0 ? storeTotal : 'Loading...'}
+                    {/* User requested ONLY P1 */}
+                    {totalP1}
                   </div>
-                  <div className="text-xs opacity-60 mt-2 font-mono uppercase">Validated Store Data</div>
+                  <div className="text-xs opacity-60 mt-2 font-mono uppercase">Validated Jan/Feb Report</div>
               </div>
           </div>
 
@@ -124,42 +125,7 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
             })}
           </div>
 
-          <h3 className="text-xl font-bold text-gray-800 mb-4 mt-8">Specialist Leaderboard</h3>
-          <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead className="bg-gray-100 text-gray-600 uppercase font-bold text-xs">
-                  <tr>
-                    <th className="p-3">Specialist</th>
-                    <th className="p-3 text-center">Days</th>
-                    <th className="p-3 text-right">Reg. Users</th>
-                    <th className="p-3 text-right text-teal-700">Acq. P1</th>
-                    <th className="p-3 text-right text-blue-700">Acq. P4</th>
-                    <th className="p-3 text-right text-purple-700">Offtake P5</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {Object.entries(totals)
-                    .sort(([, a]: any, [, b]: any) => (b.acquisitionP1 + b.acquisitionP4) - (a.acquisitionP1 + a.acquisitionP4))
-                    .map(([name, stats]: any) => (
-                    <tr key={name} className="hover:bg-gray-50 border-b last:border-0 transition-colors">
-                      <td className="p-3 font-bold text-gray-700">{name}</td>
-                      <td className="p-3 text-center text-gray-500">{stats.workingDays}</td>
-                      <td className="p-3 text-right font-medium">{stats.registeredUsers || 0}</td>
-                      <td className="p-3 text-right font-bold text-teal-700">{stats.acquisitionP1}</td>
-                      <td className="p-3 text-right font-bold text-blue-700">{stats.acquisitionP4}</td>
-                      <td className="p-3 text-right font-bold text-purple-700">{stats.offtakeP5}</td>
-                    </tr>
-                  ))}
-                  {Object.keys(totals).length === 0 && (
-                    <tr>
-                       <td className="p-4 text-center text-gray-400" colSpan={6}>No performance data available.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+
         </div>
       </div>
     </div>
@@ -185,7 +151,6 @@ const PersonStatsCard = ({ name, stats, workingDays, targets, onGoldHover }: any
   const currentTargetP4 = showP4Over ? overP4 : targetP4;
 
   return (
-    <div className="bg-white p-6 rounded-xl border shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold">
@@ -200,11 +165,7 @@ const PersonStatsCard = ({ name, stats, workingDays, targets, onGoldHover }: any
           {workingDays} days
         </div>
       </div>
-      
-      <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-6">
-         <span className="block text-xs uppercase tracking-wider text-blue-500 font-bold mb-1">Registered Users</span>
-         <span className="text-2xl font-black text-blue-700">{stats.registeredUsers || 0}</span>
-      </div>
+
 
       <div className="mb-6">
         <div className="flex justify-between items-end mb-1">
