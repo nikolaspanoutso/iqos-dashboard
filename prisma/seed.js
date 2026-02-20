@@ -132,9 +132,13 @@ async function main() {
     }
     console.log('Users synced.');
 
-    // 2. Clear old stats (Optional, but safe for dev)
+    // 2. Clear old stats and stores to prevent duplicates
+    // We must delete child records (Sale, Comment) before deleting Store due to FK constraints
+    await prisma.sale.deleteMany({});
+    await prisma.comment.deleteMany({});
     await prisma.dailyStat.deleteMany({});
-    console.log('Old stats cleared.');
+    await prisma.store.deleteMany({});
+    console.log('Old data cleared (Stats, Sales, Comments, Stores).');
 
     // 3. Process Sales CSVs
     const files = ['january.csv', 'february.csv'];
