@@ -4,24 +4,32 @@ import AppLayout from '@/components/Layout/AppLayout';
 import AdvancedScheduleTable from '@/components/Schedule/AdvancedScheduleTable';
 import AddShiftsModal from '@/components/Schedule/AddShiftsModal'; // Import Modal
 import { useAuth } from '@/context/AuthContext';
-import { Lock, Unlock, Plus } from 'lucide-react';
+import { Plus, X as CloseIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function SchedulePage() {
   const { user, loading } = useAuth();
   const [showAddModal, setShowAddModal] = useState(false);
-  const [isScheduleLocked, setIsScheduleLocked] = useState(false); // Simple lock state
   const [triggerRefresh, setTriggerRefresh] = useState(0); // To force table reload
+  const router = useRouter();
 
   if (loading) return <div className="h-screen flex items-center justify-center">Loading...</div>;
 
   return (
     <AppLayout>
-      <div className="h-full flex flex-col p-6 overflow-hidden">
-        <div className="mb-6 flex justify-between items-end">
+      <div className="h-full flex flex-col p-6 overflow-hidden relative">
+        {/* Navigation / Exit Button */}
+        <button 
+            onClick={() => router.push('/')}
+            className="absolute top-6 right-6 z-10 p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-900 border border-transparent hover:border-gray-200 shadow-sm bg-white"
+        >
+            <CloseIcon size={24} />
+        </button>
+
+        <div className="mb-6 flex justify-between items-end pr-14">
             <div>
-                <h1 className="text-3xl font-black text-gray-900 mb-2 flex items-center gap-3">
+                <h1 className="text-3xl font-black text-gray-900 mb-2">
                     Schedule Management
-                    {isScheduleLocked && <Lock className="text-red-500" size={24} />}
                 </h1>
                 <p className="text-gray-500">
                     {user?.role === 'specialist' 
@@ -33,16 +41,8 @@ export default function SchedulePage() {
             {user?.role !== 'specialist' && (
                 <div className="flex gap-3">
                     <button 
-                        onClick={() => setIsScheduleLocked(!isScheduleLocked)}
-                        className={`px-4 py-2 rounded-lg font-bold shadow-sm border flex items-center gap-2 transition-colors ${isScheduleLocked ? 'bg-red-50 text-red-600 border-red-200' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
-                    >
-                        {isScheduleLocked ? <><Unlock size={18}/> Unlock Schedule</> : <><Lock size={18}/> Close Schedule</>}
-                    </button>
-
-                    <button 
                         onClick={() => setShowAddModal(true)}
-                        disabled={isScheduleLocked}
-                        className="bg-primary text-white px-4 py-2 rounded-lg font-bold shadow-md hover:bg-primary-dark transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-primary text-white px-4 py-2 rounded-lg font-bold shadow-md hover:bg-primary-dark transition-colors flex items-center gap-2"
                     >
                         <Plus size={18} />
                         Add Shifts
@@ -52,7 +52,7 @@ export default function SchedulePage() {
         </div>
 
         <div className="flex-1 overflow-hidden">
-            <AdvancedScheduleTable key={triggerRefresh} isLocked={isScheduleLocked} />
+            <AdvancedScheduleTable key={triggerRefresh} isLocked={false} />
         </div>
 
         {/* Modal */}

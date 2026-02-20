@@ -4,20 +4,35 @@ import { Users, Calendar, Map as MapIcon, List, Menu, X, ChevronRight, LogOut } 
 import { useAuth } from '@/context/AuthContext';
 import TeamPerformanceModal from '@/components/UI/TeamPerformanceModal';
 import ScheduleModal from '@/components/UI/ScheduleModal';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface SidebarProps {
   currentView?: 'map' | 'list';
   onViewChange?: (view: 'map' | 'list') => void;
 }
 
-export default function Sidebar({ currentView, onViewChange }: SidebarProps) {
+export default function Sidebar({ currentView: propView, onViewChange }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(true);
   const [showPerformanceModal, setShowPerformanceModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
+  
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Determine current view from prop or search param
+  const currentView = propView || (searchParams.get('view') as 'map' | 'list') || 'map';
 
   const { logout, user, login, users } = useAuth();
 
   const toggleSidebar = () => setIsOpen(!isOpen);
+
+  const handleNavClick = (view: 'map' | 'list') => {
+    if (onViewChange) {
+      onViewChange(view);
+    } else {
+      router.push(`/?view=${view}`);
+    }
+  };
 
   return (
     <>
@@ -60,14 +75,14 @@ export default function Sidebar({ currentView, onViewChange }: SidebarProps) {
             <NavItem 
               icon={<MapIcon size={20} />} 
               label="Map View" 
-              isActive={currentView === 'map'} 
-              onClick={() => onViewChange?.('map')} 
+              isActive={currentView === 'map' && typeof window !== 'undefined' && window.location.pathname === '/'} 
+              onClick={() => handleNavClick('map')} 
             />
             <NavItem 
               icon={<List size={20} />} 
               label="Stores List" 
-              isActive={currentView === 'list'} 
-              onClick={() => onViewChange?.('list')} 
+              isActive={currentView === 'list' && typeof window !== 'undefined' && window.location.pathname === '/'} 
+              onClick={() => handleNavClick('list')} 
             />
 
             <div className="text-xs font-bold text-gray-400 uppercase mb-2 mt-6 tracking-wider">Management</div>
@@ -81,8 +96,8 @@ export default function Sidebar({ currentView, onViewChange }: SidebarProps) {
             <NavItem 
               icon={<Calendar size={20} />} 
               label="Schedule" 
-              isActive={window.location.pathname === '/schedule'} 
-              onClick={() => window.location.href = '/schedule'} 
+              isActive={typeof window !== 'undefined' && window.location.pathname === '/schedule'} 
+              onClick={() => router.push('/schedule')} 
             />
           </nav>
 

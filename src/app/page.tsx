@@ -10,13 +10,25 @@ import { History } from "lucide-react";
 
 import { useAuth } from '@/context/AuthContext';
 import AddStoreModal from '@/components/Stores/AddStoreModal';
+import { useSearchParams } from 'next/navigation';
 
 export default function Home() {
   const [isClient, setIsClient] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   
+  const searchParams = useSearchParams();
+  const initialView = (searchParams.get('view') as 'map' | 'list') || 'map';
+
   // App State lifted to Page level
-  const [currentView, setCurrentView] = useState<'map' | 'list'>('map');
+  const [currentView, setCurrentView] = useState<'map' | 'list'>(initialView);
+  
+  // Sync view state if search param changes
+  useEffect(() => {
+    const viewParam = searchParams.get('view');
+    if (viewParam === 'map' || viewParam === 'list') {
+      setCurrentView(viewParam);
+    }
+  }, [searchParams]);
   const [stores, setStores] = useState<any[]>([]);
   const [selectedStore, setSelectedStore] = useState<any>(null);
   
