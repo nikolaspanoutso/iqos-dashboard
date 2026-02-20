@@ -1,38 +1,56 @@
-import React from 'react';
-import { MapPin } from 'lucide-react';
+import React, { useState } from 'react';
+import { MapPin, Search } from 'lucide-react';
 
 interface StoresListProps {
   stores: any[];
   onSelectStore: (store: any) => void;
+  onAddStore?: () => void;
+  canAddStore?: boolean;
 }
 
-export default function StoresList({ stores, onSelectStore, onAddStore, canAddStore }: { 
-  stores: any[], 
-  onSelectStore: (store: any) => void,
-  onAddStore?: () => void,
-  canAddStore?: boolean
-}) {
+export default function StoresList({ stores, onSelectStore, onAddStore, canAddStore }: StoresListProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredStores = stores.filter(store => 
+    store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    store.address?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    store.area?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="h-full w-full bg-gray-50 p-6 overflow-y-auto pt-8 animate-fade-in">
       <div className="max-w-7xl mx-auto">
-         <div className="flex justify-between items-center mb-6">
+         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
               Registered Stores 
-              <span className="text-sm font-normal text-gray-500 bg-gray-200 px-2 py-1 rounded-full">{stores.length}</span>
+              <span className="text-sm font-normal text-gray-500 bg-gray-200 px-2 py-1 rounded-full">{filteredStores.length}</span>
             </h2>
             
-            {canAddStore && (
-                <button 
-                    onClick={onAddStore}
-                    className="bg-primary text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-dark transition-colors shadow-sm text-sm font-medium"
-                >
-                    + Add Store
-                </button>
-            )}
+            <div className="flex items-center gap-4 w-full md:w-auto">
+                <div className="relative flex-1 md:w-64">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                    <input 
+                        type="text"
+                        placeholder="Search stores..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-primary outline-none"
+                    />
+                </div>
+
+                {canAddStore && (
+                    <button 
+                        onClick={onAddStore}
+                        className="bg-primary text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-dark transition-colors shadow-sm text-sm font-medium whitespace-nowrap"
+                    >
+                        + Add Store
+                    </button>
+                )}
+            </div>
          </div>
          
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {stores.map((store) => (
+            {filteredStores.map((store) => (
               <div 
                 key={store.id} 
                 onClick={() => onSelectStore(store)}
