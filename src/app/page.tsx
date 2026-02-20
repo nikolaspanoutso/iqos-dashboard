@@ -105,6 +105,7 @@ export default function Home() {
           isOpen={!!selectedStore} 
           onClose={() => setSelectedStore(null)} 
           data={selectedStore}
+          onStoreUpdate={fetchStores}
         />
         
         {/* Add Store Modal */}

@@ -178,32 +178,66 @@ async function main() {
 
             if (cols.length < 5) continue;
 
-            const ta = cols[0]?.trim(); // "MICHALOPOULOS DIMITRIS" or "Karagiannis Dimitris"
+            const ta = cols[0]?.trim();
             const name = cols[1]?.trim().replace(/\*/g, '');
-            const area = cols[2]?.trim();
-            const address = cols[3]?.trim();
-            const zip = cols[4]?.trim();
-            const totalAcqStr = cols[5]?.trim();
-            const totalAcq = parseInt(totalAcqStr) || 0;
 
             // Resolve Activator ID
             const activatorId = userMapDB[ta] || null;
 
-            // GEOLOCATION CALL (Keep existing logic)
-            let lat, lng;
-            await new Promise(r => setTimeout(r, 1100));
-            const coords = await getCoordinates(address, area, zip);
+            let area = cols[2]?.trim();
+            let address = cols[3]?.trim();
+            let zip = cols[4]?.trim(); // Might be acquisition if shifted?
 
-            if (coords) {
-                lat = coords.lat;
-                lng = coords.lng;
-                console.log(`✅ Found: ${name} -> ${lat}, ${lng}`);
+            // Check if parsing alignment is correct or shifted due to missing columns?
+            // Standard: TA, Name, Area, Address, Zip, TotalAcq
+            // Coord row: TA, Name, Lat, Lng, TotalAcq, %
+
+            let totalAcqStr = cols[5]?.trim();
+
+            let lat = null;
+            let lng = null;
+
+            // Check if Area/Address are actually coordinates
+            // Replace comma with dot for Greek notation
+            const potentialLat = parseFloat(area?.replace(',', '.'));
+            const potentialLng = parseFloat(address?.replace(',', '.'));
+
+            if (!isNaN(potentialLat) && !isNaN(potentialLng) &&
+                potentialLat > 34 && potentialLat < 42 && // Roughly Greece Lat
+                potentialLng > 19 && potentialLng < 29) { // Roughly Greece Lng
+
+                lat = potentialLat;
+                lng = potentialLng;
+
+                // If these are coords, then Zip is likely TotalAcquisition based on CSV structure for these rows?
+                // Let's look at line 17: ... ,37.957444, 23.756611,8,"1,06..."
+                // Col 4 is '8' which is TotalAcq.
+                // So if Coords detected:
+                // Area -> Lat, Address -> Lng, Zip -> TotalAcq
+
+                totalAcqStr = zip;
+                area = "Coordinates"; // Placeholder
+                address = "Coordinates";
+                console.log(`📍 Using provided coords for ${name}: ${lat}, ${lng}`);
             } else {
-                const center = cityCenters[area] || cityCenters['Athina'];
-                lat = center.lat + (Math.random() - 0.5) * 0.005;
-                lng = center.lng + (Math.random() - 0.5) * 0.005;
-                console.log(`⚠️ Fallback: ${name}`);
+                // Standard Geocoding Flow
+                // Wait 1.1 second to respect OSM rate limits (absolute requirement)
+                await new Promise(r => setTimeout(r, 1100));
+                const coords = await getCoordinates(address, area, zip);
+
+                if (coords) {
+                    lat = coords.lat;
+                    lng = coords.lng;
+                    console.log(`✅ Found: ${name} -> ${lat}, ${lng}`);
+                } else {
+                    const center = cityCenters[area] || cityCenters['Athina'];
+                    lat = center.lat + (Math.random() - 0.5) * 0.005;
+                    lng = center.lng + (Math.random() - 0.5) * 0.005;
+                    console.log(`⚠️ Fallback: ${name}`);
+                }
             }
+
+            const totalAcq = parseInt(totalAcqStr) || 0;
 
             storeEntries.push({
                 name,
@@ -217,6 +251,8 @@ async function main() {
                 lng,
                 type: name.toLowerCase().includes('kiosk') || name.toLowerCase().includes('periptero') ? 'Kiosk' : 'Store'
             });
+
+
         }
 
         console.log(`Geocoding finished. Upserting ${storeEntries.length} stores...`);

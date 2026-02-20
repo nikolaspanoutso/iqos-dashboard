@@ -37,6 +37,7 @@ model Store {
   lng              Float?
   
   activatorId      String?
+  isActive         Boolean   @default(true)
   activator        User?     @relation(fields: [activatorId], references: [id])
 
   sales            Sale[]

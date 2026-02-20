@@ -8,14 +8,17 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId');
   const role = searchParams.get('role');
+  const showAll = searchParams.get('all') === 'true'; // For stats
 
   try {
     const whereClause: any = {};
     
+    // Default: Hide inactive stores unless 'all=true' is requested
+    if (!showAll) {
+        whereClause.isActive = true;
+    }
+
     // Scoping Logic:
-    // If user is Activator, only show their stores.
-    // If Admin, show all.
-    // If Specialist (or others), maybe show all or none? Assuming show all for now unless specified.
     if (role === 'activator' && userId) {
         whereClause.activatorId = userId;
     }
@@ -34,6 +37,28 @@ export async function GET(request: Request) {
     console.error("Failed to fetch stores", error);
     return NextResponse.json({ error: 'Failed to fetch stores' }, { status: 500 });
   }
+}
+
+export async function PATCH(request: Request) {
+    try {
+        const body = await request.json();
+        const { id, action } = body;
+
+        if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
+
+        if (action === 'delete') {
+            const updated = await prisma.store.update({
+                where: { id },
+                data: { isActive: false }
+            });
+            return NextResponse.json(updated);
+        }
+
+        return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+    } catch (error) {
+        console.error("Failed to update store", error);
+        return NextResponse.json({ error: 'Failed to update store' }, { status: 500 });
+    }
 }
 
 export async function POST(request: Request) {

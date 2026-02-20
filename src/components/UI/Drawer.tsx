@@ -8,9 +8,10 @@ interface DrawerProps {
   isOpen: boolean;
   onClose: () => void;
   data: any;
+  onStoreUpdate?: () => void; // Callback to refresh list
 }
 
-export default function Drawer({ isOpen, onClose, data }: DrawerProps) {
+export default function Drawer({ isOpen, onClose, data, onStoreUpdate }: DrawerProps) {
   const { user } = useAuth();
   const { addSale, addComment, getStoreSales, comments } = useSales();
   
@@ -40,12 +41,35 @@ export default function Drawer({ isOpen, onClose, data }: DrawerProps) {
     }
   };
   
+  const handleRemoveStore = async () => {
+     if (!confirm('Are you sure you want to remove this store? It will be hidden from your list but performance data will be kept.')) return;
+
+     try {
+         const res = await fetch('/api/stores', {
+             method: 'PATCH',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify({ id: data.id, action: 'delete' })
+         });
+         
+         if (res.ok) {
+             onClose();
+             if (onStoreUpdate) onStoreUpdate();
+         } else {
+             alert('Failed to remove store');
+         }
+     } catch (e) {
+         console.error(e);
+         alert('Error removing store');
+     }
+  };
+  
   const storeComments = comments
     .filter(c => c.storeId === data?.id)
     .sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
   // If user is Specialist, show Sales Entry. Everyone sees Notes.
   const canEdit = user?.role === 'specialist' || user?.role === 'admin';
+  const isOwner = (user?.role === 'activator' && user?.id === data?.activatorId) || user?.role === 'admin';
 
   // Default to Sales if can edit, otherwise Notes
   useEffect(() => {
@@ -100,9 +124,22 @@ const storeSales = comments
                     <span className="block text-[10px] uppercase tracking-wider opacity-70">Total Acquisitions</span>
                     <span className="text-2xl font-bold">{totalAcquisition}</span>
                  </div>
-                 <div className="bg-white/10 backdrop-blur-md rounded-lg p-2 pr-4 flex-1 border border-white/10">
-                    <span className="block text-[10px] uppercase tracking-wider opacity-70">Area</span>
-                    <span className="text-lg font-bold truncate">{data.area || '-'}</span>
+                 
+                 {/* Area or Remove Button */}
+                 <div className="bg-white/10 backdrop-blur-md rounded-lg p-2 pr-4 flex-1 border border-white/10 flex flex-col justify-center">
+                    {isOwner ? (
+                        <button 
+                            onClick={handleRemoveStore}
+                            className="text-xs font-bold bg-red-500/80 hover:bg-red-600 text-white px-2 py-1.5 rounded flex items-center justify-center gap-1 transition-colors"
+                        >
+                            Remove Store
+                        </button>
+                    ) : (
+                        <>
+                            <span className="block text-[10px] uppercase tracking-wider opacity-70">Area</span>
+                            <span className="text-lg font-bold truncate">{data.area || '-'}</span>
+                        </>
+                    )}
                  </div>
               </div>
             </div>

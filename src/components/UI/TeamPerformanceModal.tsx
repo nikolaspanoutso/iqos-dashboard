@@ -87,23 +87,21 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
               </div>
           </div>
 
-          {/* Team Summary Breakdown (Derived from individual reports, just for info) */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 opacity-70 hover:opacity-100 transition-opacity">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 opacity-90 transition-opacity">
             <SummaryCard 
-              title="Acquisition P1" 
+              title="Registered Users" 
               actual={totalP1} 
-              // Sum of all individual targets
-              target={Object.values(totals).reduce((acc: number, curr: any) => acc + (curr.workingDays * 1.7), 0)} 
+              // Removed target as per request
               color="teal"
             />
             <SummaryCard 
-              title="Acquisition P4" 
+              title="Device Upgrades (P4)" 
               actual={totalP4} 
-              target={Object.values(totals).reduce((acc: number, curr: any) => acc + (curr.workingDays * 0.7), 0)} 
               color="blue"
             />
              <SummaryCard 
-              title="Offtake P5" 
+              title="Consumables (P5)" 
               actual={totalP5} 
               color="purple"
             />
@@ -179,6 +177,12 @@ const PersonStatsCard = ({ name, stats, workingDays, targets, onGoldHover }: any
         </div>
       </div>
       
+      {/* Registered Users */}
+      <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-6">
+         <span className="block text-xs uppercase tracking-wider text-blue-500 font-bold mb-1">Registered Users</span>
+         <span className="text-2xl font-black text-blue-700">{stats.registeredUsers || 0}</span>
+      </div>
+
       {/* P1 Stats */}
       <div className="mb-6">
         <div className="flex justify-between items-end mb-1">
