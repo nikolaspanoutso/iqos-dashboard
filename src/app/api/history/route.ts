@@ -45,8 +45,8 @@ export async function PUT(request: Request) {
     // 3. Sync the delta with a virtual "System - Specialist Adjustments" store
     // This ensure the Team Total (sum of stores) remains accurate after history edits.
     if (deltaP1 !== 0) {
-        // Use findUnique + update/create since upsert-by-name might have lint issues if generate wasn't run
-        const adjustmentStore = await prisma.store.findUnique({
+        // Use findFirst since upsert-by-name might have lint issues if generate wasn't run
+        const adjustmentStore = await prisma.store.findFirst({
             where: { name: 'System - Specialist Adjustments' }
         });
 

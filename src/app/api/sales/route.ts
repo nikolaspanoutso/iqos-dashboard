@@ -45,10 +45,17 @@ export async function GET() {
     // For this migration, let's assume DailyStats are the source of truth for history,
     // and we just return the raw daily stats to be processed by frontend if needed.
 
+    // Fetch list of Trade Specialists for History selector
+    const specialistsList = await prisma.user.findMany({
+        where: { role: 'specialist' },
+        select: { name: true }
+    });
+
     return NextResponse.json({ 
       dailyStats, 
       recentSales,
-      aggregatedStats 
+      aggregatedStats,
+      specialists: specialistsList.map(s => s.name)
     });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch sales data' }, { status: 500 });

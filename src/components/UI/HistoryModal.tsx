@@ -9,19 +9,22 @@ interface HistoryModalProps {
 }
 
 export default function HistoryModal({ onClose }: HistoryModalProps) {
-  const { data, updateDailySales } = useSales();
+  const { data, updateDailySales, specialists } = useSales();
   const { user } = useAuth();
   
   const [selectedMonth, setSelectedMonth] = useState('02'); // Default to February
-  const [viewedUser, setViewedUser] = useState(user?.name || 'Maria Tasiou');
+  const [viewedUser, setViewedUser] = useState(
+    (user?.role === 'specialist') ? user.name : (specialists[0] || 'Maria Tasiou')
+  );
   const [editingCell, setEditingCell] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState('');
 
-  // Extract available users for Admin selector
-  const availableUsers = [
-    'Maria Tasiou', 'Nikos Mousas', 'Giwrgos Grimanis', 
-    'Nikolas Panoutsopoulos', 'Nefeli Merko'
-  ];
+  // Update viewedUser if specialists list loads after initial render for non-specialists
+  React.useEffect(() => {
+    if (user?.role !== 'specialist' && specialists.length > 0 && !specialists.includes(viewedUser)) {
+        setViewedUser(specialists[0]);
+    }
+  }, [specialists, user, viewedUser]);
 
   // Filter Data based on Month and User
   const filteredRows = data.filter((day: any) => {
@@ -29,6 +32,7 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
     const month = day.date.split('/')[1];
     return month === selectedMonth;
   }).map((day: any) => {
+     // Use viewedUser to extract stats from the daily data
     const stats = day.people[viewedUser] || { acquisitionP1: 0, acquisitionP4: 0, offtakeP5: 0 };
     return {
       date: day.date,
@@ -58,7 +62,7 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
   
   const canEdit = () => {
     if (!user) return false;
-    if (user.role === 'admin') return true;
+    if (user.role === 'admin' || user.role === 'activator') return true;
     return user.role === 'specialist' && user.name === viewedUser;
   };
 
@@ -76,20 +80,21 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
                History
              </h2>
              
-             {/* Admin User Selector */}
+             {/* Admin User Selector - Only shows Specialists */}
              {(user?.role === 'admin' || user?.role === 'activator') && (
                <select 
                  value={viewedUser} 
                  onChange={(e) => setViewedUser(e.target.value)}
-                 className="text-sm p-1 border rounded bg-white"
+                 className="text-sm p-1 border rounded bg-white font-medium text-teal-700"
                >
-                 {availableUsers.map(u => <option key={u} value={u}>{u}</option>)}
+                 {specialists.map(u => <option key={u} value={u}>{u}</option>)}
+                 {specialists.length === 0 && <option value={viewedUser}>{viewedUser}</option>}
                </select>
              )}
              
              {/* Specialist Name Display */}
              {user?.role === 'specialist' && (
-                <span className="font-medium text-gray-600 border-l pl-4">{user.name}</span>
+                <span className="font-medium text-teal-700 border-l pl-4">{user.name}</span>
              )}
           </div>
 

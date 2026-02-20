@@ -33,6 +33,7 @@ interface SalesContextType {
   comments: StoreComment[];
   addComment: (storeId: string, text: string) => void;
   historyEdits: any; // Deprecated, but kept for type compat if needed (though we move logic to DB)
+  specialists: string[];
   updateDailySales: (date: string, userId: string, p1: number, p4: number, p5: number) => void;
   getStoreSales: (storeId: string) => { p1: number, p4: number };
 }
@@ -45,6 +46,7 @@ export function SalesProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<SalesData[]>([]);
   const [totals, setTotals] = useState<any>({});
   const [comments, setComments] = useState<StoreComment[]>([]);
+  const [specialists, setSpecialists] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   
   // Cache for local added sales to show in Drawer immediately (optional optimization)
@@ -83,6 +85,7 @@ export function SalesProvider({ children }: { children: React.ReactNode }) {
 
       setData(sortedData);
       setTotals(salesData.aggregatedStats);
+      setSpecialists(salesData.specialists || []);
       setComments(commentsData); // timestamps are strings now
       
     } catch (error) {
@@ -167,6 +170,7 @@ export function SalesProvider({ children }: { children: React.ReactNode }) {
       addComment, 
       comments, 
       getStoreSales,
+      specialists,
       historyEdits: {}, // No longer needed as separate state
       updateDailySales
     }}>
