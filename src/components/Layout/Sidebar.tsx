@@ -6,8 +6,8 @@ import TeamPerformanceModal from '@/components/UI/TeamPerformanceModal';
 import ScheduleModal from '@/components/UI/ScheduleModal';
 
 interface SidebarProps {
-  currentView: 'map' | 'list';
-  onViewChange: (view: 'map' | 'list') => void;
+  currentView?: 'map' | 'list';
+  onViewChange?: (view: 'map' | 'list') => void;
 }
 
 export default function Sidebar({ currentView, onViewChange }: SidebarProps) {
