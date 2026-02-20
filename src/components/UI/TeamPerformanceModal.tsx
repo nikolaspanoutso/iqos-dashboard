@@ -8,9 +8,10 @@ interface TeamPerformanceModalProps {
 }
 
 export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalProps) {
-  const { totals, loading: salesLoading } = useSales(); // Renamed to avoid specific loading conflict if needed
+  const { totals, loading: salesLoading } = useSales();
   const [rainTimestamp, setRainTimestamp] = useState<number | null>(null);
-  const [storeTotal, setStoreTotal] = useState(0); // Holds the sum of 'Total Acquisitions' from stores
+  const [storeTotal, setStoreTotal] = useState(0);
+  const [storesList, setStoresList] = useState<any[]>([]); // Added state
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,9 +19,12 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
         .then(res => res.json())
         .then(data => {
            if (Array.isArray(data)) {
-              // Sum up totalAcquisition from all stores
+              // Sum up totalAcquisition
               const sum = data.reduce((acc, store) => acc + (store.totalAcquisition || 0), 0);
               setStoreTotal(sum);
+              // Sort by Performance
+              const sorted = data.sort((a, b) => (b.totalAcquisition || 0) - (a.totalAcquisition || 0));
+              setStoresList(sorted);
            }
         })
         .finally(() => setLoading(false));
@@ -270,6 +274,44 @@ const PersonStatsCard = ({ name, stats, workingDays, targets, onGoldHover }: any
       <div className="bg-purple-50 p-2 rounded border border-purple-100 flex justify-between items-center">
         <span className="text-xs font-bold text-purple-700">Offtake P5</span>
         <span className="text-lg font-bold text-purple-800">{stats.offtakeP5}</span>
+      </div>
+
+      {/* Specialist Leaderboard Table */}
+      <h3 className="text-xl font-bold text-gray-800 mb-4 mt-8">Specialist Leaderboard</h3>
+      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-gray-100 text-gray-600 uppercase font-bold text-xs">
+              <tr>
+                <th className="p-3">Specialist</th>
+                <th className="p-3 text-center">Days</th>
+                <th className="p-3 text-right">Reg. Users</th>
+                <th className="p-3 text-right text-teal-700">Acq. P1</th>
+                <th className="p-3 text-right text-blue-700">Acq. P4</th>
+                <th className="p-3 text-right text-purple-700">Offtake P5</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {Object.entries(totals)
+                .sort(([, a]: any, [, b]: any) => (b.acquisitionP1 + b.acquisitionP4) - (a.acquisitionP1 + a.acquisitionP4))
+                .map(([name, stats]: any) => (
+                <tr key={name} className="hover:bg-gray-50 border-b last:border-0 transition-colors">
+                  <td className="p-3 font-bold text-gray-700">{name}</td>
+                  <td className="p-3 text-center text-gray-500">{stats.workingDays}</td>
+                  <td className="p-3 text-right font-medium">{stats.registeredUsers || 0}</td>
+                  <td className="p-3 text-right font-bold text-teal-700">{stats.acquisitionP1}</td>
+                  <td className="p-3 text-right font-bold text-blue-700">{stats.acquisitionP4}</td>
+                  <td className="p-3 text-right font-bold text-purple-700">{stats.offtakeP5}</td>
+                </tr>
+              ))}
+              {Object.keys(totals).length === 0 && (
+                <tr>
+                   <td className="p-4 text-center text-gray-400" colSpan={6}>No performance data available.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
     </div>

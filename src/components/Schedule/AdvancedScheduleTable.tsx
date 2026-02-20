@@ -26,9 +26,14 @@ interface ScheduleEntry {
 }
 
 // --- Status Options ---
+// --- Status Options ---
 const STATUS_OPTIONS = ['Pending', 'Present', 'Sick', 'Off', 'Leave'];
 
-export default function AdvancedScheduleTable() {
+interface Props {
+    isLocked?: boolean;
+}
+
+export default function AdvancedScheduleTable({ isLocked = false }: Props) {
   const { user } = useAuth();
   const [data, setData] = useState<ScheduleEntry[]>([]);
   const [stores, setStores] = useState<any[]>([]);
@@ -136,8 +141,9 @@ export default function AdvancedScheduleTable() {
 
             return (
                 <select 
-                    className="w-full bg-transparent border-none focus:ring-0 text-sm p-1 rounded hover:bg-gray-100"
+                    className="w-full bg-transparent border-none focus:ring-0 text-sm p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                     value={val || ''}
+                    disabled={isLocked}
                     onChange={(e) => handleUpdate(row.index, 'storeId', e.target.value)}
                 >
                     <option value="">Select Store</option>
@@ -156,8 +162,9 @@ export default function AdvancedScheduleTable() {
 
             return (
                 <input 
-                    className="w-full bg-transparent border-none focus:ring-0 text-sm p-1 rounded hover:bg-gray-100"
+                    className="w-full bg-transparent border-none focus:ring-0 text-sm p-1 rounded hover:bg-gray-100 disabled:opacity-50"
                     value={val}
+                    disabled={isLocked}
                     onChange={(e) => {
                          // Interactive input usually needs local state for debounce, 
                          // but for quick demo relying on blur or simple change
@@ -185,8 +192,9 @@ export default function AdvancedScheduleTable() {
 
             return (
                 <select 
-                    className={`w-full border-none focus:ring-0 text-xs font-bold py-1 px-2 rounded appearance-none cursor-pointer ${colorClass}`}
+                    className={`w-full border-none focus:ring-0 text-xs font-bold py-1 px-2 rounded appearance-none cursor-pointer ${colorClass} disabled:opacity-50`}
                     value={val || 'Pending'}
+                    disabled={isLocked}
                     onChange={(e) => handleUpdate(row.index, 'status', e.target.value)}
                 >
                     {STATUS_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -194,7 +202,7 @@ export default function AdvancedScheduleTable() {
             )
         }
     })
-  ], [data, stores, user]);
+  ], [data, stores, user, isLocked]);
 
   const table = useReactTable({
     data,
