@@ -9,7 +9,7 @@ interface HistoryModalProps {
 }
 
 export default function HistoryModal({ onClose }: HistoryModalProps) {
-  const { data, updateDailySales, specialists } = useSales();
+  const { data, updateDailySales, updateUserStatus, specialists, schedules } = useSales();
   const { user } = useAuth();
   
   const [selectedMonth, setSelectedMonth] = useState('02'); // Default to February
@@ -43,8 +43,6 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
     }
     return days;
   };
-
-  const { schedules } = useSales();
 
   // Filter Data based on Month and User
   const allMonthDates = generateMonthDays(selectedMonth);
@@ -201,9 +199,24 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
                     </td>
 
                     <td className="p-2 border border-gray-300 text-center">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${getStatusStyle(row.status)}`}>
-                            {row.status.toUpperCase()}
-                        </span>
+                        {isEditable ? (
+                            <select
+                                value={row.status}
+                                onChange={(e) => updateUserStatus(row.date, viewedUser, e.target.value)}
+                                className={`px-2 py-0.5 rounded-full text-[10px] font-bold border outline-none cursor-pointer ${getStatusStyle(row.status)}`}
+                            >
+                                <option value="Work">WORK</option>
+                                <option value="Sick">SICK</option>
+                                <option value="Off">OFF</option>
+                                <option value="Leave">LEAVE</option>
+                                <option value="Training">TRAINING</option>
+                                <option value="AB">AB</option>
+                            </select>
+                        ) : (
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${getStatusStyle(row.status)}`}>
+                                {row.status.toUpperCase()}
+                            </span>
+                        )}
                     </td>
                     
                     {/* P1 Cell */}

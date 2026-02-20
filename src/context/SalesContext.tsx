@@ -36,6 +36,7 @@ interface SalesContextType {
   specialists: string[];
   schedules: any[]; // [ { userId, date, status } ]
   updateDailySales: (date: string, userId: string, p1: number, p4: number, p5: number) => void;
+  updateUserStatus: (date: string, userId: string, status: string) => void;
   getStoreSales: (storeId: string) => { p1: number, p4: number };
 }
 
@@ -145,14 +146,31 @@ export function SalesProvider({ children }: { children: React.ReactNode }) {
 
   const updateDailySales = async (date: string, userId: string, p1: number, p4: number, p5: number) => {
     try {
-      await fetch('/api/history', {
+      const res = await fetch('/api/history', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ date, userId, p1, p4, p5 })
       });
+      if (!res.ok) throw new Error('Failed to update sales');
       refreshData();
-    } catch (e) {
-       console.error(e);
+    } catch (error) {
+      console.error(error);
+      alert('Σφάλμα κατά την ενημέρωση των πωλήσεων');
+    }
+  };
+
+  const updateUserStatus = async (date: string, userId: string, status: string) => {
+    try {
+      const res = await fetch('/api/history', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date, userId, status })
+      });
+      if (!res.ok) throw new Error('Failed to update status');
+      refreshData();
+    } catch (error) {
+      console.error(error);
+      alert('Σφάλμα κατά την ενημέρωση του status');
     }
   };
 
@@ -176,7 +194,8 @@ export function SalesProvider({ children }: { children: React.ReactNode }) {
       specialists,
       schedules,
       historyEdits: {}, // No longer needed as separate state
-      updateDailySales
+      updateDailySales,
+      updateUserStatus
     }}>
       {children}
     </SalesContext.Provider>
