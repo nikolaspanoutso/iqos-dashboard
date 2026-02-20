@@ -42,7 +42,7 @@ export async function GET(request: Request) {
 export async function PATCH(request: Request) {
     try {
         const body = await request.json();
-        const { id, action } = body;
+        const { id, action, name } = body;
 
         if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
 
@@ -50,6 +50,17 @@ export async function PATCH(request: Request) {
             const updated = await prisma.store.update({
                 where: { id },
                 data: { isActive: false }
+            });
+            return NextResponse.json(updated);
+        }
+
+        if (action === 'update') {
+            const updateData: any = {};
+            if (name !== undefined) updateData.name = name;
+            
+            const updated = await prisma.store.update({
+                where: { id },
+                data: updateData
             });
             return NextResponse.json(updated);
         }

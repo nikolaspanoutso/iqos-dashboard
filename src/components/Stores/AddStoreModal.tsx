@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { X, Save, MapPin } from 'lucide-react';
+import { togglePromoSuffix } from '@/lib/promo';
 
 // Dynamic import of the Map component to avoid SSR issues with Leaflet
 const AddStoreMap = dynamic(() => import('./AddStoreMap'), { 
@@ -21,6 +22,7 @@ export default function AddStoreModal({ onClose, onSave, activatorId }: AddStore
     type: 'Store',
     address: '',
     area: 'Athina',
+    isPromo: false, // New state
   });
   const [position, setPosition] = useState({ lat: 37.9838, lng: 23.7275 }); // Default Athens
   const [loading, setLoading] = useState(false);
@@ -28,8 +30,13 @@ export default function AddStoreModal({ onClose, onSave, activatorId }: AddStore
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    
+    // Apply promo suffix if toggled
+    const finalName = togglePromoSuffix(formData.name, formData.isPromo);
+
     await onSave({
         ...formData,
+        name: finalName,
         lat: position.lat,
         lng: position.lng,
         activatorId
@@ -95,6 +102,19 @@ export default function AddStoreModal({ onClose, onSave, activatorId }: AddStore
                         onChange={e => setFormData({...formData, address: e.target.value})}
                          placeholder="e.g. Oulof Palme 15"
                     />
+                </div>
+
+                <div className="flex items-center gap-2 py-2">
+                    <input 
+                        type="checkbox"
+                        id="promoStatus"
+                        className="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
+                        checked={formData.isPromo}
+                        onChange={e => setFormData({...formData, isPromo: e.target.checked})}
+                    />
+                    <label htmlFor="promoStatus" className="text-sm font-bold text-gray-700 cursor-pointer">
+                        Promo Status (*)
+                    </label>
                 </div>
 
                 <div className="mt-auto pt-4">

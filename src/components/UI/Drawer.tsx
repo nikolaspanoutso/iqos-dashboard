@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import { isPromo, togglePromoSuffix } from '@/lib/promo';
 import { X, User2, Package, Tag, MessageSquare, Plus, Minus, Save, ShoppingBag } from 'lucide-react';
 import { useSales } from '@/context/SalesContext';
 import { useAuth } from '@/context/AuthContext';
@@ -62,7 +63,27 @@ export default function Drawer({ isOpen, onClose, data, onStoreUpdate }: DrawerP
          alert('Error removing store');
      }
   };
-  
+
+  const handleTogglePromo = async (status: boolean) => {
+      const newName = togglePromoSuffix(data.name, status);
+      try {
+          const res = await fetch('/api/stores', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: data.id, action: 'update', name: newName })
+          });
+          
+          if (res.ok) {
+              if (onStoreUpdate) onStoreUpdate();
+          } else {
+              alert('Failed to update promo status');
+          }
+      } catch (e) {
+          console.error(e);
+          alert('Error updating promo status');
+      }
+  };
+
   const storeComments = comments
     .filter(c => c.storeId === data?.id)
     .sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
@@ -144,6 +165,25 @@ const storeSales = comments
               </div>
             </div>
           </div>
+
+          {/* Promo Toggle for Activators/Admins */}
+          {isOwner && (
+            <div className="bg-blue-50/50 p-4 border-b flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <input 
+                        type="checkbox"
+                        id="drawerPromoStatus"
+                        className="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
+                        checked={isPromo(data.name)}
+                        onChange={e => handleTogglePromo(e.target.checked)}
+                    />
+                    <label htmlFor="drawerPromoStatus" className="text-sm font-bold text-gray-700 cursor-pointer">
+                        Promo Status (*)
+                    </label>
+                </div>
+                <div className="text-[10px] text-gray-400 font-medium">Visible to Specialists</div>
+            </div>
+          )}
 
           {/* Navigation */}
           <div className="flex border-b bg-gray-50">

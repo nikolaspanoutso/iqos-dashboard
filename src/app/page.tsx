@@ -12,6 +12,7 @@ import { useAuth } from '@/context/AuthContext';
 import AddStoreModal from '@/components/Stores/AddStoreModal';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import { isPromo } from '@/lib/promo';
 
 function DashboardContent() {
   const [isClient, setIsClient] = useState(false);
@@ -103,7 +104,10 @@ function DashboardContent() {
          </button>
 
         {currentView === 'map' ? (
-           <Map stores={stores} onSelectStore={setSelectedStore} />
+           <Map 
+             stores={user?.role === 'specialist' ? stores.filter(s => isPromo(s.name)) : stores} 
+             onSelectStore={setSelectedStore} 
+           />
         ) : (
            <StoresList 
                 stores={stores} 
