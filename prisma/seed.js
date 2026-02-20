@@ -145,7 +145,54 @@ async function main() {
     // await prisma.store.deleteMany({}); // <--- CHANGED: Do not delete stores
     console.log('Old stats cleared. Updating Stores...');
 
-    // ... (Stats parsing remains the same)
+    // 3. Seed Daily Stats from january.csv and february.csv
+    const monthlyFiles = ['january.csv', 'february.csv'];
+    for (const file of monthlyFiles) {
+        const filePath = path.join(__dirname, '..', file);
+        if (fs.existsSync(filePath)) {
+            console.log(`Processing ${file}...`);
+            const stats = await parseCSV(filePath);
+            console.log(`Found ${stats.length} stats entries.`);
+
+            for (const stat of stats) {
+                // Find user by name to ensure ID (we have userMapDB but CSV names might match slightly differently? 
+                // Let's assume names match or we skip.
+                const userId = userMapDB[stat.userId];
+                if (!userId) {
+                    // Try to find if user exists but wasn't in predefined (e.g. from shops.csv later?)
+                    // For now, only insert if user is known.
+                    // console.warn(`Skipping stat for unknown user: ${stat.userId}`);
+                    continue;
+                }
+
+                await prisma.dailyStat.upsert({
+                    where: {
+                        date_userId: {
+                            date: stat.date,
+                            userId: stat.userId
+                        }
+                    },
+                    create: {
+                        date: stat.date,
+                        userId: stat.userId,
+                        acquisitionP1: stat.acquisitionP1,
+                        acquisitionP4: stat.acquisitionP4,
+                        offtakeP5: stat.offtakeP5,
+                        workingDays: stat.workingDays
+                    },
+                    update: {
+                        acquisitionP1: stat.acquisitionP1,
+                        acquisitionP4: stat.acquisitionP4,
+                        offtakeP5: stat.offtakeP5,
+                        workingDays: stat.workingDays
+                    }
+                });
+            }
+            console.log(`Imported stats from ${file}.`);
+        } else {
+            console.warn(`File not found: ${file}`);
+        }
+    }
 
     // 4. Seed Stores from shops.csv
     const storesFile = path.join(__dirname, '..', 'shops.csv');
@@ -228,36 +275,44 @@ async function main() {
 
             const totalAcq = parseInt(totalAcqStr) || 0;
 
-            // Upsert Store
-            await prisma.store.upsert({
-                where: { name: name }, // Assuming Name is unique enough for this data set
-                update: {
-                    activatorName: ta,
-                    activatorId: activatorId,
-                    area,
-                    address,
-                    postCode: zip,
-                    totalAcquisition: totalAcq,
-                    lat,
-                    lng,
-                    type: name.toLowerCase().includes('kiosk') || name.toLowerCase().includes('periptero') ? 'Kiosk' : 'Store',
-                    // isActive: true // Don't force true, respect if manually deleted? Or re-activate if found in CSV? User choice. Let's re-activate to be safe as it's an import.
-                    isActive: true
-                },
-                create: {
-                    name,
-                    activatorName: ta,
-                    activatorId: activatorId,
-                    area,
-                    address,
-                    postCode: zip,
-                    totalAcquisition: totalAcq,
-                    lat,
-                    lng,
-                    type: name.toLowerCase().includes('kiosk') || name.toLowerCase().includes('periptero') ? 'Kiosk' : 'Store',
-                    isActive: true
-                }
+            // Manual Upsert to avoid "WhereUniqueInput" error on Name
+            const existingStore = await prisma.store.findFirst({
+                where: { name: name }
             });
+
+            if (existingStore) {
+                await prisma.store.update({
+                    where: { id: existingStore.id },
+                    data: {
+                        activatorName: ta,
+                        activatorId: activatorId,
+                        area,
+                        address,
+                        postCode: zip,
+                        totalAcquisition: totalAcq,
+                        lat,
+                        lng,
+                        type: name.toLowerCase().includes('kiosk') || name.toLowerCase().includes('periptero') ? 'Kiosk' : 'Store',
+                        isActive: true
+                    }
+                });
+            } else {
+                await prisma.store.create({
+                    data: {
+                        name,
+                        activatorName: ta,
+                        activatorId: activatorId,
+                        area,
+                        address,
+                        postCode: zip,
+                        totalAcquisition: totalAcq,
+                        lat,
+                        lng,
+                        type: name.toLowerCase().includes('kiosk') || name.toLowerCase().includes('periptero') ? 'Kiosk' : 'Store',
+                        isActive: true
+                    }
+                });
+            }
             process.stdout.write('.'); // Progress indicator
         }
         console.log('\nStores synced successfully.');

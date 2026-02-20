@@ -36,5 +36,8 @@
     "eslint-config-next": "^0.2.4",
     "prisma": "5.12.1",
     "typescript": "^5"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   }
 }
