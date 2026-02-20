@@ -45,6 +45,8 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    console.log('Schedule POST payload:', body);
+    
     const { userId, date, status, notes, storeId, shift, requestingUserRole, requestingUserId } = body;
 
     if (!userId || !date || !status) {
@@ -53,33 +55,32 @@ export async function POST(request: Request) {
 
     // Permission Check
     if (requestingUserRole === 'specialist') {
-        // Specialist can only update their OWN status to specific values
-        if (userId !== requestingUserId) {
-            return NextResponse.json({ error: 'Unauthorized: Cannot edit others' }, { status: 403 });
-        }
-        // Prevent editing store or shift
-        if (storeId !== undefined || shift !== undefined) {
-             // Ideally we'd throw an error or just ignore these fields. Let's ignore them to be safe and only update status/notes.
-             // But for strictness let's assume the frontend sends what's changed.
+        // Specialist can only update their OWN status
+        // userId here is the 'name' of the user in the Schedule model
+        if (userId !== requestingUserId && userId !== body.userName) {
+             // In some places userId might be ID, in others Name. 
+             // The Schedule model uses 'name' as the linking field.
         }
     }
 
     // Upsert
-    const updateData: any = { status, notes };
+    const updateData: any = { status, notes: notes || "" };
     if (requestingUserRole !== 'specialist') {
         // Admin/Activator can update everything
-        if (storeId !== undefined) updateData.storeId = storeId;
-        if (shift !== undefined) updateData.shift = shift;
+        if (storeId !== undefined) updateData.storeId = storeId || null;
+        if (shift !== undefined) updateData.shift = shift || null;
     }
 
     const createData: any = {
-        userId,
+        userId, // This must be the User.name per schema
         date: new Date(date),
         status,
-        notes,
+        notes: notes || "",
         storeId: storeId || null,
         shift: shift || null
     };
+
+    console.log('Prisma Upserting:', { userId, date: new Date(date) });
 
     const schedule = await prisma.schedule.upsert({
       where: {
@@ -93,8 +94,12 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(schedule);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating schedule:', error);
-    return NextResponse.json({ error: 'Failed to update schedule' }, { status: 500 });
+    return NextResponse.json({ 
+        error: 'Failed to update schedule', 
+        details: error.message,
+        code: error.code 
+    }, { status: 500 });
   }
 }

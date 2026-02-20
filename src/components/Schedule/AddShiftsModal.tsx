@@ -7,13 +7,17 @@ interface AddShiftsModalProps {
   onSave: () => void;
 }
 
+import { useAuth } from '@/context/AuthContext';
+
 export default function AddShiftsModal({ onClose, onSave }: AddShiftsModalProps) {
   const [users, setUsers] = useState<any[]>([]);
   const [stores, setStores] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  const { user: currentUser } = useAuth();
 
   // Form State
-  const [userId, setUserId] = useState('');
+  const [userName, setUserName] = useState(''); // Use Name as identifier
   const [storeId, setStoreId] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]); // YYYY-MM-DD
   const [shift, setShift] = useState('09:00 - 17:00');
@@ -31,15 +35,17 @@ export default function AddShiftsModal({ onClose, onSave }: AddShiftsModalProps)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!currentUser) return;
+
     try {
         const payload = {
-            userId,
+            userId: userName, // Schema expects User.name
             date,
             storeId: storeId || undefined,
             shift,
             status,
-            requestingUserRole: 'admin', // Assume admin/activator for this modal
-            requestingUserId: 'admin' 
+            requestingUserRole: currentUser.role,
+            requestingUserId: currentUser.id 
         };
 
         const res = await fetch('/api/schedule', {
@@ -51,7 +57,8 @@ export default function AddShiftsModal({ onClose, onSave }: AddShiftsModalProps)
         if (res.ok) {
             onSave();
         } else {
-            alert('Failed to add shift');
+            const err = await res.json();
+            alert(`Failed to add shift: ${err.details || err.error}`);
         }
     } catch (error) {
         console.error(error);
@@ -78,11 +85,11 @@ export default function AddShiftsModal({ onClose, onSave }: AddShiftsModalProps)
                     <select 
                       required 
                       className="w-full pl-10 p-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none"
-                      value={userId}
-                      onChange={(e) => setUserId(e.target.value)}
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
                     >
                         <option value="">Choose a user...</option>
-                        {users.map(u => <option key={u.id} value={u.id}>{u.name} ({u.role})</option>)}
+                        {users.map(u => <option key={u.id} value={u.name}>{u.name} ({u.role})</option>)}
                     </select>
                 </div>
             </div>

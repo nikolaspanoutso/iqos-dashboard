@@ -52,7 +52,9 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
     setLoading(true);
     try {
         // Fetch Schedules
-        const resSchedule = await fetch(`/api/schedule?start=${startOfMonth}&end=${endOfMonth}&userId=${user?.id}&role=${user?.role}`);
+        // Use user.name for specialist filtering as the DB schema relates Schedule.userId to User.name
+        const filterId = user?.role === 'specialist' ? user.name : user?.id;
+        const resSchedule = await fetch(`/api/schedule?start=${startOfMonth}&end=${endOfMonth}&userId=${filterId}&role=${user?.role}`);
         const scheduleData = await resSchedule.json();
         
         // Fetch Stores (for dropdown) - Only needed if Activator/Admin
@@ -60,7 +62,7 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
             const resStores = await fetch('/api/stores'); // Assuming returns all stores
             setStores(await resStores.json());
             
-            const resUsers = await fetch('/api/users'); // Need endpoint for users list
+            const resUsers = await fetch('/api/users'); 
             setUsers(await resUsers.json());
         }
 
@@ -90,9 +92,9 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
 
     try {
         const payload = {
-            userId: row.userId,
+            userId: row.userId, // This is already the Name from the DB
             date: row.date,
-            status: row.status, // Default to existing
+            status: row.status, 
             notes: row.notes,
             storeId: row.storeId,
             shift: row.shift,
@@ -107,14 +109,15 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
             body: JSON.stringify(payload)
         });
 
-        if (!res.ok) throw new Error('Failed to save');
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.details || err.error || 'Failed to save');
+        }
         
-        // Refresh data to get ID/Associations if it was a new entry
-        // For simplicity in this demo, strictly relying on optimistic usually requires a re-fetch or ID update
-    } catch (e) {
+    } catch (e: any) {
         console.error("Save failed", e);
-        // Revert?
-        alert("Failed to save change. Please refresh.");
+        alert(`Failed to save change: ${e.message}`);
+        fetchData(); // Revert by re-fetching
     }
   };
 
