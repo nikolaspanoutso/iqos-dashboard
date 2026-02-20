@@ -1,65 +1,19 @@
 "use client";
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { X, Save, MapPin } from 'lucide-react';
-import 'leaflet/dist/leaflet.css';
 
-// Dynamic import for Map to avoid SSR issues
-const MapContainer = dynamic(
-  () => import('react-leaflet').then((mod) => mod.MapContainer),
-  { ssr: false }
-);
-const TileLayer = dynamic(
-  () => import('react-leaflet').then((mod) => mod.TileLayer),
-  { ssr: false }
-);
-const Marker = dynamic(
-  () => import('react-leaflet').then((mod) => mod.Marker),
-  { ssr: false }
-);
-const useMapEvents = dynamic(
-    () => import('react-leaflet').then((mod) => mod.useMapEvents),
-    { ssr: false }
-);
+// Dynamic import of the Map component to avoid SSR issues with Leaflet
+const AddStoreMap = dynamic(() => import('./AddStoreMap'), { 
+    ssr: false,
+    loading: () => <div className="h-full w-full bg-gray-100 animate-pulse flex items-center justify-center text-gray-400">Loading Map...</div>
+});
 
 interface AddStoreModalProps {
   onClose: () => void;
   onSave: (store: any) => Promise<void>;
   activatorId?: string;
 }
-
-// Draggable Marker Component
-function DraggableMarker({ position, setPosition }: { position: any, setPosition: (pos: any) => void }) {
-  const markerRef = useRef(null);
-  
-  // We need to access Leaflet icon via simple import or assume global L if simpler, 
-  // but better to rely on what Map.tsx used or default.
-  // To avoid icon issues, we can try to use the same fix as Map.tsx or just default.
-  // For now let's hope globally set icons in Page/Map work, or we import L.
-    const eventHandlers = useMemo(
-    () => ({
-      dragend() {
-        const marker: any = markerRef.current;
-        if (marker != null) {
-          setPosition(marker.getLatLng());
-        }
-      },
-    }),
-    [setPosition],
-  );
-
-  return (
-    <Marker
-      draggable={true}
-      eventHandlers={eventHandlers}
-      position={position}
-      ref={markerRef}
-    />
-  );
-}
-
-// Fix for icon
-// Import L inside effect to avoid SSR issues
 
 export default function AddStoreModal({ onClose, onSave, activatorId }: AddStoreModalProps) {
   const [formData, setFormData] = useState({
@@ -70,24 +24,6 @@ export default function AddStoreModal({ onClose, onSave, activatorId }: AddStore
   });
   const [position, setPosition] = useState({ lat: 37.9838, lng: 23.7275 }); // Default Athens
   const [loading, setLoading] = useState(false);
-
-  // Fix Leaflet icons (SSR issue)
-  useEffect(() => {
-    (async function initLeaflet() {
-       // @ts-ignore
-       const L = (await import('leaflet')).default;
-       
-        // Fix default icon issue
-        // @ts-ignore
-        delete L.Icon.Default.prototype._getIconUrl;
-        // @ts-ignore
-        L.Icon.Default.mergeOptions({
-            iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-            iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-        });
-    })();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -182,13 +118,7 @@ export default function AddStoreModal({ onClose, onSave, activatorId }: AddStore
 
              {/* Right: Map */}
              <div className="w-full md:w-2/3 bg-gray-100 h-[400px] md:h-auto relative z-0">
-                <MapContainer center={position} zoom={13} style={{ height: '100%', width: '100%' }}>
-                    <TileLayer
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        attribution='&copy; OpenStreetMap contributors'
-                    />
-                    <DraggableMarker position={position} setPosition={setPosition} />
-                </MapContainer>
+                <AddStoreMap position={position} setPosition={setPosition} />
              </div>
         </div>
       </div>
