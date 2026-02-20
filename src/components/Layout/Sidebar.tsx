@@ -61,13 +61,13 @@ export default function Sidebar({ currentView, onViewChange }: SidebarProps) {
               icon={<MapIcon size={20} />} 
               label="Map View" 
               isActive={currentView === 'map'} 
-              onClick={() => onViewChange('map')} 
+              onClick={() => onViewChange?.('map')} 
             />
             <NavItem 
               icon={<List size={20} />} 
               label="Stores List" 
               isActive={currentView === 'list'} 
-              onClick={() => onViewChange('list')} 
+              onClick={() => onViewChange?.('list')} 
             />
 
             <div className="text-xs font-bold text-gray-400 uppercase mb-2 mt-6 tracking-wider">Management</div>
