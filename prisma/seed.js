@@ -278,10 +278,12 @@ async function main() {
 
                     lat = potentialLat;
                     lng = potentialLng;
-                    totalAcqStr = zip; // Shifted? No, manual coords usually in Area/Address fields
-                    // If Manual coords are in Area/Addr, then Zip/TotalAcq are usually in right place or shifted by 1?
-                    // Usually Manual Coords means Area=Lat, Address=Lng. Then Zip is Zip, TotalAcq is TotalAcq.
-                    // But let's trust the variables mapping if they aren't split.
+
+                    // Only overwrite totalAcqStr if we haven't already parsed it from a shift
+                    if (!totalAcqStr || totalAcqStr === '0' || totalAcqStr === '') {
+                        totalAcqStr = zip;
+                    }
+
                     area = "Coordinates";
                     address = "Coordinates";
                 }

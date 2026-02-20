@@ -2,31 +2,29 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-    const stores = await prisma.store.findMany();
-    console.log('--- Store Data Analysis ---');
-    console.log(`Total Stores: ${stores.length}`);
+    const stores = await prisma.store.findMany({
+        orderBy: {
+            totalAcquisition: 'desc'
+        }
+    });
+    console.log('--- DETAILED STORE ACQUISITION AUDIT ---');
+    console.log(`Total Stores Found: ${stores.length}`);
+    console.log('-----------------------------------------------');
+    console.log('Store Name | Total Acquisition');
+    console.log('-----------------------------------------------');
 
     let total = 0;
     stores.forEach(store => {
-        const val = store.totalAcquisition;
+        const val = store.totalAcquisition || 0;
+        const numVal = typeof val === 'number' ? val : (parseInt(val) || 0);
+        total += numVal;
 
-        // Check specific stores user mentioned
-        if (store.name.includes('PICK IT') || store.name.includes('ΚΡΑΨΙΤΗΣ') || store.name.includes('ΠΑΠΑΖΙΚΟΣ')) {
-            console.log(`🎯 CHECK: ${store.name} | DB Value: ${val}`);
-        }
-
-        if (typeof val === 'number') {
-            total += val;
-        } else {
-            const parsed = parseInt(val);
-            if (!isNaN(parsed)) total += parsed;
-        }
+        console.log(`${store.name.padEnd(40)} | ${numVal}`);
     });
 
-    console.log(`-----------------------------------------------`);
-    console.log(`🔢 TOTAL ACQUISITIONS IN DB: ${total}`);
-    console.log(`-----------------------------------------------`);
-    console.log(`Total Stores Counted: ${stores.length}`);
+    console.log('-----------------------------------------------');
+    console.log(`🔢 FINAL SUM IN DATABASE: ${total}`);
+    console.log('-----------------------------------------------');
 }
 
 main()
