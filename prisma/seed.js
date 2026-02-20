@@ -202,8 +202,9 @@ async function main() {
         const lines = content.split(/\r?\n/).filter(l => l.trim() !== '');
 
         // Pre-fetch existing stores to avoid re-geocoding
+        // Use a "clean" name (no asterisks) for the lookup key
         const existingStores = await prisma.store.findMany();
-        const storeMap = new Map(existingStores.map(s => [s.name, s]));
+        const storeMap = new Map(existingStores.map(s => [s.name.replace(/\*/g, '').trim(), s]));
 
         const cityCenters = {
             'Athina': { lat: 37.9838, lng: 23.7275 },
@@ -291,7 +292,9 @@ async function main() {
 
             // 3. DB Cache (if not found yet)
             if (!lat || !lng) {
-                const existing = storeMap.get(name);
+                // Lookup using clean name to bridge the asterisk difference
+                const cleanName = name.replace(/\*/g, '').trim();
+                const existing = storeMap.get(cleanName);
                 if (existing && existing.lat && existing.lng) {
                     lat = existing.lat;
                     lng = existing.lng;
