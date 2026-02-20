@@ -138,13 +138,12 @@ async function main() {
     }
     console.log('Users synced.');
 
-    // 2. Clear old stats and stores to prevent duplicates
-    // We must delete child records (Sale, Comment) before deleting Store due to FK constraints
+    // 2. Clear old stats (Sales, Comments, etc) but KEEP Stores to preserve Geocoding
     await prisma.sale.deleteMany({});
     await prisma.comment.deleteMany({});
     await prisma.dailyStat.deleteMany({});
-    await prisma.store.deleteMany({});
-    console.log('Old data cleared (Stats, Sales, Comments, Stores).');
+    // await prisma.store.deleteMany({}); // <--- CHANGED: Do not delete stores
+    console.log('Old stats cleared. Updating Stores...');
 
     // ... (Stats parsing remains the same)
 
@@ -155,9 +154,10 @@ async function main() {
         const content = fs.readFileSync(storesFile, 'utf-8');
         const lines = content.split(/\r?\n/).filter(l => l.trim() !== '');
 
-        const storeEntries = [];
+        // Pre-fetch existing stores to avoid re-geocoding
+        const existingStores = await prisma.store.findMany();
+        const storeMap = new Map(existingStores.map(s => [s.name, s]));
 
-        // Fallback centers just in case API fails completely
         const cityCenters = {
             'Athina': { lat: 37.9838, lng: 23.7275 },
             'Zografou': { lat: 37.9715, lng: 23.7610 },
@@ -169,97 +169,98 @@ async function main() {
             'Menemeni': { lat: 40.6558, lng: 22.9095 }
         };
 
-        // Skip header (i=1)
-        console.log(`Found ${lines.length - 1} stores to process. Starting Geocoding (this will take time)...`);
+        console.log(`Found ${lines.length - 1} stores in CSV.`);
 
         for (let i = 1; i < lines.length; i++) {
-            // Regex for CSV split
             const cols = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-
             if (cols.length < 5) continue;
 
             const ta = cols[0]?.trim();
             const name = cols[1]?.trim().replace(/\*/g, '');
-
-            // Resolve Activator ID
             const activatorId = userMapDB[ta] || null;
-
             let area = cols[2]?.trim();
             let address = cols[3]?.trim();
-            let zip = cols[4]?.trim(); // Might be acquisition if shifted?
-
-            // Check if parsing alignment is correct or shifted due to missing columns?
-            // Standard: TA, Name, Area, Address, Zip, TotalAcq
-            // Coord row: TA, Name, Lat, Lng, TotalAcq, %
-
+            let zip = cols[4]?.trim();
             let totalAcqStr = cols[5]?.trim();
 
             let lat = null;
             let lng = null;
 
-            // Check if Area/Address are actually coordinates
-            // Replace comma with dot for Greek notation
+            // 1. Check for Manual Coordinates in CSV
             const potentialLat = parseFloat(area?.replace(',', '.'));
             const potentialLng = parseFloat(address?.replace(',', '.'));
 
             if (!isNaN(potentialLat) && !isNaN(potentialLng) &&
-                potentialLat > 34 && potentialLat < 42 && // Roughly Greece Lat
-                potentialLng > 19 && potentialLng < 29) { // Roughly Greece Lng
+                potentialLat > 34 && potentialLat < 42 &&
+                potentialLng > 19 && potentialLng < 29) {
 
                 lat = potentialLat;
                 lng = potentialLng;
-
-                // If these are coords, then Zip is likely TotalAcquisition based on CSV structure for these rows?
-                // Let's look at line 17: ... ,37.957444, 23.756611,8,"1,06..."
-                // Col 4 is '8' which is TotalAcq.
-                // So if Coords detected:
-                // Area -> Lat, Address -> Lng, Zip -> TotalAcq
-
                 totalAcqStr = zip;
-                area = "Coordinates"; // Placeholder
+                area = "Coordinates";
                 address = "Coordinates";
-                console.log(`📍 Using provided coords for ${name}: ${lat}, ${lng}`);
+                // console.log(`📍 Using CSV coords for ${name}`);
             } else {
-                // Standard Geocoding Flow
-                // Wait 1.1 second to respect OSM rate limits (absolute requirement)
-                await new Promise(r => setTimeout(r, 1100));
-                const coords = await getCoordinates(address, area, zip);
-
-                if (coords) {
-                    lat = coords.lat;
-                    lng = coords.lng;
-                    console.log(`✅ Found: ${name} -> ${lat}, ${lng}`);
+                // 2. Check DB Cache
+                const existing = storeMap.get(name);
+                if (existing && existing.lat && existing.lng) {
+                    lat = existing.lat;
+                    lng = existing.lng;
+                    // console.log(`⏩ Using DB cache for ${name}`);
                 } else {
-                    const center = cityCenters[area] || cityCenters['Athina'];
-                    lat = center.lat + (Math.random() - 0.5) * 0.005;
-                    lng = center.lng + (Math.random() - 0.5) * 0.005;
-                    console.log(`⚠️ Fallback: ${name}`);
+                    // 3. Geocode (Only if missing)
+                    // Wait 1.1 second to respect OSM rate limits
+                    await new Promise(r => setTimeout(r, 1100));
+                    const coords = await getCoordinates(address, area, zip);
+
+                    if (coords) {
+                        lat = coords.lat;
+                        lng = coords.lng;
+                        console.log(`✅ Geocoded: ${name}`);
+                    } else {
+                        const center = cityCenters[area] || cityCenters['Athina'];
+                        lat = center.lat + (Math.random() - 0.5) * 0.005;
+                        lng = center.lng + (Math.random() - 0.5) * 0.005;
+                        console.log(`⚠️ Fallback: ${name}`);
+                    }
                 }
             }
 
             const totalAcq = parseInt(totalAcqStr) || 0;
 
-            storeEntries.push({
-                name,
-                activatorName: ta,
-                activatorId: activatorId, // Link to User
-                area,
-                address,
-                postCode: zip,
-                totalAcquisition: totalAcq,
-                lat,
-                lng,
-                type: name.toLowerCase().includes('kiosk') || name.toLowerCase().includes('periptero') ? 'Kiosk' : 'Store'
+            // Upsert Store
+            await prisma.store.upsert({
+                where: { name: name }, // Assuming Name is unique enough for this data set
+                update: {
+                    activatorName: ta,
+                    activatorId: activatorId,
+                    area,
+                    address,
+                    postCode: zip,
+                    totalAcquisition: totalAcq,
+                    lat,
+                    lng,
+                    type: name.toLowerCase().includes('kiosk') || name.toLowerCase().includes('periptero') ? 'Kiosk' : 'Store',
+                    // isActive: true // Don't force true, respect if manually deleted? Or re-activate if found in CSV? User choice. Let's re-activate to be safe as it's an import.
+                    isActive: true
+                },
+                create: {
+                    name,
+                    activatorName: ta,
+                    activatorId: activatorId,
+                    area,
+                    address,
+                    postCode: zip,
+                    totalAcquisition: totalAcq,
+                    lat,
+                    lng,
+                    type: name.toLowerCase().includes('kiosk') || name.toLowerCase().includes('periptero') ? 'Kiosk' : 'Store',
+                    isActive: true
+                }
             });
-
-
+            process.stdout.write('.'); // Progress indicator
         }
-
-        console.log(`Geocoding finished. Upserting ${storeEntries.length} stores...`);
-
-        for (const s of storeEntries) {
-            await prisma.store.create({ data: s });
-        }
+        console.log('\nStores synced successfully.');
     }
 
     console.log('Seeding completed successfully.');
