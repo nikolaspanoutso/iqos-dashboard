@@ -15,6 +15,7 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+     setLoading(true);
      // Fetch ALL stores (including inactive) to get correct total performance
      fetch('/api/stores?all=true')
         .then(res => res.json())
@@ -28,7 +29,7 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
            }
         })
         .finally(() => setLoading(false));
-  }, []);
+  }, [salesLoading]); // Re-fetch when sales context refreshes (e.g. after history save)
 
   const triggerRain = () => {
     setRainTimestamp(Date.now());

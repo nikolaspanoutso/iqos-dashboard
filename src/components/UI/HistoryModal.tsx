@@ -150,21 +150,47 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
                     {/* P1 Cell */}
                     <td className="p-0 border border-gray-300 text-center relative h-12 align-middle">
                       {editingCell === `${row.date}_${viewedUser}_p1` ? (
-                        <input 
-                          autoFocus
-                          type="number" 
-                          value={tempValue}
-                          onChange={(e) => setTempValue(e.target.value)}
-                          onBlur={() => handleSaveEdit(row.date, 'p1', currentStats)}
-                          onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(row.date, 'p1', currentStats)}
-                          className="w-full h-full text-center focus:bg-blue-50 focus:ring-2 focus:ring-blue-500 outline-none font-bold text-lg"
-                        />
+                        <div className="flex items-center h-full">
+                           <button 
+                            onClick={() => setTempValue((parseInt(tempValue) - 1).toString())}
+                            className="w-8 h-full bg-red-50 hover:bg-red-100 text-red-600 font-bold border-r"
+                           >-</button>
+                           <input 
+                            autoFocus
+                            type="number" 
+                            value={tempValue}
+                            onChange={(e) => setTempValue(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(row.date, 'p1', currentStats)}
+                            className="flex-1 w-full h-full text-center focus:bg-blue-50 focus:ring-2 focus:ring-blue-500 outline-none font-bold text-lg"
+                           />
+                           <button 
+                            onClick={() => setTempValue((parseInt(tempValue) + 1).toString())}
+                            className="w-8 h-full bg-green-50 hover:bg-green-100 text-green-600 font-bold border-l"
+                           >+</button>
+                           <div className="absolute right-[-40px] top-0 bottom-0 flex items-center gap-1 z-20">
+                             <button 
+                                onClick={() => handleSaveEdit(row.date, 'p1', currentStats)}
+                                className="p-1.5 bg-green-600 text-white rounded shadow-sm hover:bg-green-700"
+                                title="Save"
+                             >
+                               <Save size={14} />
+                             </button>
+                             <button 
+                                onClick={() => setEditingCell(null)}
+                                className="p-1.5 bg-gray-500 text-white rounded shadow-sm hover:bg-gray-600"
+                                title="Cancel"
+                             >
+                               <X size={14} />
+                             </button>
+                           </div>
+                        </div>
                       ) : (
                         <div 
                           onClick={() => isEditable && handleStartEdit(`${row.date}_${viewedUser}_p1`, currentStats.p1)}
-                          className={`w-full h-full flex items-center justify-center text-lg font-medium ${isEditable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
+                          className={`w-full h-full flex items-center justify-center text-lg font-medium group ${isEditable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
                         >
                            {currentStats.p1}
+                           {isEditable && <Edit2 size={12} className="ml-1 text-gray-400 opacity-0 group-hover:opacity-100" />}
                         </div>
                       )}
                     </td>
@@ -172,21 +198,47 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
                      {/* P4 Cell */}
                     <td className="p-0 border border-gray-300 text-center relative h-12 align-middle">
                       {editingCell === `${row.date}_${viewedUser}_p4` ? (
-                        <input 
-                          autoFocus
-                          type="number" 
-                          value={tempValue}
-                          onChange={(e) => setTempValue(e.target.value)}
-                          onBlur={() => handleSaveEdit(row.date, 'p4', currentStats)}
-                          onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(row.date, 'p4', currentStats)}
-                          className="w-full h-full text-center focus:bg-blue-50 focus:ring-2 focus:ring-blue-500 outline-none font-bold text-lg"
-                        />
+                        <div className="flex items-center h-full">
+                            <button 
+                              onClick={() => setTempValue((parseInt(tempValue) - 1).toString())}
+                              className="w-8 h-full bg-red-50 hover:bg-red-100 text-red-600 font-bold border-r"
+                            >-</button>
+                            <input 
+                              autoFocus
+                              type="number" 
+                              value={tempValue}
+                              onChange={(e) => setTempValue(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(row.date, 'p4', currentStats)}
+                              className="flex-1 w-full h-full text-center focus:bg-blue-50 focus:ring-2 focus:ring-blue-500 outline-none font-bold text-lg"
+                            />
+                            <button 
+                              onClick={() => setTempValue((parseInt(tempValue) + 1).toString())}
+                              className="w-8 h-full bg-green-50 hover:bg-green-100 text-green-600 font-bold border-l"
+                            >+</button>
+                            <div className="absolute right-[-40px] top-0 bottom-0 flex items-center gap-1 z-20">
+                             <button 
+                                onClick={() => handleSaveEdit(row.date, 'p4', currentStats)}
+                                className="p-1.5 bg-green-600 text-white rounded shadow-sm hover:bg-green-700"
+                                title="Save"
+                             >
+                               <Save size={14} />
+                             </button>
+                             <button 
+                                onClick={() => setEditingCell(null)}
+                                className="p-1.5 bg-gray-500 text-white rounded shadow-sm hover:bg-gray-600"
+                                title="Cancel"
+                             >
+                               <X size={14} />
+                             </button>
+                           </div>
+                        </div>
                       ) : (
                         <div 
                           onClick={() => isEditable && handleStartEdit(`${row.date}_${viewedUser}_p4`, currentStats.p4)}
-                          className={`w-full h-full flex items-center justify-center text-lg font-medium ${isEditable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
+                          className={`w-full h-full flex items-center justify-center text-lg font-medium group ${isEditable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
                         >
                            {currentStats.p4}
+                           {isEditable && <Edit2 size={12} className="ml-1 text-gray-400 opacity-0 group-hover:opacity-100" />}
                         </div>
                       )}
                     </td>
@@ -194,21 +246,47 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
                     {/* P5 Cell */}
                     <td className="p-0 border border-gray-300 text-center relative h-12 align-middle">
                       {editingCell === `${row.date}_${viewedUser}_p5` ? (
-                        <input 
-                          autoFocus
-                          type="number" 
-                          value={tempValue}
-                          onChange={(e) => setTempValue(e.target.value)}
-                          onBlur={() => handleSaveEdit(row.date, 'p5', currentStats)}
-                          onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(row.date, 'p5', currentStats)}
-                          className="w-full h-full text-center focus:bg-purple-50 focus:ring-2 focus:ring-purple-500 outline-none font-bold text-lg text-purple-700"
-                        />
+                        <div className="flex items-center h-full">
+                            <button 
+                              onClick={() => setTempValue((parseInt(tempValue) - 1).toString())}
+                              className="w-8 h-full bg-red-50 hover:bg-red-100 text-red-600 font-bold border-r"
+                            >-</button>
+                            <input 
+                              autoFocus
+                              type="number" 
+                              value={tempValue}
+                              onChange={(e) => setTempValue(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit(row.date, 'p5', currentStats)}
+                              className="flex-1 w-full h-full text-center focus:bg-purple-50 focus:ring-2 focus:ring-purple-500 outline-none font-bold text-lg text-purple-700"
+                            />
+                            <button 
+                              onClick={() => setTempValue((parseInt(tempValue) + 1).toString())}
+                              className="w-8 h-full bg-green-50 hover:bg-green-100 text-green-600 font-bold border-l"
+                            >+</button>
+                            <div className="absolute right-[-40px] top-0 bottom-0 flex items-center gap-1 z-20">
+                             <button 
+                                onClick={() => handleSaveEdit(row.date, 'p5', currentStats)}
+                                className="p-1.5 bg-green-600 text-white rounded shadow-sm hover:bg-green-700"
+                                title="Save"
+                             >
+                               <Save size={14} />
+                             </button>
+                             <button 
+                                onClick={() => setEditingCell(null)}
+                                className="p-1.5 bg-gray-500 text-white rounded shadow-sm hover:bg-gray-600"
+                                title="Cancel"
+                             >
+                               <X size={14} />
+                             </button>
+                           </div>
+                        </div>
                       ) : (
                         <div 
                           onClick={() => isEditable && handleStartEdit(`${row.date}_${viewedUser}_p5`, currentStats.p5)}
-                          className={`w-full h-full flex items-center justify-center text-lg font-medium text-purple-700 ${isEditable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
+                          className={`w-full h-full flex items-center justify-center text-lg font-medium text-purple-700 group ${isEditable ? 'cursor-pointer hover:bg-gray-100' : ''}`}
                         >
                            {currentStats.p5}
+                           {isEditable && <Edit2 size={12} className="ml-1 text-gray-400 opacity-0 group-hover:opacity-100" />}
                         </div>
                       )}
                     </td>

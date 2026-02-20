@@ -11,7 +11,15 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
     }
 
-    // Upsert the daily stat override
+    // 1. Get current value to calculate delta for P1
+    const currentStat = await prisma.dailyStat.findUnique({
+      where: { date_userId: { date, userId } }
+    });
+
+    const oldP1 = currentStat?.acquisitionP1 || 0;
+    const deltaP1 = p1 - oldP1;
+
+    // 2. Upsert the daily stat override
     const updatedStat = await prisma.dailyStat.upsert({
       where: {
         date_userId: {
@@ -30,9 +38,39 @@ export async function PUT(request: Request) {
         acquisitionP1: p1,
         acquisitionP4: p4,
         offtakeP5: p5,
-        workingDays: 1 // Default if creating new
+        workingDays: 1
       }
     });
+
+    // 3. Sync the delta with a virtual "System - Specialist Adjustments" store
+    // This ensure the Team Total (sum of stores) remains accurate after history edits.
+    if (deltaP1 !== 0) {
+        // Use findUnique + update/create since upsert-by-name might have lint issues if generate wasn't run
+        const adjustmentStore = await prisma.store.findUnique({
+            where: { name: 'System - Specialist Adjustments' }
+        });
+
+        if (adjustmentStore) {
+            await prisma.store.update({
+                where: { id: adjustmentStore.id },
+                data: {
+                    totalAcquisition: { increment: deltaP1 }
+                }
+            });
+        } else {
+            await prisma.store.create({
+                data: {
+                    name: 'System - Specialist Adjustments',
+                    type: 'SYSTEM',
+                    city: 'Global',
+                    region: 'Global',
+                    lat: 0,
+                    lng: 0,
+                    totalAcquisition: deltaP1
+                } as any // Use any to bypass linting if schema is being tricky
+            });
+        }
+    }
 
     return NextResponse.json(updatedStat);
   } catch (error) {
