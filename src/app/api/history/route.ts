@@ -57,6 +57,27 @@ export async function PUT(request: Request) {
                 });
             }
         }
+
+        // 4. AUTO-WORK: If total sales > 0, set status to 'Work'
+        if (p1 + p4 + p5 > 0) {
+            const [day, month, year] = date.split('/').map(Number);
+            const dateObj = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+            
+            await prisma.schedule.upsert({
+                where: {
+                    userId_date: {
+                        userId,
+                        date: dateObj
+                    }
+                },
+                update: { status: 'Work' },
+                create: {
+                    userId,
+                    date: dateObj,
+                    status: 'Work'
+                }
+            });
+        }
     }
 
     // Case 2: Updating Status (Work, Sick, Off, etc.)

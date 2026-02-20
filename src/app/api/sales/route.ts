@@ -137,10 +137,28 @@ export async function POST(request: Request) {
             date: today,
             userId: userId,
             acquisitionP1: type === 'P1' ? count : 0,
-            acquisitionP4: type === 'P4' ? count : 0,
             offtakeP5: type === 'P5' ? count : 0,
             workingDays: 1
           }
+        });
+
+        // 4. AUTO-WORK: Set status to 'Work' in Schedule for Today
+        const now = new Date();
+        const dateObj = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0));
+        
+        await prisma.schedule.upsert({
+            where: {
+                userId_date: {
+                    userId,
+                    date: dateObj
+                }
+            },
+            update: { status: 'Work' },
+            create: {
+                userId,
+                date: dateObj,
+                status: 'Work'
+            }
         });
     }
 
