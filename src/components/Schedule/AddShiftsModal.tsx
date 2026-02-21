@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { X, Save, Calendar, User, Clock } from 'lucide-react';
+import { X, Save, Calendar, User, Clock, Search } from 'lucide-react';
 
 interface AddShiftsModalProps {
   onClose: () => void;
@@ -20,6 +20,8 @@ export default function AddShiftsModal({ onClose, onSave }: AddShiftsModalProps)
   const [userName, setUserName] = useState(''); // Use Name as identifier
   const [storeId, setStoreId] = useState('');
   const [storeId2, setStoreId2] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm2, setSearchTerm2] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]); // YYYY-MM-DD
   const [shift, setShift] = useState('09:00 - 13:00');
   const [shift2, setShift2] = useState('13:00 - 17:00');
@@ -38,6 +40,18 @@ export default function AddShiftsModal({ onClose, onSave }: AddShiftsModalProps)
         }
     }).finally(() => setLoading(false));
   }, []);
+
+  const filteredStores = stores.filter(s => 
+    s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    (s.area || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredStores2 = stores
+    .filter(s => s.id !== storeId)
+    .filter(s => 
+      s.name.toLowerCase().includes(searchTerm2.toLowerCase()) || 
+      (s.area || '').toLowerCase().includes(searchTerm2.toLowerCase())
+    );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -151,14 +165,26 @@ export default function AddShiftsModal({ onClose, onSave }: AddShiftsModalProps)
                  <label className="block text-sm font-bold text-gray-700 mb-1">
                     {isSplit ? 'Shop 1 (Morning)' : 'Store (Optional)'}
                  </label>
-                 <select 
-                      className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none"
-                      value={storeId}
-                      onChange={(e) => setStoreId(e.target.value)}
+                 <div className="space-y-2">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                        <input 
+                            type="text"
+                            placeholder="Search store..."
+                            className="w-full pl-9 p-1.5 text-xs border rounded-lg bg-gray-50 focus:ring-1 focus:ring-primary outline-none"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <select 
+                        className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                        value={storeId}
+                        onChange={(e) => setStoreId(e.target.value)}
                     >
                         <option value="">No Store / Office</option>
-                        {stores.map(s => <option key={s.id} value={s.id}>{s.name} ({s.area})</option>)}
+                        {filteredStores.map(s => <option key={s.id} value={s.id}>{s.name} ({s.area})</option>)}
                     </select>
+                 </div>
             </div>
 
              {/* Shift 1 */}
@@ -183,15 +209,27 @@ export default function AddShiftsModal({ onClose, onSave }: AddShiftsModalProps)
                     {/* Store 2 */}
                     <div>
                         <label className="block text-sm font-bold text-gray-700 mb-1 text-primary">Shop 2 (Afternoon)</label>
-                        <select 
-                            required
-                            className="w-full p-2 border-2 border-primary/20 rounded-lg focus:ring-2 focus:ring-primary outline-none bg-primary/5"
-                            value={storeId2}
-                            onChange={(e) => setStoreId2(e.target.value)}
-                        >
-                            <option value="">Choose Shop 2...</option>
-                            {stores.filter(s => s.id !== storeId).map(s => <option key={s.id} value={s.id}>{s.name} ({s.area})</option>)}
-                        </select>
+                        <div className="space-y-2">
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary/40" size={14} />
+                                <input 
+                                    type="text"
+                                    placeholder="Search shop 2..."
+                                    className="w-full pl-9 p-1.5 text-xs border border-primary/20 rounded-lg bg-primary/5 focus:ring-1 focus:ring-primary outline-none"
+                                    value={searchTerm2}
+                                    onChange={(e) => setSearchTerm2(e.target.value)}
+                                />
+                            </div>
+                            <select 
+                                required
+                                className="w-full p-2 border-2 border-primary/20 rounded-lg focus:ring-2 focus:ring-primary outline-none bg-primary/5"
+                                value={storeId2}
+                                onChange={(e) => setStoreId2(e.target.value)}
+                            >
+                                <option value="">Choose Shop 2...</option>
+                                {filteredStores2.map(s => <option key={s.id} value={s.id}>{s.name} ({s.area})</option>)}
+                            </select>
+                        </div>
                     </div>
 
                     {/* Shift 2 */}
