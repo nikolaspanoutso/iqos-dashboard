@@ -19,9 +19,12 @@ export default function AddShiftsModal({ onClose, onSave }: AddShiftsModalProps)
   // Form State
   const [userName, setUserName] = useState(''); // Use Name as identifier
   const [storeId, setStoreId] = useState('');
+  const [storeId2, setStoreId2] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]); // YYYY-MM-DD
-  const [shift, setShift] = useState('09:00 - 17:00');
+  const [shift, setShift] = useState('09:00 - 13:00');
+  const [shift2, setShift2] = useState('13:00 - 17:00');
   const [status, setStatus] = useState('Pending');
+  const [isSplit, setIsSplit] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -38,11 +41,23 @@ export default function AddShiftsModal({ onClose, onSave }: AddShiftsModalProps)
     if (!currentUser) return;
 
     try {
+        if (isSplit && !storeId2) {
+            alert('Please select the second store for the split shift.');
+            return;
+        }
+
+        if (isSplit && storeId === storeId2) {
+            alert('Shop 1 and Shop 2 must be different for a split shift.');
+            return;
+        }
+
         const payload = {
             userId: userName, // Schema expects User.name
             date,
             storeId: storeId || undefined,
             shift,
+            storeId2: isSplit ? storeId2 : undefined,
+            shift2: isSplit ? shift2 : undefined,
             status,
             requestingUserRole: currentUser.role,
             requestingUserId: currentUser.id 
@@ -109,9 +124,30 @@ export default function AddShiftsModal({ onClose, onSave }: AddShiftsModalProps)
                 </div>
             </div>
 
-            {/* Store */}
+             {/* Split Shift Toggle */}
+             <div className="flex items-center justify-between p-3 bg-blue-50/50 rounded-lg border border-blue-100">
+                <div>
+                    <div className="text-sm font-bold text-blue-800">Split Shift</div>
+                    <div className="text-[10px] text-blue-600">4 hours in Shop A + 4 hours in Shop B</div>
+                </div>
+                <button 
+                    type="button"
+                    onClick={() => {
+                        setIsSplit(!isSplit);
+                        if (!isSplit) setShift('09:00 - 13:00');
+                        else setShift('09:00 - 17:00');
+                    }}
+                    className={`w-12 h-6 rounded-full transition-colors relative ${isSplit ? 'bg-primary' : 'bg-gray-300'}`}
+                >
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${isSplit ? 'left-7' : 'left-1'}`} />
+                </button>
+             </div>
+
+            {/* Store 1 */}
             <div>
-                 <label className="block text-sm font-bold text-gray-700 mb-1">Store (Optional)</label>
+                 <label className="block text-sm font-bold text-gray-700 mb-1">
+                    {isSplit ? 'Shop 1 (Morning)' : 'Store (Optional)'}
+                 </label>
                  <select 
                       className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none"
                       value={storeId}
@@ -122,20 +158,54 @@ export default function AddShiftsModal({ onClose, onSave }: AddShiftsModalProps)
                     </select>
             </div>
 
-             {/* Shift */}
+             {/* Shift 1 */}
             <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Shift Time</label>
+                <label className="block text-sm font-bold text-gray-700 mb-1">
+                    {isSplit ? 'Hours (Shop 1)' : 'Shift Time'}
+                </label>
                 <div className="relative">
                     <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                     <input 
                       type="text"
-                      placeholder="e.g. 09:00 - 17:00"
+                      placeholder="e.g. 09:00 - 13:00"
                       className="w-full pl-10 p-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none"
                       value={shift}
                       onChange={(e) => setShift(e.target.value)}
                     />
                 </div>
             </div>
+
+            {isSplit && (
+                <div className="space-y-4 animate-in slide-in-from-top-2">
+                    {/* Store 2 */}
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1 text-primary">Shop 2 (Afternoon)</label>
+                        <select 
+                            required
+                            className="w-full p-2 border-2 border-primary/20 rounded-lg focus:ring-2 focus:ring-primary outline-none bg-primary/5"
+                            value={storeId2}
+                            onChange={(e) => setStoreId2(e.target.value)}
+                        >
+                            <option value="">Choose Shop 2...</option>
+                            {stores.filter(s => s.id !== storeId).map(s => <option key={s.id} value={s.id}>{s.name} ({s.area})</option>)}
+                        </select>
+                    </div>
+
+                    {/* Shift 2 */}
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1 text-primary">Hours (Shop 2)</label>
+                        <div className="relative">
+                            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-primary/40" size={18} />
+                            <input 
+                                type="text"
+                                className="w-full pl-10 p-2 border-2 border-primary/20 rounded-lg focus:ring-2 focus:ring-primary outline-none bg-primary/5"
+                                value={shift2}
+                                onChange={(e) => setShift2(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
             
             <div className="mt-4 flex gap-3">
                 <button type="button" onClick={onClose} className="flex-1 py-2 text-gray-600 font-bold hover:bg-gray-100 rounded-lg">

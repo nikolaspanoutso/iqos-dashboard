@@ -39,7 +39,8 @@ export async function GET(request: Request) {
       where: whereClause,
       include: {
         user: { select: { name: true, role: true } },
-        store: { select: { id: true, name: true } }
+        store: { select: { id: true, name: true } },
+        store2: { select: { id: true, name: true } }
       },
       orderBy: {
         date: 'asc'
@@ -58,7 +59,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     console.log('Schedule POST payload:', body);
     
-    const { userId, date, status, notes, storeId, shift, requestingUserRole, requestingUserId } = body;
+    const { userId, date, status, notes, storeId, shift, storeId2, shift2, requestingUserRole, requestingUserId } = body;
 
     if (!userId || !date || !status) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -80,6 +81,8 @@ export async function POST(request: Request) {
         // Admin/Activator can update everything
         if (storeId !== undefined) updateData.storeId = storeId || null;
         if (shift !== undefined) updateData.shift = shift || null;
+        if (storeId2 !== undefined) updateData.storeId2 = storeId2 || null;
+        if (shift2 !== undefined) updateData.shift2 = shift2 || null;
     }
 
     const createData: any = {
@@ -88,7 +91,9 @@ export async function POST(request: Request) {
         status,
         notes: notes || "",
         storeId: storeId || null,
-        shift: shift || null
+        shift: shift || null,
+        storeId2: storeId2 || null,
+        shift2: shift2 || null
     };
 
     console.log('Prisma Upserting:', { userId, date: new Date(date) });

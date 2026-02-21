@@ -39,10 +39,10 @@ model Store {
   activatorId      String?
   isActive         Boolean   @default(true)
   activator        User?     @relation(fields: [activatorId], references: [id])
-
   sales            Sale[]
   comments         Comment[]
-  schedules        Schedule[]
+  schedules        Schedule[] @relation("Store1")
+  schedules2       Schedule[] @relation("Store2")
 }
 
 model Sale {
@@ -90,11 +90,14 @@ model Schedule {
   notes     String?
   storeId   String?
   shift     String?
+  storeId2  String?
+  shift2    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   user      User     @relation(fields: [userId], references: [name])
-  store     Store?   @relation(fields: [storeId], references: [id])
+  store     Store?   @relation("Store1", fields: [storeId], references: [id])
+  store2    Store?   @relation("Store2", fields: [storeId2], references: [id])
 
   @@unique([userId, date])
 }

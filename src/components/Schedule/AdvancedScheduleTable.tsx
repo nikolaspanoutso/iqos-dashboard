@@ -21,6 +21,9 @@ interface ScheduleEntry {
   shift: string;
   storeId: string;
   store?: { name: string };
+  shift2?: string;
+  storeId2?: string;
+  store2?: { name: string };
   status: string;
   notes?: string;
 }
@@ -153,50 +156,93 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
         cell: (info: any) => <span className="font-medium text-gray-700">{info.getValue() || info.row.original.userId}</span>
     }),
     columnHelper.accessor('storeId', {
-        header: 'Store',
+        header: 'Store(s)',
         cell: ({ row, getValue }: any) => {
             const val = getValue();
+            const val2 = row.original.storeId2;
             const isAdmin = user?.role !== 'specialist';
+            const isSplit = !!val2;
             
-            if (!isAdmin) return row.original.store?.name || '-';
+            if (!isAdmin) {
+                return (
+                    <div className="flex flex-col gap-1">
+                        <div>{row.original.store?.name || '-'}</div>
+                        {isSplit && <div className="text-xs text-gray-500 border-t pt-1">{row.original.store2?.name || '-'}</div>}
+                    </div>
+                );
+            }
 
             return (
-                <select 
-                    className="w-full bg-transparent border-none focus:ring-0 text-sm p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                    value={val || ''}
-                    disabled={isLocked}
-                    onChange={(e) => handleUpdate(row.index, 'storeId', e.target.value)}
-                >
-                    <option value="">Select Store</option>
-                    {stores.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                </select>
+                <div className="flex flex-col gap-2">
+                    <select 
+                        className="w-full bg-transparent border-none focus:ring-0 text-sm p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                        value={val || ''}
+                        disabled={isLocked}
+                        onChange={(e) => handleUpdate(row.index, 'storeId', e.target.value)}
+                    >
+                        <option value="">Select Store 1</option>
+                        {stores.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                    </select>
+                    
+                    <select 
+                        className="w-full bg-transparent border-none focus:ring-0 text-[11px] p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed border-t border-dashed"
+                        value={val2 || ''}
+                        disabled={isLocked}
+                        onChange={(e) => handleUpdate(row.index, 'storeId2', e.target.value)}
+                    >
+                        <option value="">Select Store 2 (Split)</option>
+                        {stores.filter(s => s.id !== val).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                    </select>
+                </div>
             )
         }
     }),
     columnHelper.accessor('shift', {
-        header: 'Shift',
+        header: 'Shift Time(s)',
         cell: ({ row, getValue }: any) => {
             const val = getValue() || '';
+            const val2 = row.original.shift2 || '';
             const isAdmin = user?.role !== 'specialist';
+            const isSplit = !!row.original.storeId2;
 
-            if (!isAdmin) return val;
+            if (!isAdmin) {
+                return (
+                    <div className="flex flex-col gap-1">
+                        <div>{val || '-'}</div>
+                        {isSplit && <div className="text-xs text-gray-500 border-t pt-1">{val2 || '-'}</div>}
+                    </div>
+                );
+            }
 
             return (
-                <input 
-                    className="w-full bg-transparent border-none focus:ring-0 text-sm p-1 rounded hover:bg-gray-100 disabled:opacity-50"
-                    value={val}
-                    disabled={isLocked}
-                    onChange={(e) => {
-                         // Interactive input usually needs local state for debounce, 
-                         // but for quick demo relying on blur or simple change
-                         // Let's rely on onBlur for API save to avoid too many reqs
-                         const updated = [...data];
-                         updated[row.index].shift = e.target.value;
-                         setData(updated);
-                    }}
-                    onBlur={(e) => handleUpdate(row.index, 'shift', e.target.value)}
-                    placeholder="09:00-17:00"
-                />
+                <div className="flex flex-col gap-2">
+                    <input 
+                        className="w-full bg-transparent border-none focus:ring-0 text-sm p-1 rounded hover:bg-gray-100 disabled:opacity-50"
+                        value={val}
+                        disabled={isLocked}
+                        onChange={(e) => {
+                             const updated = [...data];
+                             updated[row.index].shift = e.target.value;
+                             setData(updated);
+                        }}
+                        onBlur={(e) => handleUpdate(row.index, 'shift', e.target.value)}
+                        placeholder="09:00-17:00"
+                    />
+                    
+                    <input 
+                        className="w-full bg-transparent border-none focus:ring-0 text-[11px] p-1 rounded hover:bg-gray-100 disabled:opacity-50 border-t border-dashed"
+                        value={val2}
+                        disabled={isLocked || !isSplit}
+                        onChange={(e) => {
+                             const updated = [...data];
+                             // @ts-ignore
+                             updated[row.index].shift2 = e.target.value;
+                             setData(updated);
+                        }}
+                        onBlur={(e) => handleUpdate(row.index, 'shift2', e.target.value)}
+                        placeholder="Second Shift"
+                    />
+                </div>
             )
         }
     }),
