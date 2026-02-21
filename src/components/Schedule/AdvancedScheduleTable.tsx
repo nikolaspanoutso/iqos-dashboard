@@ -4,7 +4,6 @@ import {
   useReactTable,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   flexRender,
   createColumnHelper,
@@ -51,15 +50,20 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
   const [currentDate, setCurrentDate] = useState(new Date());
   
   const startOfMonth = useMemo(() => {
+    // Force to year-month-01 in local time and return as YYYY-MM-DD
     const d = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    d.setHours(0, 0, 0, 0);
-    return d.toISOString();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}-01`;
   }, [currentDate]);
 
   const endOfMonth = useMemo(() => {
+    // Get last day of current month in local time 
     const d = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-    d.setHours(23, 59, 59, 999);
-    return d.toISOString();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }, [currentDate]);
 
   // --- Fetch Data ---
@@ -334,7 +338,6 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
   });
 
   return (
