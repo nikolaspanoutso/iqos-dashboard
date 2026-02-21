@@ -33,6 +33,24 @@ export default function AddShiftsModal({ onClose, onSave, editData }: AddShiftsM
   const [status, setStatus] = useState(editData?.status || 'Pending');
   const [isSplit, setIsSplit] = useState(!!editData?.storeId2);
 
+  const applyPreset = (type: 1 | 2) => {
+    if (type === 1) {
+        if (isSplit) {
+            setShift('10:00 - 14:00');
+            setShift2('14:00 - 18:00');
+        } else {
+            setShift('10:00 - 18:00');
+        }
+    } else {
+        if (isSplit) {
+            setShift('13:00 - 17:00');
+            setShift2('17:00 - 21:00');
+        } else {
+            setShift('13:00 - 21:00');
+        }
+    }
+  };
+
   useEffect(() => {
     Promise.all([
         fetch('/api/users').then(res => res.json()),
@@ -193,20 +211,42 @@ export default function AddShiftsModal({ onClose, onSave, editData }: AddShiftsM
                  </div>
             </div>
 
-             {/* Shift 1 */}
-            <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">
-                    {isSplit ? 'Hours (Shop 1)' : 'Shift Time'}
-                </label>
-                <div className="relative">
-                    <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input 
-                      type="text"
-                      placeholder="e.g. 09:00 - 13:00"
-                      className="w-full pl-10 p-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none"
-                      value={shift}
-                      onChange={(e) => setShift(e.target.value)}
-                    />
+             {/* Shift Times & Presets */}
+             <div className="flex items-end justify-between gap-4">
+                <div className="flex-1">
+                    <label className="block text-sm font-bold text-gray-700 mb-1">
+                        {isSplit ? 'Hours (Shop 1)' : 'Shift Time'}
+                    </label>
+                    <div className="relative">
+                        <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <input 
+                            type="text"
+                            placeholder="e.g. 09:00 - 17:00"
+                            className="w-full pl-10 p-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                            value={shift}
+                            onChange={(e) => setShift(e.target.value)}
+                        />
+                    </div>
+                </div>
+
+                {/* Presets */}
+                <div className="flex gap-2 pb-0.5">
+                    <button 
+                        type="button" 
+                        onClick={() => applyPreset(1)}
+                        className="w-10 h-10 flex items-center justify-center rounded-lg border-2 border-gray-200 font-black text-gray-400 hover:border-primary hover:text-primary transition-all bg-gray-50 hover:bg-white"
+                        title="Preset [1]: Morning (10:00 - 18:00)"
+                    >
+                        [1]
+                    </button>
+                    <button 
+                        type="button" 
+                        onClick={() => applyPreset(2)}
+                        className="w-10 h-10 flex items-center justify-center rounded-lg border-2 border-gray-200 font-black text-gray-400 hover:border-primary hover:text-primary transition-all bg-gray-50 hover:bg-white"
+                        title="Preset [2]: Afternoon (13:00 - 21:00)"
+                    >
+                        [2]
+                    </button>
                 </div>
             </div>
 
