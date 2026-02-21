@@ -110,6 +110,7 @@ function DashboardContent() {
         {currentView === 'map' ? (
            <Map 
              stores={filteredStores} 
+             selectedStore={selectedStore}
              onSelectStore={setSelectedStore} 
            />
         ) : (
