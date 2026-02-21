@@ -62,11 +62,37 @@ export async function GET() {
             status: true
         }
     });
+    
+    // Fetch all stores to aggregate acquisitions by activator
+    const stores = await prisma.store.findMany({
+        select: {
+            totalAcquisition: true,
+            activatorId: true,
+        }
+    });
+
+    // Fetch activator names
+    const activators = await prisma.user.findMany({
+        where: { role: 'activator' },
+        select: { id: true, name: true }
+    });
+
+    const activatorTotals: any = {};
+    activators.forEach(a => {
+        activatorTotals[a.id] = { name: a.name, total: 0 };
+    });
+
+    stores.forEach(store => {
+        if (store.activatorId && activatorTotals[store.activatorId]) {
+            activatorTotals[store.activatorId].total += store.totalAcquisition || 0;
+        }
+    });
 
     return NextResponse.json({ 
       dailyStats, 
       recentSales,
       aggregatedStats,
+      activatorTotals,
       specialists: specialistsList.map(s => s.name),
       schedules: schedules.map(s => ({
           userId: s.userId,

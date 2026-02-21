@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { X, Loader2, CalendarDays, CheckCircle2 } from 'lucide-react';
+import { X, Loader2, CalendarDays, CheckCircle2, Users } from 'lucide-react';
 import { useSales } from '@/context/SalesContext';
 
 interface TeamPerformanceModalProps {
@@ -8,7 +8,8 @@ interface TeamPerformanceModalProps {
 }
 
 export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalProps) {
-  const { totals, loading: salesLoading } = useSales();
+  const { totals, loading: salesLoading, rawData } = useSales();
+  const activatorTotals = rawData?.activatorTotals || {};
   const [rainTimestamp, setRainTimestamp] = useState<number | null>(null);
   const [storeTotal, setStoreTotal] = useState(0);
   const [storesList, setStoresList] = useState<any[]>([]);
@@ -83,24 +84,32 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
               </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 opacity-70 hover:opacity-100 transition-opacity">
-            <SummaryCard 
-              title="Acquisition P1" 
-              actual={totalP1} 
-              target={Object.values(totals).reduce((acc: number, curr: any) => acc + (curr.workingDays * 1.7), 0)} 
-              color="teal"
-            />
-            <SummaryCard 
-              title="Acquisition P4" 
-              actual={totalP4} 
-              target={Object.values(totals).reduce((acc: number, curr: any) => acc + (curr.workingDays * 0.7), 0)} 
-              color="blue"
-            />
-             <SummaryCard 
-              title="Offtake P5" 
-              actual={totalP5} 
-              color="purple"
-            />
+          {/* Activator Performance Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+            {Object.entries(activatorTotals).map(([id, data]: any) => (
+                <div key={id} className="bg-white p-6 rounded-xl border-2 border-indigo-50 shadow-sm hover:shadow-md transition-all">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="bg-indigo-600 p-2 rounded-lg text-white">
+                            <Users size={20} />
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">Trade Activator</h3>
+                            <div className="text-lg font-black text-gray-800">{data.name}</div>
+                        </div>
+                    </div>
+                    <div className="flex items-end justify-between">
+                        <div>
+                            <div className="text-3xl font-black text-indigo-600 leading-none">
+                                {data.total}
+                            </div>
+                            <div className="text-[10px] text-gray-400 font-bold uppercase mt-1 tracking-tighter">Attributed Acquisitions</div>
+                        </div>
+                        <div className="text-right opacity-20">
+                             <CheckCircle2 size={40} className="text-indigo-600" />
+                        </div>
+                    </div>
+                </div>
+            ))}
           </div>
 
           <h3 className="text-xl font-bold text-gray-800 mb-6">Individual Performance</h3>
@@ -125,6 +134,30 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
                 />
               );
             })}
+          </div>
+
+          {/* Lower Summary Section (Moved from top) */}
+          <div className="mt-12 pt-10 border-t border-gray-100">
+              <h3 className="text-xl font-bold text-gray-800 mb-6">Acquisition & Offtake Totals</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 opacity-80 hover:opacity-100 transition-opacity">
+                <SummaryCard 
+                  title="Acquisition P1" 
+                  actual={totalP1} 
+                  target={Object.values(totals).reduce((acc: number, curr: any) => acc + (curr.workingDays * 1.7), 0)} 
+                  color="teal"
+                />
+                <SummaryCard 
+                  title="Acquisition P4" 
+                  actual={totalP4} 
+                  target={Object.values(totals).reduce((acc: number, curr: any) => acc + (curr.workingDays * 0.7), 0)} 
+                  color="blue"
+                />
+                 <SummaryCard 
+                  title="Offtake P5" 
+                  actual={totalP5} 
+                  color="purple"
+                />
+              </div>
           </div>
 
 

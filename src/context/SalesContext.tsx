@@ -28,6 +28,7 @@ export interface StoreComment {
 interface SalesContextType {
   data: SalesData[];
   totals: any;
+  rawData: any;
   loading: boolean;
   addSale: (storeId: string, type: 'P1' | 'P4' | 'P5', count: number) => void;
   comments: StoreComment[];
@@ -47,6 +48,7 @@ export function SalesProvider({ children }: { children: React.ReactNode }) {
   
   const [data, setData] = useState<SalesData[]>([]);
   const [totals, setTotals] = useState<any>({});
+  const [rawData, setRawData] = useState<any>(null);
   const [comments, setComments] = useState<StoreComment[]>([]);
   const [specialists, setSpecialists] = useState<string[]>([]);
   const [schedules, setSchedules] = useState<any[]>([]);
@@ -88,6 +90,7 @@ export function SalesProvider({ children }: { children: React.ReactNode }) {
 
       setData(sortedData);
       setTotals(salesData.aggregatedStats);
+      setRawData(salesData);
       setSpecialists(salesData.specialists || []);
       setSchedules(salesData.schedules || []);
       setComments(commentsData); // timestamps are strings now
@@ -186,6 +189,7 @@ export function SalesProvider({ children }: { children: React.ReactNode }) {
     <SalesContext.Provider value={{ 
       data, 
       totals, 
+      rawData,
       loading, 
       addSale, 
       addComment, 
