@@ -6,24 +6,25 @@ import { Search, X, MapPin } from 'lucide-react';
 
 interface MapProps {
   stores: any[];
+  selectedStore: any | null;
   onSelectStore: (store: any) => void;
 }
 
 // Sub-component to handle map centering and zoom
-function MapController({ center, zoom }: { center: [number, number], zoom: number }) {
+function MapController({ center, zoom, isSelection }: { center: [number, number], zoom: number, isSelection: boolean }) {
   const map = useMap();
   useEffect(() => {
-    map.flyTo(center, zoom, {
+    const targetZoom = isSelection ? Math.max(map.getZoom(), 17) : zoom;
+    map.flyTo(center, targetZoom, {
       duration: 1.5
     });
-  }, [center, zoom, map]);
+  }, [center, zoom, map, isSelection]);
   return null;
 }
 
-export default function Map({ stores, onSelectStore }: MapProps) {
+export default function Map({ stores, selectedStore, onSelectStore }: MapProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
@@ -75,11 +76,7 @@ export default function Map({ stores, onSelectStore }: MapProps) {
     s.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const selectedStore = selectedStoreId ? stores.find(s => s.id === selectedStoreId) : null;
-  const displayedStores = selectedStore ? [selectedStore] : stores;
-
   const handleSelectStore = (store: any) => {
-    setSelectedStoreId(store.id);
     setSearchQuery(store.name);
     setShowDropdown(false);
     onSelectStore(store);
@@ -87,12 +84,12 @@ export default function Map({ stores, onSelectStore }: MapProps) {
 
   const clearSearch = () => {
     setSearchQuery('');
-    setSelectedStoreId(null);
     setShowDropdown(false);
+    onSelectStore(null);
   };
 
   const mapCenter: [number, number] = selectedStore ? [selectedStore.lat, selectedStore.lng] : [37.9838, 23.7275];
-  const mapZoom = selectedStore ? 16 : 12;
+  const mapZoom = 12; // Default zoom when not selected
 
   return (
     <div className="h-full w-full relative z-0">
@@ -112,7 +109,7 @@ export default function Map({ stores, onSelectStore }: MapProps) {
                         onChange={(e) => {
                             setSearchQuery(e.target.value);
                             setShowDropdown(true);
-                            if (!e.target.value) setSelectedStoreId(null);
+                            if (!e.target.value) onSelectStore(null);
                         }}
                     />
                     {searchQuery && (
@@ -169,9 +166,13 @@ export default function Map({ stores, onSelectStore }: MapProps) {
           />
           <ZoomControl position="bottomright" />
           
-          <MapController center={mapCenter} zoom={mapZoom} />
+          <MapController 
+            center={mapCenter} 
+            zoom={mapZoom} 
+            isSelection={!!selectedStore} 
+          />
 
-          {displayedStores.map((store) => (
+          {stores.map((store) => (
             <Marker 
               key={store.id} 
               position={[store.lat || 37.9838, store.lng || 23.7275]}
@@ -179,7 +180,8 @@ export default function Map({ stores, onSelectStore }: MapProps) {
               eventHandlers={{
                 click: () => onSelectStore(store),
               }}
-            />
+            >
+            </Marker>
           ))}
         </MapContainer>
     </div>

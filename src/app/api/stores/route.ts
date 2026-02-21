@@ -23,6 +23,9 @@ export async function GET(request: Request) {
         whereClause.activatorId = userId;
     }
 
+    // ALWAYS hide system adjustment store from regular lists
+    whereClause.name = { not: 'System - Specialist Adjustments' };
+
     const stores = await prisma.store.findMany({
       where: whereClause,
       include: {

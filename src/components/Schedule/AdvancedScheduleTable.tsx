@@ -72,7 +72,9 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
         // Fetch Stores (for dropdown) - Only needed if Activator/Admin
         if (user?.role !== 'specialist') {
             const resStores = await fetch('/api/stores');
-            setStores(await resStores.json());
+            const storesData = await resStores.json();
+            // Global UI Filter
+            setStores(Array.isArray(storesData) ? storesData.filter((s: any) => s.name !== 'System - Specialist Adjustments') : []);
             
             const resUsers = await fetch('/api/users'); 
             setUsers(await resUsers.json());

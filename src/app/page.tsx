@@ -49,7 +49,9 @@ function DashboardContent() {
         const res = await fetch(`/api/stores?${params.toString()}`);
         const data = await res.json();
         if (Array.isArray(data)) {
-            setStores(data);
+            // Apply Global UI Filter to hide system stores
+            const visibleStores = data.filter((s: any) => s.name !== 'System - Specialist Adjustments');
+            setStores(visibleStores);
         }
     } catch (err) {
         console.error("Failed to load stores", err);

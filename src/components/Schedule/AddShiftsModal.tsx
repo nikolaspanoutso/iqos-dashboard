@@ -32,7 +32,10 @@ export default function AddShiftsModal({ onClose, onSave }: AddShiftsModalProps)
         fetch('/api/stores').then(res => res.json())
     ]).then(([usersData, storesData]) => {
         if(Array.isArray(usersData)) setUsers(usersData);
-        if(Array.isArray(storesData)) setStores(storesData);
+        if(Array.isArray(storesData)) {
+            // Global UI Filter
+            setStores(storesData.filter((s: any) => s.name !== 'System - Specialist Adjustments'));
+        }
     }).finally(() => setLoading(false));
   }, []);
 
