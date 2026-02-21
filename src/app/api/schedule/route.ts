@@ -119,3 +119,32 @@ export async function POST(request: Request) {
     }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get('id');
+        const requestingUserRole = searchParams.get('role');
+
+        if (!id) {
+            return NextResponse.json({ error: 'Missing shift ID' }, { status: 400 });
+        }
+
+        // Security: Only Admin and Activator can delete
+        if (requestingUserRole !== 'admin' && requestingUserRole !== 'activator') {
+            return NextResponse.json({ error: 'Permission denied. Only Admins or Activators can delete shifts.' }, { status: 403 });
+        }
+
+        await prisma.schedule.delete({
+            where: { id }
+        });
+
+        return NextResponse.json({ success: true });
+    } catch (error: any) {
+        console.error('Error deleting shift:', error);
+        return NextResponse.json({ 
+            error: 'Failed to delete shift', 
+            details: error.message 
+        }, { status: 500 });
+    }
+}

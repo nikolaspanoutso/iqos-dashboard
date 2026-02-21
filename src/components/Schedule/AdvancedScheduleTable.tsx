@@ -10,7 +10,7 @@ import {
   createColumnHelper,
 } from '@tanstack/react-table';
 import { useAuth } from '@/context/AuthContext';
-import { Loader2, Save, X, Check, ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { Loader2, Save, X, Check, ChevronLeft, ChevronRight, Search, Trash2 } from 'lucide-react';
 
 // --- Types ---
 interface ScheduleEntry {
@@ -142,6 +142,26 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Είστε σίγουροι ότι θέλετε να διαγράψετε αυτή τη βάρδια;')) return;
+
+    try {
+        const res = await fetch(`/api/schedule?id=${id}&role=${user?.role}`, {
+            method: 'DELETE'
+        });
+
+        if (res.ok) {
+            setData(prev => prev.filter(item => item.id !== id));
+        } else {
+            const err = await res.json();
+            alert(`Failed to delete: ${err.details || err.error}`);
+        }
+    } catch (e) {
+        console.error("Delete failed", e);
+        alert("Error deleting shift");
+    }
+  };
+
   // --- Columns Configuration ---
   const columnHelper = createColumnHelper<ScheduleEntry>();
 
@@ -266,6 +286,22 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
                 >
                     {STATUS_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                 </select>
+            )
+        }
+    }),
+    columnHelper.display({
+        id: 'actions',
+        header: 'Actions',
+        cell: ({ row }) => {
+            if (user?.role === 'specialist') return null;
+            return (
+                <button 
+                    onClick={() => row.original.id && handleDelete(row.original.id)}
+                    className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    title="Delete Shift"
+                >
+                    <Trash2 size={16} />
+                </button>
             )
         }
     })
