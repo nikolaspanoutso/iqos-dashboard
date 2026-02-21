@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { Users, Calendar, Map as MapIcon, List, Menu, X, ChevronRight, LogOut } from 'lucide-react';
+import { Users, Calendar, Map as MapIcon, List, Menu, X, ChevronRight, LogOut, Clock, MapPin } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import TeamPerformanceModal from '@/components/UI/TeamPerformanceModal';
 import ScheduleModal from '@/components/UI/ScheduleModal';
@@ -15,6 +15,8 @@ export default function Sidebar({ currentView: propView, onViewChange }: Sidebar
   const [isOpen, setIsOpen] = useState(true);
   const [showPerformanceModal, setShowPerformanceModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [nextShift, setNextShift] = useState<any>(null);
+  const [loadingShift, setLoadingShift] = useState(false);
   
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -23,6 +25,28 @@ export default function Sidebar({ currentView: propView, onViewChange }: Sidebar
   const currentView = propView || (searchParams.get('view') as 'map' | 'list') || 'map';
 
   const { logout, user, login, users } = useAuth();
+
+  React.useEffect(() => {
+    if (user?.role === 'specialist') {
+        const fetchNextShift = async () => {
+            setLoadingShift(true);
+            try {
+                const res = await fetch(`/api/schedule/next?userId=${user.name}`);
+                const data = await res.json();
+                if (data && !data.error && !data.message) {
+                    setNextShift(data);
+                } else {
+                    setNextShift(null);
+                }
+            } catch (err) {
+                console.error("Failed to fetch next shift", err);
+            } finally {
+                setLoadingShift(false);
+            }
+        };
+        fetchNextShift();
+    }
+  }, [user]);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
 
@@ -101,6 +125,48 @@ export default function Sidebar({ currentView: propView, onViewChange }: Sidebar
             />
           </nav>
 
+          {/* Next Shift Section */}
+          {user?.role === 'specialist' && (
+            <div className="mt-8 pt-6 border-t border-gray-100">
+                <div className="text-xs font-bold text-gray-400 uppercase mb-4 tracking-wider">Next Shift</div>
+                {loadingShift ? (
+                    <div className="animate-pulse flex flex-col gap-2">
+                        <div className="h-4 bg-gray-100 rounded w-2/3"></div>
+                        <div className="h-4 bg-gray-100 rounded w-1/2"></div>
+                    </div>
+                ) : nextShift ? (
+                    <div className="bg-indigo-50/50 rounded-xl p-4 border border-indigo-100/50">
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className="bg-indigo-100 p-2 rounded-lg text-indigo-600">
+                                <Clock size={16} />
+                            </div>
+                            <div>
+                                <div className="text-sm font-bold text-gray-800">
+                                    {new Date(nextShift.date).toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'short' })}
+                                </div>
+                                <div className="text-[11px] text-indigo-600 font-medium">{nextShift.shift}</div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                           <StoreLink 
+                             label={nextShift.store.name} 
+                             onClick={() => router.push(`/?view=map&selectStoreId=${nextShift.storeId}`)} 
+                           />
+                           {nextShift.storeId2 && (
+                             <StoreLink 
+                               label={nextShift.store2.name} 
+                               onClick={() => router.push(`/?view=map&selectStoreId=${nextShift.storeId2}`)} 
+                               isSecond
+                             />
+                           )}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="text-sm text-gray-400 italic">No upcoming shifts</div>
+                )}
+            </div>
+          )}
         </div>
 
         {/* Footer / Logout */}
@@ -135,4 +201,14 @@ const NavItem = ({ icon, label, isActive, onClick }: any) => (
     <span className="font-medium">{label}</span>
     {isActive && <ChevronRight size={16} className="ml-auto opacity-75" />}
   </button>
+);
+
+const StoreLink = ({ label, onClick, isSecond }: any) => (
+    <button 
+        onClick={onClick}
+        className="flex items-center gap-2 w-full text-left p-2 rounded-lg hover:bg-white hover:shadow-sm transition-all group"
+    >
+        <MapPin size={12} className={isSecond ? "text-orange-400" : "text-indigo-400"} />
+        <span className="text-sm font-semibold text-gray-700 group-hover:text-primary transition-colors truncate">{label}</span>
+    </button>
 );

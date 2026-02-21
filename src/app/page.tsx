@@ -65,6 +65,19 @@ function DashboardContent() {
     }
   }, [user]); // Re-fetch when user changes
 
+  // Auto-select store from URL param
+  useEffect(() => {
+    const storeId = searchParams.get('selectStoreId');
+    if (storeId && stores.length > 0) {
+        const store = stores.find(s => s.id === storeId);
+        if (store) {
+            setSelectedStore(store);
+            // Also ensure we are in map view if a store is selected
+            if (currentView !== 'map') setCurrentView('map');
+        }
+    }
+  }, [searchParams, stores, currentView]);
+
   const handleSaveStore = async (newStoreData: any) => {
     try {
         const res = await fetch('/api/stores', {
