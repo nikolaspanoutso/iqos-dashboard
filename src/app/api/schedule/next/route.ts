@@ -22,7 +22,10 @@ export async function GET(request: Request) {
             date: {
                 gte: now
             },
-            status: 'Work' // Only interested in working shifts
+            // Include both Pending (default) and Present (checked-in)
+            // but ignore Off, Sick, Leave
+            status: { in: ['Work', 'Pending', 'Present'] },
+            storeId: { not: null }
         },
         include: {
             store: {
