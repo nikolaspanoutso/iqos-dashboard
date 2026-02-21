@@ -10,7 +10,8 @@ import {
   createColumnHelper,
 } from '@tanstack/react-table';
 import { useAuth } from '@/context/AuthContext';
-import { Loader2, Save, X, Check, ChevronLeft, ChevronRight, Search, Trash2 } from 'lucide-react';
+import { Loader2, Save, X, Check, ChevronLeft, ChevronRight, Search, Trash2, Pencil } from 'lucide-react';
+import AddShiftsModal from './AddShiftsModal';
 
 // --- Types ---
 interface ScheduleEntry {
@@ -43,6 +44,8 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [globalFilter, setGlobalFilter] = useState('');
+  const [editingShift, setEditingShift] = useState<ScheduleEntry | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   // Date Range (Default to current month)
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -297,13 +300,25 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
         cell: ({ row }) => {
             if (user?.role === 'specialist') return null;
             return (
-                <button 
-                    onClick={() => row.original.id && handleDelete(row.original.id)}
-                    className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                    title="Delete Shift"
-                >
-                    <Trash2 size={16} />
-                </button>
+                <div className="flex items-center gap-1">
+                    <button 
+                        onClick={() => {
+                            setEditingShift(row.original);
+                            setShowEditModal(true);
+                        }}
+                        className="p-1 text-blue-500 hover:bg-blue-50 rounded transition-colors"
+                        title="Edit Shift"
+                    >
+                        <Pencil size={15} />
+                    </button>
+                    <button 
+                        onClick={() => row.original.id && handleDelete(row.original.id)}
+                        className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors"
+                        title="Delete Shift"
+                    >
+                        <Trash2 size={15} />
+                    </button>
+                </div>
             )
         }
     })
@@ -394,10 +409,27 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
             </table>
         </div>
         
-        {/* Pagination */}
-        <div className="p-3 border-t bg-gray-50 text-xs flex justify-end gap-2 text-gray-600">
+        {/* Pagination / Footer */}
+        <div className="p-3 border-t bg-gray-50 text-xs flex justify-between items-center text-gray-600">
             <span>{table.getRowModel().rows.length} rows</span>
+            <div className="text-[10px] italic">Trade Activators can edit/delete shifts. Specialists have read-only access.</div>
         </div>
+
+        {/* Edit Modal */}
+        {showEditModal && editingShift && (
+            <AddShiftsModal 
+                editData={editingShift}
+                onClose={() => {
+                    setShowEditModal(false);
+                    setEditingShift(null);
+                }}
+                onSave={() => {
+                    setShowEditModal(false);
+                    setEditingShift(null);
+                    fetchData(); // Refresh table after edit
+                }}
+            />
+        )}
     </div>
   );
 }

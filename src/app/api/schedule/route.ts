@@ -120,6 +120,44 @@ export async function POST(request: Request) {
   }
 }
 
+export async function PUT(request: Request) {
+    try {
+        const body = await request.json();
+        const { id, userId, date, status, notes, storeId, shift, storeId2, shift2, requestingUserRole } = body;
+
+        if (!id) {
+            return NextResponse.json({ error: 'Missing shift ID' }, { status: 400 });
+        }
+
+        // Security: Only Admin and Activator can update via PUT (Full Edit)
+        if (requestingUserRole !== 'admin' && requestingUserRole !== 'activator') {
+            return NextResponse.json({ error: 'Permission denied. Only Admins or Activators can perform full edits.' }, { status: 403 });
+        }
+
+        const updatedSchedule = await prisma.schedule.update({
+            where: { id },
+            data: {
+                userId,
+                date: date ? new Date(date) : undefined,
+                status,
+                notes,
+                storeId: storeId === undefined ? undefined : (storeId || null),
+                shift: shift === undefined ? undefined : (shift || null),
+                storeId2: storeId2 === undefined ? undefined : (storeId2 || null),
+                shift2: shift2 === undefined ? undefined : (shift2 || null),
+            }
+        });
+
+        return NextResponse.json(updatedSchedule);
+    } catch (error: any) {
+        console.error('Error updating shift:', error);
+        return NextResponse.json({ 
+            error: 'Failed to update shift', 
+            details: error.message 
+        }, { status: 500 });
+    }
+}
+
 export async function DELETE(request: Request) {
     try {
         const { searchParams } = new URL(request.url);

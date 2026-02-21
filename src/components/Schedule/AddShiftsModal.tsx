@@ -5,11 +5,12 @@ import { X, Save, Calendar, User, Clock, Search } from 'lucide-react';
 interface AddShiftsModalProps {
   onClose: () => void;
   onSave: () => void;
+  editData?: any;
 }
 
 import { useAuth } from '@/context/AuthContext';
 
-export default function AddShiftsModal({ onClose, onSave }: AddShiftsModalProps) {
+export default function AddShiftsModal({ onClose, onSave, editData }: AddShiftsModalProps) {
   const [users, setUsers] = useState<any[]>([]);
   const [stores, setStores] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -17,16 +18,20 @@ export default function AddShiftsModal({ onClose, onSave }: AddShiftsModalProps)
   const { user: currentUser } = useAuth();
 
   // Form State
-  const [userName, setUserName] = useState(''); // Use Name as identifier
-  const [storeId, setStoreId] = useState('');
-  const [storeId2, setStoreId2] = useState('');
+  const [userName, setUserName] = useState(editData?.userId || ''); // Use Name as identifier
+  const [storeId, setStoreId] = useState(editData?.storeId || '');
+  const [storeId2, setStoreId2] = useState(editData?.storeId2 || '');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchTerm2, setSearchTerm2] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]); // YYYY-MM-DD
-  const [shift, setShift] = useState('09:00 - 13:00');
-  const [shift2, setShift2] = useState('13:00 - 17:00');
-  const [status, setStatus] = useState('Pending');
-  const [isSplit, setIsSplit] = useState(false);
+  const [date, setDate] = useState(
+    editData?.date 
+      ? new Date(editData.date).toISOString().split('T')[0] 
+      : new Date().toISOString().split('T')[0]
+  );
+  const [shift, setShift] = useState(editData?.shift || '09:00 - 17:00');
+  const [shift2, setShift2] = useState(editData?.shift2 || '13:00 - 17:00');
+  const [status, setStatus] = useState(editData?.status || 'Pending');
+  const [isSplit, setIsSplit] = useState(!!editData?.storeId2);
 
   useEffect(() => {
     Promise.all([
@@ -69,6 +74,7 @@ export default function AddShiftsModal({ onClose, onSave }: AddShiftsModalProps)
         }
 
         const payload = {
+            id: editData?.id,
             userId: userName, // Schema expects User.name
             date,
             storeId: storeId || undefined,
@@ -81,7 +87,7 @@ export default function AddShiftsModal({ onClose, onSave }: AddShiftsModalProps)
         };
 
         const res = await fetch('/api/schedule', {
-            method: 'POST',
+            method: editData ? 'PUT' : 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(payload)
         });
@@ -102,7 +108,7 @@ export default function AddShiftsModal({ onClose, onSave }: AddShiftsModalProps)
     <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
       <div className="bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden relative">
         <div className="flex justify-between items-center p-4 border-b bg-gray-50">
-          <h2 className="text-xl font-bold text-gray-800">Add New Shift</h2>
+          <h2 className="text-xl font-bold text-gray-800">{editData ? 'Edit Shift' : 'Add New Shift'}</h2>
           <button onClick={onClose} className="p-1 hover:bg-gray-200 rounded-full text-gray-500">
             <X size={20} />
           </button>
