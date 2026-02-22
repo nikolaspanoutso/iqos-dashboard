@@ -1,35 +1,42 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { X, Loader2, CalendarDays, CheckCircle2, Users } from 'lucide-react';
+import { X, Loader2, CalendarDays, CheckCircle2, Users, Target, Trophy, TrendingUp } from 'lucide-react';
 import { useSales } from '@/context/SalesContext';
+import { useAuth } from '@/context/AuthContext';
 
 interface TeamPerformanceModalProps {
   onClose: () => void;
 }
 
 export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalProps) {
-  const { totals, loading: salesLoading, rawData } = useSales();
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
+  const { totals, loading: salesLoading, rawData, settings, updateSetting, updateUserTarget } = useSales();
   const activatorTotals = rawData?.activatorTotals || {};
+  const usersWithData = rawData?.users || []; // Need to fetch all users to get targets even if no sales
+
+  const teamBonusTarget = parseInt(settings.team_bonus_target || '0');
   const [rainTimestamp, setRainTimestamp] = useState<number | null>(null);
   const [storeTotal, setStoreTotal] = useState(0);
   const [storesList, setStoresList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [allUsers, setAllUsers] = useState<any[]>([]);
 
   useEffect(() => {
      setLoading(true);
-     // Fetch ALL stores (including inactive) to get correct total performance
-     fetch('/api/stores?all=true')
-        .then(res => res.json())
-        .then(data => {
-           if (Array.isArray(data)) {
-              // Fix for massive number: ensure totalAcquisition is treated as a number
-              const sum = data.reduce((acc, store) => acc + (parseInt(store.totalAcquisition) || 0), 0);
-              setStoreTotal(sum);
-              const sorted = data.sort((a, b) => (b.totalAcquisition || 0) - (a.totalAcquisition || 0));
-              setStoresList(sorted);
-           }
-        })
-        .finally(() => setLoading(false));
+     Promise.all([
+        fetch('/api/stores?all=true').then(res => res.json()),
+        fetch('/api/users').then(res => res.json())
+     ]).then(([storesData, usersData]) => {
+        if (Array.isArray(storesData)) {
+           const sum = storesData.reduce((acc, store) => acc + (parseInt(store.totalAcquisition) || 0), 0);
+           setStoreTotal(sum);
+           setStoresList(storesData.sort((a, b) => (b.totalAcquisition || 0) - (a.totalAcquisition || 0)));
+        }
+        if (Array.isArray(usersData)) {
+            setAllUsers(usersData);
+        }
+     }).finally(() => setLoading(false));
   }, [salesLoading]); // Re-fetch when sales context refreshes (e.g. after history save)
 
   const triggerRain = () => {
@@ -74,52 +81,106 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
 
         <div className="flex-1 overflow-y-auto p-8 bg-gray-50/50">
           
-          <div className="bg-gradient-to-r from-teal-800 to-teal-600 text-white p-8 rounded-xl shadow-lg mb-8 flex items-center justify-center text-center transform transition-transform hover:scale-[1.01]">
-              <div>
-                  <h3 className="text-sm font-bold uppercase tracking-widest opacity-80 mb-2">Total Team Acquisitions</h3>
-                  <div className="text-6xl font-black tracking-tight drop-shadow-lg">
+          <div className="bg-gradient-to-r from-teal-800 to-teal-600 text-white p-8 rounded-xl shadow-lg mb-8 flex flex-col items-center justify-center text-center transform transition-all hover:shadow-teal-200/50">
+              <h3 className="text-sm font-bold uppercase tracking-widest opacity-80 mb-2">Total Team Acquisitions</h3>
+              <div className="flex items-center gap-6">
+                  <div className="text-7xl font-black tracking-tight drop-shadow-lg">
                     {storeTotal}
                   </div>
-                  <div className="text-xs opacity-60 mt-2 font-mono uppercase">Verified Store Performance</div>
+                  {teamBonusTarget > 0 && (
+                      <div className="h-16 w-[2px] bg-white/20 hidden sm:block"></div>
+                  )}
+                  {teamBonusTarget > 0 && (
+                      <div className="text-left">
+                          <div className="text-sm opacity-60 font-bold uppercase">Bonus Target</div>
+                          <div className="text-3xl font-black">{teamBonusTarget}</div>
+                          <div className="text-xs font-bold bg-white/20 px-2 py-0.5 rounded mt-1">
+                              {Math.round((storeTotal / teamBonusTarget) * 100)}% Reached
+                          </div>
+                      </div>
+                  )}
               </div>
+              
+              {isAdmin && (
+                  <div className="mt-6 flex items-center gap-2 bg-black/20 p-2 rounded-lg backdrop-blur-sm border border-white/10">
+                      <Target size={14} className="text-teal-300" />
+                      <input 
+                        type="number"
+                        placeholder="Set Team Bonus..."
+                        className="bg-transparent border-none outline-none text-xs font-bold w-32 placeholder:text-white/40"
+                        onBlur={(e) => updateSetting('team_bonus_target', e.target.value)}
+                        defaultValue={teamBonusTarget || ''}
+                      />
+                  </div>
+              )}
           </div>
 
           {/* Activator Performance Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-            {Object.entries(activatorTotals).map(([id, data]: any) => (
-                <div key={id} className="bg-white p-6 rounded-xl border-2 border-indigo-50 shadow-sm hover:shadow-md transition-all">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="bg-indigo-600 p-2 rounded-lg text-white">
-                            <Users size={20} />
-                        </div>
-                        <div>
-                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">Trade Activator</h3>
-                            <div className="text-lg font-black text-gray-800">{data.name}</div>
-                        </div>
-                    </div>
-                    <div className="flex items-end justify-between">
-                        <div>
-                            <div className="text-3xl font-black text-indigo-600 leading-none">
-                                {data.total}
+            {Object.entries(activatorTotals).map(([id, data]: any) => {
+                const dbUser = allUsers.find(u => u.id === id);
+                const target = dbUser?.activatorTarget || 0;
+                return (
+                    <div key={id} className="bg-white p-6 rounded-xl border-2 border-indigo-50 shadow-sm hover:shadow-md transition-all">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-indigo-600 p-2 rounded-lg text-white">
+                                    <Users size={20} />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">Trade Activator</h3>
+                                    <div className="text-lg font-black text-gray-800">{data.name}</div>
+                                </div>
                             </div>
-                            <div className="text-[10px] text-gray-400 font-bold uppercase mt-1 tracking-tighter">Attributed Acquisitions</div>
+                            {isAdmin && (
+                                <div className="flex items-center gap-2 bg-gray-50 border p-1 px-2 rounded-lg">
+                                    <Target size={12} className="text-gray-400" />
+                                    <input 
+                                       type="number"
+                                       className="bg-transparent border-none outline-none text-[10px] font-bold w-16"
+                                       placeholder="Set Target"
+                                       onBlur={(e) => updateUserTarget(data.name, { activatorTarget: e.target.value })}
+                                       defaultValue={target || ''}
+                                    />
+                                </div>
+                            )}
                         </div>
-                        <div className="text-right opacity-20">
-                             <CheckCircle2 size={40} className="text-indigo-600" />
+                        <div className="flex items-end justify-between">
+                            <div>
+                                <div className="text-3xl font-black text-indigo-600 leading-none">
+                                    {data.total}
+                                    {target > 0 && <span className="text-gray-300 mx-1">/</span>}
+                                    {target > 0 && <span className="text-gray-400 text-xl">{target}</span>}
+                                </div>
+                                <div className="text-[10px] text-gray-400 font-bold uppercase mt-1 tracking-tighter">
+                                    {target > 0 ? `${Math.round((data.total / target) * 100)}% of Performance Target` : 'Attributed Acquisitions'}
+                                </div>
+                            </div>
+                            <div className={`text-right ${data.total >= target && target > 0 ? 'text-green-500' : 'opacity-20'}`}>
+                                 <CheckCircle2 size={40} />
+                            </div>
                         </div>
                     </div>
-                </div>
-            ))}
+                );
+            })}
           </div>
 
           <h3 className="text-xl font-bold text-gray-800 mb-6">Individual Performance</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Object.entries(totals).map(([name, stats]: any) => {
+              const dbUser = allUsers.find(u => u.name === name);
               const wd = stats.workingDays;
+              
+              // Dynamic Target Logic
+              const bonusValue = dbUser?.bonusTarget || 1.7;
+              const bonusType = dbUser?.bonusTargetType || 'multiplier';
+              const pillarValue = dbUser?.pillarGoal || 1.9;
+              const pillarType = dbUser?.pillarGoalType || 'multiplier';
+
               const targets = {
-                targetP1: wd * 1.7,
-                overP1: wd * 1.9,
-                targetP4: wd * 0.7,
+                targetP1: bonusType === 'multiplier' ? wd * bonusValue : bonusValue,
+                overP1: pillarType === 'multiplier' ? wd * pillarValue : pillarValue,
+                targetP4: wd * 0.7, // P4 static target for now
                 overP4: wd * 0.9,
               };
 
@@ -131,6 +192,9 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
                   workingDays={wd}
                   targets={targets}
                   onGoldHover={triggerRain}
+                  isAdmin={isAdmin}
+                  onTargetUpdate={(data: any) => updateUserTarget(name, data)}
+                  dbUser={dbUser}
                 />
               );
             })}
@@ -167,10 +231,15 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
   );
 }
 
-const PersonStatsCard = ({ name, stats, workingDays, targets, onGoldHover }: any) => {
+const PersonStatsCard = ({ name, stats, workingDays, targets, onGoldHover, isAdmin, onTargetUpdate, dbUser }: any) => {
   const { targetP1, overP1, targetP4, overP4 } = targets;
   const [showP1Over, setShowP1Over] = useState(false);
   const [showP4Over, setShowP4Over] = useState(false);
+
+  const bonusValue = dbUser?.bonusTarget || 1.7;
+  const bonusType = dbUser?.bonusTargetType || 'multiplier';
+  const pillarValue = dbUser?.pillarGoal || 1.9;
+  const pillarType = dbUser?.pillarGoalType || 'multiplier';
 
   const p1Progress = Math.min((stats.acquisitionP1 / targetP1) * 100, 100);
   const p1OverProgress = Math.min((stats.acquisitionP1 / overP1) * 100, 100);
@@ -201,6 +270,51 @@ const PersonStatsCard = ({ name, stats, workingDays, targets, onGoldHover }: any
           {workingDays} days
         </div>
       </div>
+
+      {isAdmin && (
+          <div className="flex gap-2 mb-6 p-2 bg-gray-50 rounded-lg border border-dashed">
+              <div className="flex-1">
+                  <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Set Bonus</label>
+                  <div className="flex items-center gap-1">
+                      <input 
+                        type="number" 
+                        step="0.1"
+                        className="w-full text-xs p-1 border rounded"
+                        defaultValue={bonusValue}
+                        onBlur={(e) => onTargetUpdate({ bonusTarget: e.target.value })}
+                      />
+                      <select 
+                        className="text-[10px] border rounded p-1"
+                        defaultValue={bonusType}
+                        onChange={(e) => onTargetUpdate({ bonusTargetType: e.target.value })}
+                      >
+                          <option value="multiplier">xWD</option>
+                          <option value="fixed">Fix</option>
+                      </select>
+                  </div>
+              </div>
+              <div className="flex-1">
+                  <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Set Pillar</label>
+                  <div className="flex items-center gap-1">
+                      <input 
+                        type="number" 
+                        step="0.1"
+                        className="w-full text-xs p-1 border rounded"
+                        defaultValue={pillarValue}
+                        onBlur={(e) => onTargetUpdate({ pillarGoal: e.target.value })}
+                      />
+                      <select 
+                        className="text-[10px] border rounded p-1"
+                        defaultValue={pillarType}
+                        onChange={(e) => onTargetUpdate({ pillarGoalType: e.target.value })}
+                      >
+                          <option value="multiplier">xWD</option>
+                          <option value="fixed">Fix</option>
+                      </select>
+                  </div>
+              </div>
+          </div>
+      )}
 
 
       <div className="mb-6">

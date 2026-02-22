@@ -17,11 +17,23 @@ model User {
   role      String   // 'admin', 'activator', 'specialist'
   createdAt DateTime @default(now())
   
+  // Target & Bonus Fields
+  bonusTarget     Float?   @default(1.7)
+  bonusTargetType String   @default("multiplier") // 'multiplier' or 'fixed'
+  pillarGoal      Float?   @default(1.9)
+  pillarGoalType  String   @default("multiplier") // 'multiplier' or 'fixed'
+  activatorTarget Int?     @default(0) // Fixed target for activators
+
   sales     Sale[]
   comments  Comment[]
   dailyStats DailyStat[]
   schedules  Schedule[]
   stores     Store[]
+}
+
+model Setting {
+  key   String @id
+  value String
 }
 
 model Store {

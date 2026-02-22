@@ -39,6 +39,9 @@ interface SalesContextType {
   updateDailySales: (date: string, userId: string, p1: number, p4: number, p5: number) => void;
   updateUserStatus: (date: string, userId: string, status: string) => void;
   getStoreSales: (storeId: string) => { p1: number, p4: number };
+  settings: Record<string, string>;
+  updateSetting: (key: string, value: string) => Promise<void>;
+  updateUserTarget: (name: string, data: any) => Promise<void>;
 }
 
 const SalesContext = createContext<SalesContextType | undefined>(undefined);
@@ -52,6 +55,7 @@ export function SalesProvider({ children }: { children: React.ReactNode }) {
   const [comments, setComments] = useState<StoreComment[]>([]);
   const [specialists, setSpecialists] = useState<string[]>([]);
   const [schedules, setSchedules] = useState<any[]>([]);
+  const [settings, setSettings] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   
   // Cache for local added sales to show in Drawer immediately (optional optimization)
@@ -61,13 +65,15 @@ export function SalesProvider({ children }: { children: React.ReactNode }) {
   const refreshData = async () => {
     try {
       const splitTime = performance.now();
-      const [salesRes, commentsRes] = await Promise.all([
+      const [salesRes, commentsRes, settingsRes] = await Promise.all([
         fetch('/api/sales'),
-        fetch('/api/comments')
+        fetch('/api/comments'),
+        fetch('/api/settings')
       ]);
 
       const salesData = await salesRes.json();
       const commentsData = await commentsRes.json();
+      const settingsData = await settingsRes.json();
 
       // Transform DB Flat Stats -> UI Nested Structure of SalesData[]
       const groupedByDate: Record<string, SalesData> = {};
@@ -94,6 +100,7 @@ export function SalesProvider({ children }: { children: React.ReactNode }) {
       setSpecialists(salesData.specialists || []);
       setSchedules(salesData.schedules || []);
       setComments(commentsData); // timestamps are strings now
+      setSettings(settingsData || {});
       
     } catch (error) {
       console.error("API Fetch Error:", error);
@@ -177,6 +184,32 @@ export function SalesProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateSetting = async (key: string, value: string) => {
+    try {
+        await fetch('/api/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key, value })
+        });
+        refreshData();
+    } catch (e) {
+        console.error(e);
+    }
+  };
+
+  const updateUserTarget = async (name: string, targetData: any) => {
+    try {
+        await fetch('/api/users', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, ...targetData })
+        });
+        refreshData();
+    } catch (e) {
+        console.error(e);
+    }
+  };
+
   const getStoreSales = (storeId: string) => {
     // This was used for the + - widget state? 
     // Or to just show what was added *in this session*?
@@ -199,7 +232,10 @@ export function SalesProvider({ children }: { children: React.ReactNode }) {
       schedules,
       historyEdits: {}, // No longer needed as separate state
       updateDailySales,
-      updateUserStatus
+      updateUserStatus,
+      settings,
+      updateSetting,
+      updateUserTarget
     }}>
       {children}
     </SalesContext.Provider>
