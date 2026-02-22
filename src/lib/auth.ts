@@ -64,4 +64,5 @@ export const authOptions: NextAuthOptions = {
     signIn: "/", 
   },
   secret: process.env.NEXTAUTH_SECRET || "fallback-secret-for-dev-only",
+  debug: process.env.NODE_ENV === 'development',
 };
