@@ -47,6 +47,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 { id: 'spec3', name: 'Giwrgos Grimanis', role: 'specialist' },
                 { id: 'spec4', name: 'Nikolas Panoutsopoulos', role: 'specialist' },
                 { id: 'spec5', name: 'Nefeli Merko', role: 'specialist' },
+                { id: 'act1', name: 'MICHALOPOULOS DIMITRIS', role: 'activator' },
+                { id: 'act2', name: 'Karagiannis Dimitris', role: 'activator' },
              ];
         }
         setUsersList(finalUsers);
