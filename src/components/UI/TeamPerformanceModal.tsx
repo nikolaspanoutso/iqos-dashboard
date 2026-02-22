@@ -58,6 +58,9 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
   const totalP4 = Object.values(totals).reduce((acc: number, curr: any) => acc + curr.acquisitionP4, 0);
   const totalP5 = Object.values(totals).reduce((acc: number, curr: any) => acc + curr.offtakeP5, 0);
 
+  // Calculate Team Total as the sum of all activator totals to ensure 100% consistency
+  const storeTotalSum = Object.values(activatorTotals).reduce((acc: number, curr: any) => acc + curr.total, 0);
+
   return (
     <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
       <div className="bg-white rounded-lg shadow-2xl w-full max-w-6xl h-[95vh] flex flex-col overflow-hidden relative">
@@ -85,7 +88,7 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
               <h3 className="text-sm font-bold uppercase tracking-widest opacity-80 mb-2">Total Team Acquisitions</h3>
               <div className="flex items-center gap-6">
                   <div className="text-7xl font-black tracking-tight drop-shadow-lg">
-                    {storeTotal}
+                    {storeTotalSum}
                   </div>
                   {teamBonusTarget > 0 && (
                       <div className="h-16 w-[2px] bg-white/20 hidden sm:block"></div>
@@ -95,7 +98,7 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
                           <div className="text-sm opacity-60 font-bold uppercase">Bonus Target</div>
                           <div className="text-3xl font-black">{teamBonusTarget}</div>
                           <div className="text-xs font-bold bg-white/20 px-2 py-0.5 rounded mt-1">
-                              {Math.round((storeTotal / teamBonusTarget) * 100)}% Reached
+                              {Math.round((storeTotalSum / teamBonusTarget) * 100)}% Reached
                           </div>
                       </div>
                   )}
@@ -271,7 +274,7 @@ const PersonStatsCard = ({ name, stats, workingDays, targets, onGoldHover, isAdm
         </div>
       </div>
 
-      {isAdmin && (
+      {isAdmin && dbUser?.role === 'specialist' && (
           <div className="flex gap-2 mb-6 p-2 bg-gray-50 rounded-lg border border-dashed">
               <div className="flex-1">
                   <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Set Bonus</label>

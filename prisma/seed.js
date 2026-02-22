@@ -280,7 +280,8 @@ async function main() {
                     lat = potentialLat;
                     lng = potentialLng;
 
-                    // Only overwrite totalAcqStr if we haven't already parsed it from a shift
+                    // Only overwrite totalAcqStr if it is empty! 
+                    // If a shift was already detected, preserve that value.
                     if (!totalAcqStr || totalAcqStr === '0' || totalAcqStr === '') {
                         totalAcqStr = zip;
                     }
