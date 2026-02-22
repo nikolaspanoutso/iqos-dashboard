@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-// export const dynamic = 'force-dynamic'; // Removed duplicate
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const userId = searchParams.get('userId');
-  const role = searchParams.get('role');
-  const showAll = searchParams.get('all') === 'true'; // For stats
+  const url = new URL(request.url);
+  const userId = url.searchParams.get('userId');
+  const role = url.searchParams.get('role');
+  const showAll = url.searchParams.get('all') === 'true'; 
 
   try {
     const whereClause: any = {};

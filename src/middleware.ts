@@ -1,11 +1,8 @@
-export { default } from "next-auth/middleware";
+// TEMPORARILY DISABLED MIDDLEWARE TO DIAGNOSE CONNECTION ISSUES
+export default function middleware() {
+  return null;
+}
 
 export const config = {
-  // Protect specific sub-routes. We don't protect "/" because it contains the LOGIN UI
-  // which would cause an infinite redirect loop.
-  matcher: [
-    "/schedule/:path*",
-    "/api/stores/:path*",
-    "/api/sales/:path*",
-  ],
+  matcher: [],
 };
