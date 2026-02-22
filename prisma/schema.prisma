@@ -24,6 +24,8 @@ model User {
   pillarGoalType  String   @default("multiplier") // 'multiplier' or 'fixed'
   activatorTarget Int?     @default(0) // Fixed target for activators
 
+  password  String?   // Hashed password
+  
   sales     Sale[]
   comments  Comment[]
   dailyStats DailyStat[]
