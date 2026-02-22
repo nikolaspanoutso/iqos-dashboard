@@ -63,6 +63,6 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/", 
   },
-  secret: process.env.NEXTAUTH_SECRET || "fallback-secret-for-dev-only",
-  debug: process.env.NODE_ENV === 'development',
+  secret: process.env.NEXTAUTH_SECRET,
+  debug: true, // Temporarily forced true for Vercel debugging
 };
