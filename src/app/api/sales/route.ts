@@ -86,7 +86,8 @@ export async function GET() {
     });
 
     // Also include a slot for Unassigned or System stores to ensure sum matches Team Total
-    activatorTotals["unassigned"] = { name: "Other / System", total: 0 };
+    activatorTotals["unassigned"] = { name: "System", total: 0 };
+
 
     stores.forEach(store => {
         if (store.activatorId && activatorTotals[store.activatorId]) {

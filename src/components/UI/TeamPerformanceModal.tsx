@@ -120,7 +120,9 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
 
           {/* Activator Performance Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-            {Object.entries(activatorTotals).map(([id, data]: any) => {
+            {Object.entries(activatorTotals)
+              .filter(([id]) => id !== 'unassigned')
+              .map(([id, data]: any) => {
                 const dbUser = allUsers.find(u => u.id === id);
                 const target = dbUser?.activatorTarget || 0;
                 return (
@@ -167,6 +169,7 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
                 );
             })}
           </div>
+
 
           <h3 className="text-xl font-bold text-gray-800 mb-6">Individual Performance</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
