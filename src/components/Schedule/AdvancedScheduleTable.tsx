@@ -204,7 +204,7 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
             return (
                 <div className="flex flex-col gap-2">
                     <select 
-                        className="w-full bg-transparent border-none focus:ring-0 text-sm p-1 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-transparent border-none focus:ring-0 text-sm p-0.5 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                         value={val || ''}
                         disabled={isLocked}
                         onChange={(e) => handleUpdate(row.index, 'storeId', e.target.value)}
@@ -246,7 +246,7 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
             return (
                 <div className="flex flex-col gap-2">
                     <input 
-                        className="w-full bg-transparent border-none focus:ring-0 text-sm p-1 rounded hover:bg-gray-100 disabled:opacity-50"
+                        className="w-full bg-transparent border-none focus:ring-0 text-sm p-0.5 rounded hover:bg-gray-100 disabled:opacity-50"
                         value={val}
                         disabled={isLocked}
                         onChange={(e) => {
@@ -288,7 +288,7 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
 
             return (
                 <select 
-                    className={`w-full border-none focus:ring-0 text-xs font-bold py-1 px-2 rounded appearance-none cursor-pointer ${colorClass} disabled:opacity-50`}
+                    className={`w-full border-none focus:ring-0 text-xs font-bold py-0.5 px-1 rounded appearance-none cursor-pointer ${colorClass} disabled:opacity-50`}
                     value={val || 'Pending'}
                     disabled={isLocked}
                     onChange={(e) => handleUpdate(row.index, 'status', e.target.value)}
@@ -383,7 +383,7 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
                     {table.getHeaderGroups().map(headerGroup => (
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map(header => (
-                                <th key={header.id} className="p-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-r last:border-r-0">
+                                <th key={header.id} className="p-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-r last:border-r-0">
                                     {flexRender(header.column.columnDef.header, header.getContext())}
                                 </th>
                             ))}
@@ -395,7 +395,7 @@ export default function AdvancedScheduleTable({ isLocked = false }: Props) {
                         table.getRowModel().rows.map(row => (
                             <tr key={row.id} className="hover:bg-blue-50/30 transition-colors">
                                 {row.getVisibleCells().map(cell => (
-                                    <td key={cell.id} className="p-2 border-r last:border-r-0 text-sm align-middle">
+                                    <td key={cell.id} className="p-1 border-r last:border-r-0 text-sm align-middle">
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </td>
                                 ))}

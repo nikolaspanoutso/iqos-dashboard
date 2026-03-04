@@ -40,9 +40,11 @@ export async function GET(request: Request) {
         store: { select: { id: true, name: true } },
         store2: { select: { id: true, name: true } }
       },
-      orderBy: {
-        date: 'asc'
-      }
+      orderBy: [
+        { userId: 'asc' },
+        { date: 'asc' }
+      ]
+
     });
 
     return NextResponse.json(schedules);

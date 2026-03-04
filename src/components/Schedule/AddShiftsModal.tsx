@@ -58,8 +58,8 @@ export default function AddShiftsModal({ onClose, onSave, editData }: AddShiftsM
     ]).then(([usersData, storesData]) => {
         if(Array.isArray(usersData)) setUsers(usersData);
         if(Array.isArray(storesData)) {
-            // Global UI Filter
-            setStores(storesData.filter((s: any) => s.name !== 'System - Specialist Adjustments'));
+            // Filter only for Promo shops (containing '*') and exclude System adjustments
+            setStores(storesData.filter((s: any) => s.name !== 'System - Specialist Adjustments' && s.name.includes('*')));
         }
     }).finally(() => setLoading(false));
   }, []);
@@ -189,26 +189,26 @@ export default function AddShiftsModal({ onClose, onSave, editData }: AddShiftsM
                  <label className="block text-sm font-bold text-gray-700 mb-1">
                     {isSplit ? 'Shop 1 (Morning)' : 'Store (Optional)'}
                  </label>
-                 <div className="space-y-2">
-                    <div className="relative">
+                  <div className="border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary shadow-sm">
+                    <div className="relative border-b bg-gray-50/50">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
                         <input 
                             type="text"
-                            placeholder="Search store..."
-                            className="w-full pl-9 p-1.5 text-xs border rounded-lg bg-gray-50 focus:ring-1 focus:ring-primary outline-none"
+                            placeholder="Search promo shops..."
+                            className="w-full pl-9 p-2 text-xs bg-transparent border-none outline-none"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
                     <select 
-                        className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                        className="w-full p-2 border-none outline-none bg-white text-sm cursor-pointer"
                         value={storeId}
                         onChange={(e) => setStoreId(e.target.value)}
                     >
                         <option value="">No Store / Office</option>
                         {filteredStores.map(s => <option key={s.id} value={s.id}>{s.name} ({s.area})</option>)}
                     </select>
-                 </div>
+                  </div>
             </div>
 
              {/* Shift Times & Presets */}
@@ -255,20 +255,20 @@ export default function AddShiftsModal({ onClose, onSave, editData }: AddShiftsM
                     {/* Store 2 */}
                     <div>
                         <label className="block text-sm font-bold text-gray-700 mb-1 text-primary">Shop 2 (Afternoon)</label>
-                        <div className="space-y-2">
-                            <div className="relative">
+                        <div className="border-2 border-primary/20 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary bg-primary/5 shadow-sm">
+                            <div className="relative border-b border-primary/10">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary/40" size={14} />
                                 <input 
                                     type="text"
                                     placeholder="Search shop 2..."
-                                    className="w-full pl-9 p-1.5 text-xs border border-primary/20 rounded-lg bg-primary/5 focus:ring-1 focus:ring-primary outline-none"
+                                    className="w-full pl-9 p-2 text-xs bg-transparent border-none outline-none"
                                     value={searchTerm2}
                                     onChange={(e) => setSearchTerm2(e.target.value)}
                                 />
                             </div>
                             <select 
                                 required
-                                className="w-full p-2 border-2 border-primary/20 rounded-lg focus:ring-2 focus:ring-primary outline-none bg-primary/5"
+                                className="w-full p-2 border-none outline-none bg-transparent text-sm cursor-pointer"
                                 value={storeId2}
                                 onChange={(e) => setStoreId2(e.target.value)}
                             >
