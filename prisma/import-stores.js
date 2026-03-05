@@ -7,28 +7,28 @@ const prisma = new PrismaClient();
 // Bounding Box of Greece for Nominatim
 const GREECE_VIEWBOX = "19.3,41.8,28.5,34.8";
 const CITY_CENTERS = {
-    'Athina': { lat: 37.9838, lng: 23.7275 },
-    'Zografou': { lat: 37.9715, lng: 23.7610 },
-    'Galatsi': { lat: 38.0093, lng: 23.7571 },
-    'Vironas': { lat: 37.9593, lng: 23.7507 },
-    'Kesariani': { lat: 37.9667, lng: 23.7667 },
-    'Chania': { lat: 35.5138, lng: 24.0180 },
-    'Moschato': { lat: 37.9546, lng: 23.6811 },
-    'Menemeni': { lat: 40.6558, lng: 22.9095 }
+    'athina': { lat: 37.9838, lng: 23.7275 },
+    'zografou': { lat: 37.9715, lng: 23.7610 },
+    'galatsi': { lat: 38.0093, lng: 23.7571 },
+    'vironas': { lat: 37.9593, lng: 23.7507 },
+    'kesariani': { lat: 37.9667, lng: 23.7667 },
+    'chania': { lat: 35.5138, lng: 24.0180 },
+    'moschato': { lat: 37.9546, lng: 23.6811 },
+    'menemeni': { lat: 40.6558, lng: 22.9095 }
 };
-const DEFAULT_CENTER = CITY_CENTERS['Athina'];
+const DEFAULT_CENTER = CITY_CENTERS['athina'];
 
 const AREA_MAPPING = {
-    'byron': 'Vironas',
-    'μενεμένη': 'Athina',
-    'gkizi': 'Gyzi',
-    'athens': 'Athina' // Ensure we use the local transliteration
+    'byron': 'vironas',
+    'μενεμένη': 'athina',
+    'gkizi': 'gyzi',
+    'athens': 'athina'
 };
 
 function normalizeCity(city) {
-    if (!city) return 'Athina';
+    if (!city) return 'athina';
     const low = city.toLowerCase().trim();
-    return AREA_MAPPING[low] || city.trim();
+    return AREA_MAPPING[low] || low;
 }
 
 const COORDINATE_OVERRIDES = {
@@ -102,28 +102,19 @@ const getCoordinates = async (address, city, zip, ptpName) => {
 
     const streetOnly = streetNorm.replace(/leoforos\s+/i, '').replace(/l\.\s+/i, '').replace(/platia\s+/i, '').trim();
 
-    // List of providers
+    // List of providers - STRICTLY NOMINATIM per request
     const providers = [
         {
             name: 'Nominatim',
             baseUrl: 'https://nominatim.openstreetmap.org/search',
             queries: [
-                `${address.replace(/"/g, '').trim()}, ${cleanCity}, Greece`, // 🌟 Raw CSV ADDRESS (The "Perfect" old version)
+                `${address.replace(/"/g, '').trim()}, ${cleanCity}, Greece`, // 🌟 Raw CSV ADDRESS
                 `${streetNorm}, ${zip}, ${cleanCity}, Greece`,              // Normalised + Zip
                 `${streetNorm}, ${cleanCity}, Greece`,                       // Normalised
                 `${streetOnly}, ${cleanCity}, Greece`,                       // Street Only
                 `${cleanPtp}, ${cleanCity}, Greece`                          // Store Name
             ],
-            delay: 1500
-        },
-        {
-            name: 'GeocodeMaps',
-            baseUrl: 'https://geocode.maps.co/search',
-            queries: [
-                `${address.replace(/"/g, '').trim()}, ${cleanCity}, Greece`,
-                `${cleanPtp}, ${cleanCity}, Greece`
-            ],
-            delay: 1500
+            delay: 1800 // Mandatory 1.5 - 2s delay
         }
     ];
 
