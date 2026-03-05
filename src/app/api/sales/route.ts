@@ -23,8 +23,10 @@ export async function GET() {
       take: 100
     });
 
-    // Aggregate Data for the Team Performance Modal
+    // Aggregate Data for the Team Performance Modal (Current Month Only)
     const aggregatedStats: any = {};
+    const now = new Date();
+    const currentMonthSuffix = `${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
     
     dailyStats.forEach(stat => {
       if (!aggregatedStats[stat.userId]) {
@@ -36,10 +38,13 @@ export async function GET() {
         };
       }
       
-      aggregatedStats[stat.userId].acquisitionP1 += stat.acquisitionP1;
-      aggregatedStats[stat.userId].acquisitionP4 += stat.acquisitionP4;
-      aggregatedStats[stat.userId].offtakeP5 += stat.offtakeP5;
-      aggregatedStats[stat.userId].workingDays += stat.workingDays;
+      // Only add to aggregated totals if within current month
+      if (stat.date.endsWith(currentMonthSuffix)) {
+          aggregatedStats[stat.userId].acquisitionP1 += stat.acquisitionP1;
+          aggregatedStats[stat.userId].acquisitionP4 += stat.acquisitionP4;
+          aggregatedStats[stat.userId].offtakeP5 += stat.offtakeP5;
+          aggregatedStats[stat.userId].workingDays += stat.workingDays;
+      }
     });
 
     // Add recent sales to the live totals? 
@@ -182,6 +187,7 @@ export async function POST(request: Request) {
             date: today,
             userId: userId,
             acquisitionP1: type === 'P1' ? count : 0,
+            acquisitionP4: type === 'P4' ? count : 0,
             offtakeP5: type === 'P5' ? count : 0,
             workingDays: 1
           }
