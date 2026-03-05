@@ -171,10 +171,7 @@ const storeSales = comments
                 <span className="truncate flex-1">{data.address || 'No address'}</span>
                 {data.address && (
                   <a 
-                    href={data.lat && data.lng 
-                      ? `https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lng}`
-                      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.address)}`
-                    }
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${data.address}, ${data.area || ''} ${data.postCode || ''}`.trim())}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 bg-white/20 hover:bg-white/40 px-2 py-1 rounded text-[10px] font-bold transition-all border border-white/10 hover:shadow-sm"
