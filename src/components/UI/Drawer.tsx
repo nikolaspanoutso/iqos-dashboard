@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { isPromo, togglePromoSuffix } from '@/lib/promo';
-import { X, User2, Package, Tag, MessageSquare, Plus, Minus, Save, ShoppingBag, Check } from 'lucide-react';
+import { X, User2, Package, Tag, MessageSquare, Plus, Minus, Save, ShoppingBag, Check, MapPin } from 'lucide-react';
 import { useSales } from '@/context/SalesContext';
 import { useAuth } from '@/context/AuthContext';
 
@@ -166,8 +166,23 @@ const storeSales = comments
                  <span className="bg-white/20 px-2 py-1 rounded text-xs font-bold backdrop-blur-sm">{data.type}</span>
               </div>
               
-              <div className="flex items-center gap-2 text-white/80 text-sm mb-4">
-                <Tag size={12} /> {data.address || 'No address'}
+              <div className="flex items-center gap-2 text-white/80 text-sm mb-4 bg-black/10 p-2 rounded-lg">
+                <Tag size={12} className="shrink-0" /> 
+                <span className="truncate flex-1">{data.address || 'No address'}</span>
+                {data.address && (
+                  <a 
+                    href={data.lat && data.lng 
+                      ? `https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lng}`
+                      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.address)}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 bg-white/20 hover:bg-white/40 px-2 py-1 rounded text-[10px] font-bold transition-all border border-white/10 hover:shadow-sm"
+                  >
+                    <MapPin size={10} />
+                    MAPS
+                  </a>
+                )}
               </div>
 
               {/* METRICS BADGE */}
