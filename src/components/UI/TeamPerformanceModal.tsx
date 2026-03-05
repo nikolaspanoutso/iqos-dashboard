@@ -21,23 +21,52 @@ export default function TeamPerformanceModal({ onClose }: TeamPerformanceModalPr
   const [storesList, setStoresList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [allUsers, setAllUsers] = useState<any[]>([]);
+  const [lastSync, setLastSync] = useState<string | null>(null);
+
+  const fetchData = async () => {
+    try {
+      const [storesData, usersData] = await Promise.all([
+        fetch('/api/stores?all=true').then(res => res.json()),
+        fetch('/api/users').then(res => res.json())
+      ]);
+
+      if (Array.isArray(storesData)) {
+        const sum = storesData.reduce((acc, store) => acc + (parseInt(String(store.totalAcquisition)) || 0), 0);
+        setStoreTotal(sum);
+        setStoresList(storesData.sort((a, b) => (Number(b.totalAcquisition) || 0) - (Number(a.totalAcquisition) || 0)));
+      }
+      if (Array.isArray(usersData)) {
+        setAllUsers(usersData);
+      }
+    } catch (error) {
+      console.error('Failed to refresh performance data:', error);
+    }
+  };
 
   useEffect(() => {
      setLoading(true);
-     Promise.all([
-        fetch('/api/stores?all=true').then(res => res.json()),
-        fetch('/api/users').then(res => res.json())
-     ]).then(([storesData, usersData]) => {
-        if (Array.isArray(storesData)) {
-           const sum = storesData.reduce((acc, store) => acc + (parseInt(store.totalAcquisition) || 0), 0);
-           setStoreTotal(sum);
-           setStoresList(storesData.sort((a, b) => (b.totalAcquisition || 0) - (a.totalAcquisition || 0)));
+     fetchData().finally(() => setLoading(false));
+  }, [salesLoading]);
+
+  // Background polling for CSV import updates
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const settingsRes = await fetch('/api/settings');
+        const settingsData = await settingsRes.json();
+        const newSync = settingsData.last_import_timestamp;
+        
+        if (newSync && newSync !== lastSync) {
+          if (lastSync !== null) { // Don't trigger on first load to avoid double-fetch
+            fetchData();
+          }
+          setLastSync(newSync);
         }
-        if (Array.isArray(usersData)) {
-            setAllUsers(usersData);
-        }
-     }).finally(() => setLoading(false));
-  }, [salesLoading]); // Re-fetch when sales context refreshes (e.g. after history save)
+      } catch (e) {}
+    }, 10000); // Poll every 10 seconds
+
+    return () => clearInterval(interval);
+  }, [lastSync]);
 
   const triggerRain = () => {
     setRainTimestamp(Date.now());

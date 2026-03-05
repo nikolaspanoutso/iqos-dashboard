@@ -54,13 +54,20 @@ export default function Map({ stores, selectedStore, onSelectStore }: MapProps) 
   if (!isMounted) return <div className="h-full w-full bg-gray-100 animate-pulse" />;
   
   // Custom Icons logic
-  const getIcon = (type: string) => {
+  const getIcon = (type: string, lat: number, lng: number) => {
      if (typeof window === 'undefined') return null;
      const L = require('leaflet');
      
-     const iconUrl = type === 'Kiosk' 
+     // Check if it's the exact Athens fallback coordinate
+     const isFallback = Math.abs(lat - 37.9838) < 0.0001 && Math.abs(lng - 23.7275) < 0.0001;
+     
+     let iconUrl = type === 'Kiosk' 
         ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png'
         : 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png';
+        
+     if (isFallback) {
+        iconUrl = 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png';
+     }
         
      return new L.Icon({
         iconUrl: iconUrl,
@@ -176,7 +183,7 @@ export default function Map({ stores, selectedStore, onSelectStore }: MapProps) 
             <Marker 
               key={store.id} 
               position={[store.lat || 37.9838, store.lng || 23.7275]}
-              icon={getIcon(store.type)}
+              icon={getIcon(store.type, store.lat || 37.9838, store.lng || 23.7275)}
               eventHandlers={{
                 click: () => onSelectStore(store),
               }}
@@ -184,6 +191,23 @@ export default function Map({ stores, selectedStore, onSelectStore }: MapProps) 
             </Marker>
           ))}
         </MapContainer>
+
+        {/* Location Legend */}
+        <div className="absolute bottom-4 left-4 z-[1000] bg-white/90 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-gray-100 flex flex-col gap-2">
+            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Legend</div>
+            <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-red-500 shadow-sm"></div>
+                <span className="text-xs font-semibold text-gray-700">Precise Store</span>
+            </div>
+            <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></div>
+                <span className="text-xs font-semibold text-gray-700">Precise Kiosk</span>
+            </div>
+            <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-gray-400 shadow-sm border border-white"></div>
+                <span className="text-xs font-semibold text-gray-700">Pending (City Center)</span>
+            </div>
+        </div>
     </div>
   );
 }

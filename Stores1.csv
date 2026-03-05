@@ -1,96 +1,96 @@
 TA,PtP Name,City (Reev),Address,ZipCode,Total Acquisition
-MICHALOPOULOS DIMITRIS,YES STORES ΥΜΗΤΤΟΥ ΟΕ,Athina,116 Imittou,116 33,=VLOOKUP(B2;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΤΣΙΛΙΚΙΩΤΟΥ ΚΩΝΣΤΑΝΤΙΑ,Athina,73 Fotomara,117 45,=VLOOKUP(B3;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΠΕΡΙΠΤΕΡΟ ΒΕΙΚΟΥ Ο Ε,Galatsi,18 Leoforos Veikou,111 47,=VLOOKUP(B4;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,18 BEE MARKET 24H IKE,Zografou,10 Dikis,157 73,=VLOOKUP(B5;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΑΦΟΙ ΑΘΑΝΑΣΟΠΟΥΛΟΙ Ο.Ε,Galatsi,73 Papaflessa,111 46,=VLOOKUP(B6;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,YES STORES ΠΑΛΜΕ 18 Ο.Ε.,Zografou,18 Oulof Palme,157 71,=VLOOKUP(B7;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,GALATSI NOBACCO SHOP,Galatsi,40 Leoforos Veikou,111 47,=VLOOKUP(B8;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΑΓΓΕΛΟΠΟΥΛΟΣ Δ.- ΧΩΡΙΑΝΟΠΟΥΛΟΥ ΑΝΝΑ ΟΕ,Athina,59 Papadiamantopoulou,115 27,=VLOOKUP(B9;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ZOGRAFOU NOBACCO SHOP,Zografou,41 Leoforos Stratarchou Alexandrou Papagou,157 73,=VLOOKUP(B10;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,Μ.ΚΟΚΚΙΝΟΣ-Λ.ΚΟΚΚΙΝΟΥ Ο.Ε,Kesariani,74 Leoforos Ethnikis Antistaseos,161 21,=VLOOKUP(B11;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΚΑΛΛΙΑΝΙΩΤΗ ΝΙΚ. ΒΑΣΙΛΙΚΗ,Athina,135 Leoforos Vouliagmenis,116 31,=VLOOKUP(B12;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,DELIVERY HERO DMART GREECE (efood Local),Athina,76 Mikras Asias,115 27,=VLOOKUP(B13;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΑΡΙΣΤΕΙΔΗΣ ΓΚΟΡΟΣ Ο.Ε (OSA ΒΥΡΩΝΑ 2),Vironas,68 Panagi Tsaldari,162 32,=VLOOKUP(B14;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,YES STORES FEIDIPPIDOU IKE,Athina,31 Fidippidou,115 27,=VLOOKUP(B15;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΓΚΟΥΒΑ Δ. ΕΥΑΓΓΕΛΙΑ,Zografou,25 Ethnikis Antistaseos,157 72,=VLOOKUP(B16;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,VIRONAS NOBACCO SHOP,Vironas,11 Neas Elvetias,162 31,=VLOOKUP(B17;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΤΣΑΓΚΑΛΙΔΗΣ ΑΝΑΣΤ. ΣΤΥΛΙΑΝΟΣ,Zografou,42 Georgiou Zografou,157 72,=VLOOKUP(B18;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,Β ΤΣΑΚΑΛΗ ΕΕ,Athina,117 Imittou,116 33,=VLOOKUP(B19;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΚΡΑΨΙΤΗΣ ΓΕΩΡΓΙΟΣ,Athina,22 Mavrommateon,104 34,=VLOOKUP(B20;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΠΑΥΛΟΠΟΥΛΟΣ ΝΙΚ. ΚΩΝ/ΝΟΣ,Athina,2 Spirou Merkouri,116 34,=VLOOKUP(B21;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΖΥΚΟ ΣΠΥΡΟ & ΣΙΑ ΕΤΕΡΟΡΥΘΜΗ ΕΤΑΙΡΕΙΑ,Vironas,1 Chimarra,162 32,=VLOOKUP(B22;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
+MICHALOPOULOS DIMITRIS,YES STORES ΥΜΗΤΤΟΥ ΟΕ,Athina,116 Imittou,116 33, 68
+MICHALOPOULOS DIMITRIS,ΤΣΙΛΙΚΙΩΤΟΥ ΚΩΝΣΤΑΝΤΙΑ,Athina,73 Fotomara,117 45, 61
+MICHALOPOULOS DIMITRIS,ΠΕΡΙΠΤΕΡΟ ΒΕΙΚΟΥ Ο Ε,Galatsi,18 Leoforos Veikou,111 47, 24 
+MICHALOPOULOS DIMITRIS,18 BEE MARKET 24H IKE,Zografou,10 Dikis,157 73, 28
+MICHALOPOULOS DIMITRIS,ΑΦΟΙ ΑΘΑΝΑΣΟΠΟΥΛΟΙ Ο.Ε,Galatsi,73 Papaflessa,111 46, 24
+MICHALOPOULOS DIMITRIS,YES STORES ΠΑΛΜΕ 18 Ο.Ε.,Zografou,18 Oulof Palme,157 71, 19
+MICHALOPOULOS DIMITRIS,GALATSI NOBACCO SHOP,Galatsi,40 Leoforos Veikou,111 47, 19
+MICHALOPOULOS DIMITRIS,ΑΓΓΕΛΟΠΟΥΛΟΣ Δ.- ΧΩΡΙΑΝΟΠΟΥΛΟΥ ΑΝΝΑ ΟΕ,Athina,59 Papadiamantopoulou,115 27 ,21
+MICHALOPOULOS DIMITRIS,ZOGRAFOU NOBACCO SHOP,Zografou,41 Leoforos Stratarchou Alexandrou Papagou,157 73 ,15
+MICHALOPOULOS DIMITRIS,Μ.ΚΟΚΚΙΝΟΣ-Λ.ΚΟΚΚΙΝΟΥ Ο.Ε,Kesariani,74 Leoforos Ethnikis Antistaseos,161 21, 14
+MICHALOPOULOS DIMITRIS,ΚΑΛΛΙΑΝΙΩΤΗ ΝΙΚ. ΒΑΣΙΛΙΚΗ,Athina,135 Leoforos Vouliagmenis,116 31, 14
+MICHALOPOULOS DIMITRIS,DELIVERY HERO DMART GREECE (efood Local),Athina,76 Mikras Asias,115 27, 12
+MICHALOPOULOS DIMITRIS,ΑΡΙΣΤΕΙΔΗΣ ΓΚΟΡΟΣ Ο.Ε (OSA ΒΥΡΩΝΑ 2),Vironas,68 Panagi Tsaldari,162 32,10
+MICHALOPOULOS DIMITRIS,YES STORES FEIDIPPIDOU IKE,Athina,31 Fidippidou,115 27, 9
+MICHALOPOULOS DIMITRIS,ΓΚΟΥΒΑ Δ. ΕΥΑΓΓΕΛΙΑ,Zografou,25 Ethnikis Antistaseos,157 72, 13
+MICHALOPOULOS DIMITRIS,VIRONAS NOBACCO SHOP,Vironas,11 Neas Elvetias,162 31, 9
+MICHALOPOULOS DIMITRIS,ΤΣΑΓΚΑΛΙΔΗΣ ΑΝΑΣΤ. ΣΤΥΛΙΑΝΟΣ,Zografou,42 Georgiou Zografou,157 72, 7
+MICHALOPOULOS DIMITRIS,Β ΤΣΑΚΑΛΗ ΕΕ,Athina,117 Imittou,116 33,6
+MICHALOPOULOS DIMITRIS,ΚΡΑΨΙΤΗΣ ΓΕΩΡΓΙΟΣ,Athina,22 Mavrommateon,104 34, 6
+MICHALOPOULOS DIMITRIS,ΠΑΥΛΟΠΟΥΛΟΣ ΝΙΚ. ΚΩΝ/ΝΟΣ,Athina,2 Spirou Merkouri,116 34, 8
+MICHALOPOULOS DIMITRIS,ΖΥΚΟ ΣΠΥΡΟ & ΣΙΑ ΕΤΕΡΟΡΥΘΜΗ ΕΤΑΙΡΕΙΑ,Vironas,1 Chimarra,162 32, 5
 MICHALOPOULOS DIMITRIS,ΝΙΚΟΛΗΣ ΘΑΝ. ΔΙΟΝΥΣΗΣ - OSA ΓΚΥΖΗ,Athina,41 Prigkiponnison,114 76,5
-MICHALOPOULOS DIMITRIS,ΨΥΧΙΑΣ ΣΠΥΡΙΔΩΝ ΚΩΝΣΤΑΝΤΙΝΟΣ (ΥΠ/ΜΑ 01),Athina,2 Nikolaou Gkizi,114 75,=VLOOKUP(B24;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,DOLLS ( ΠΑΠΑΔΟΠΟΥΛΟΣ Ν ΓΕΩΡΓΙΟΣ ),Galatsi,84 Leoforos Galatsiou,111 46,=VLOOKUP(B25;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,NIKOLIS STORE EE (OSA ΠΑΓΚΡΑΤΙ),Athina,145 Filolaou,116 32,=VLOOKUP(B26;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,Π.ΝΤΟΥΝΙΑΣ & ΣΙΑ Ε.Ε (my kiosk),Athina,26 Melissou,116 35,=VLOOKUP(B27;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΠΑΝΑΓΟΥΛΙΑ Ν.ΜΑΡΙΑ,Zografou,22 Grigoriou Kousidi,157 72,=VLOOKUP(B28;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,PAGRATI NOBACCO SHOP,Athina,122 Imittou,156 69,=VLOOKUP(B29;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΚΟΥΜΗ ΑΛΕΞΙΑ,Athina,2 Platia Gkizi,114 75,=VLOOKUP(B30;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΥΙΟΙ Κ Ε ΑΝΑΣΤΑΣΟΠΟΥΛΟΙ ΣΥΝ Ε. Ε,Gerakas,18 Evritanias,15344,=VLOOKUP(B31;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΔΑΚΟΠΟΥΛΟΣ ΓΕΩΡΓΙΟΣ,Athina,10 Thivon,115 27,=VLOOKUP(B32;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΚΑΡΔΟΥΤΣΟΣ ΑΘΑΝΑΣΙΟΣ,Vironas,101 Agias Sofias,162 32,=VLOOKUP(B33;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΤΑΙΡΙΔΗΣ ΠΑΝΑΓΙΩΤΗΣ,Athina,50 Roumpesi,117 44,=VLOOKUP(B34;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΤΟ ΣΗΜΕΙΟ Ι. Κ. Ε,Athina,32 Agiou Thoma,115 27,=VLOOKUP(B35;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΨΥΧΙΑΣ ΣΠΥΡΙΔΩΝ,Galatsi,3 Karaiskaki,111 46,=VLOOKUP(B36;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,IQOS Corner Germanos Kaisariani,Kesariani,90 Leoforos Ethnikis Antistaseos,161 21,=VLOOKUP(B37;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,VAPE 84,Athina,84 Filolaou,116 33,=VLOOKUP(B38;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,Γ. ΑΝΑΣΤΑΣΟΠΟΥΛΟΣ & ΣΥΝΕΡΓΑΤΕΣ ΕΕ,Kesariani,103 Formionos,161 21,=VLOOKUP(B39;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΚΑΡΑΙΝΔΡΟΥ ΜΑΡΙΑ ΑΝΔΡΟΥΛΑΚΗΣ ΖΑΧΑΡΙΑΣ Ο.,Galatsi,85 Tralleon,111 46,=VLOOKUP(B40;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΛΕΚΑΣ ΓΕΩΡΓΙΟΣ,Athina,13 Kakavaki,117 44,=VLOOKUP(B41;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΜΑΝΟΣ ΙΩΑΝΝΗΣ,BYRON,Formionos & Kristalli,162 31,=VLOOKUP(B42;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΣΑΚΑΡΗ ΕΥΤΥΧΙΑ,Galatsi,6 Ersis,111 46,=VLOOKUP(B43;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΣΩΤΗΡΟΠΟΥΛΟΣ ΠΑΝΑΓΙΩΤΗΣ - ΑΛΕΞΑΝΔΡΟΣ ΜΟΝ,Athina,8 Leoforos Vouliagmenis,117 43,=VLOOKUP(B44;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ERIGERT RUKO,Zografou,80 Grigoriou Afxentiou,157 71,=VLOOKUP(B45;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,IQOS Corner Germanos Galatsi 2,Galatsi,18 Leoforos Veikou,111 47,=VLOOKUP(B46;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,IQOS Corner Germanos Pagrati 2,Athina,84 Imittou,116 34,=VLOOKUP(B47;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,IQOS Corner Germanos Vyronas,Vironas,102 Leoforos Kiprou,162 32,=VLOOKUP(B48;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΒΕΡΜΠΗ ΑΛΙΚΗ,Vironas,13 Panagi Tsaldari,162 32,=VLOOKUP(B49;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΓΑΛΑΝΗΣ Β. - ΠΙΤΣΙΝΗΣ Η. ΟΕ,Zografou,10 Georgiou Zografou,157 72,=VLOOKUP(B50;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΚΑΤΣΙΓΙΑΝΝΗΣ ΑΘ. ΝΙΚΟΛΑΟΣ,Zografou,57 Iasona Maratou,157 71,=VLOOKUP(B51;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΠΟΛΥΖΟΥ ΓΕΩΡΓΙΑ,Athina,28 Arrianou,116 35,=VLOOKUP(B52;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-MICHALOPOULOS DIMITRIS,ΨΥΧΙΑΣ Κ. ΣΠΥΡΙΔΩΝ,Athina,105 Taigetou,111 41,=VLOOKUP(B53;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,YES STORES Λ. ΑΛΕΞΑΝΔΡΑΣ 158 ΟΕ,Athina,158 Leoforos Alexandras,104 33,=VLOOKUP(B54;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΠΑΠΑΖΙΚΟΣ Ι. ΝΙΚΟΛΑΟΣ,Μενεμένη,54 Dimitsanas,115 22,=VLOOKUP(B55;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΛΟΥΚΑΤΖΙΚΟΥ ΑΛΕΞΑΝΔΡΑ,Athina,64 Spirou Patsi,118 55,=VLOOKUP(B56;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΜΕΝΤΕΝΗΣ ΙΟΡΔΑΝΗΣ ΚΑΙ ΣΙΑ ΕΕ,Athina,19 Millerou,104 36,=VLOOKUP(B57;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΠΕΡΙΠΤΕΡΟ ΔΡΑΚΟΥ ΕΕ,Athina,12 Drakou,11742,=VLOOKUP(B58;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,Γ.ΑΝΑΣΤΑΣΟΠΟΥΛΟΣ-Σ.ΑΝΑΣΤΑΣΟΠΟΥΛΟΣ ΟΕ,Athina,6 Platia Filikis Eterias,106 73,=VLOOKUP(B59;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΚΑΦΕ ΠΑΝΟΡΜΟΥ ΙΚΕ,Μενεμένη,20 Larisis,115 23,=VLOOKUP(B60;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,YES STORES KATEXAKH ΟΕ,Athina,2 Leoforos Mesogeion,115 27,=VLOOKUP(B61;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ABELOKIPOI NOBACCO SHOP,Athina,81 Kifisias ,11523,=VLOOKUP(B62;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΓΕΩΡΓΑΤΖΗΣ ΠΑΝΤΕΛΗΣ,Athina,11 Miaouli,105 54,=VLOOKUP(B63;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΠΑΠΑΓΕΩΡΓΙΟΥ ΑΠΟΣΤΟΛΟΣ,Athina,2 Platia Sintagmatos,105 57,=VLOOKUP(B64;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΠΑΠΑΓΕΩΡΓΙΟΥ ΧΡΗΣΤΟΣ,Athina,4 Platia Sintagmatos,105 63,=VLOOKUP(B65;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΠΑΠΑΔΟΓΙΑΝΝΗΣ ΓΕΩΡΓΙΟΣ,Chania,130 Efedron Polemiston,731 36,=VLOOKUP(B66;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,KOLONAKI NOBACCO SHOP,Athina,17 Irodotou Str.,10674,=VLOOKUP(B67;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,OMONOIA NOBACCO SHOP,Athina,65 Panepistimiou,10564,=VLOOKUP(B68;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,SYNTAGMA NOBACCO SHOP,Athina,14 Voulis,10563,=VLOOKUP(B69;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΓΙΩΤΗΣ ΕΛΒΙΝ,Athina,105 Panormou,115 24,=VLOOKUP(B70;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΣΙΑΠΛΑΟΥΡΑΣ ΓΕΩΡΓΙΟΣ,Athina,Platia Merkouri,118 52,=VLOOKUP(B71;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ACROPOL KIOSKYS ΕΕ,Athina,10 Rovertou Galli,117 42,=VLOOKUP(B72;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,PICK IT ΓΕΩΡΓΙΟΣ ΠΕΤΡΗΣ,Athina,23 Lamias,11523,=VLOOKUP(B73;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,Η ΑΓΟΡΑ DCT ΙΚΕ,Athina,23 Georgiou Vlachou,115 25,=VLOOKUP(B74;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,Π. ΝΤΟΥΝΙΑΣ & ΣΙΑ ΕΕ,Athina,93 Ippokratous,106 80,=VLOOKUP(B75;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΤΣΙΡΔΗΜΟΣ ΦΙΛΙΠΠΟΣ,Athina,3 Keiriadon,118 54,=VLOOKUP(B76;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,IQOS Corner Germanos Kolonaki,Athina,26 Kanari,106 74,=VLOOKUP(B77;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,IQOS Corner Germanos Stadiou,Athina,10 Stadiou,105 64,=VLOOKUP(B78;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΑΓΓΕΛΟΥ ΕΛΕΥΘΕΡΙΟΣ,Athina,3 Karatheodori,115 25,=VLOOKUP(B79;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΔΟΥΚΑΚΗΣ ΑΓΓΕΛΟΣ,Athina,81 Louizis Riankour,115 24,=VLOOKUP(B80;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΚΡΕΜΜΥΔΑ ΕΛΛΗ,Athina,63 Megalou Alexandrou,104 35,=VLOOKUP(B81;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΧΑΜΛΑΤΖΗΣ Κ. ΔΗΜΗΤΡΙΟΣ,Athina,16 Erythrou Stavrou,115 26,=VLOOKUP(B82;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,IQOS Corner Germanos Mpenaki,Athina,6 Emmanouil Benaki,105 64,=VLOOKUP(B83;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΑΝΤΩΝΟΠΟΥΛΟΣ ΝΙΚΟΛΑΟΣ,Athina,51 Papada,115 26,=VLOOKUP(B84;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΚΟΚΚΑΣ ΝΙΚΟΛ.ΔΗΜΗΤΡΙΟΣ,Athina,147 Ippokratous,114 72,=VLOOKUP(B85;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΚΟΥΜΗΣ ΓΡΗΓΟΡΙΟΣ,Athina,20 Xenokratous,106 75,=VLOOKUP(B86;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΜΑΤΣΟΥΚΑΣ ΧΡΗΣΤΟΣ & ΣΙΑ ΕΕ,Athina,6 Apollonos,105 57,=VLOOKUP(B87;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΣΤΑΣΙΝΟΣ Θ.ΠΑΝΑΓΙΩΤΗΣ,Athina,185 Ippokratous,114 72,=VLOOKUP(B88;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΨΑΡΡΟΥ ΕΜΜ. ΣΟΦΙΑ,Athina,155 Pireos,118 54,=VLOOKUP(B89;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,A.O.V. 67 O.E.,Athina,67 Panepistimiou,105 64,=VLOOKUP(B90;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,IQOS Corner Germanos N. Kosmos,Athina,76 Leoforos Andrea Siggrou,117 42,=VLOOKUP(B91;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,IQOS Corner Germanos Petralona,Moschato,147 Thessalonikis,183 46,=VLOOKUP(B92;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,UZO DILAVER NDRICIM,Athina,108 Keiriadon,118 53,=VLOOKUP(B93;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΛΙΤΗ ΕΥΑΓΓ. ΒΙΟΛΕΤΑ,Athina,56 Ious,11853,=VLOOKUP(B94;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΣΠΑΝΟΣ ΧΡΗΣΤΟΣ,Athina,113 Trion Ierarchon,118 51,=VLOOKUP(B95;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
-Karagiannis Dimitris,ΦΟΥΚΟΣ ΧΡΗΣΤΟΣ ΝΕΚΤΑΡΙΟΣ,Athina,110 Solonos,106 81,=VLOOKUP(B96;'file:///C:/Users/panou/Downloads/Πανουτσόπουλος.xlsx'#$Export.$A$1:$B$1048576;2;0)
+MICHALOPOULOS DIMITRIS,ΨΥΧΙΑΣ ΣΠΥΡΙΔΩΝ ΚΩΝΣΤΑΝΤΙΝΟΣ (ΥΠ/ΜΑ 01),Athina,2 Nikolaou Gkizi,114 75, 10
+MICHALOPOULOS DIMITRIS,DOLLS ( ΠΑΠΑΔΟΠΟΥΛΟΣ Ν ΓΕΩΡΓΙΟΣ ),Galatsi,84 Leoforos Galatsiou,111 46, 7
+MICHALOPOULOS DIMITRIS,NIKOLIS STORE EE (OSA ΠΑΓΚΡΑΤΙ),Athina,145 Filolaou,116 32, 4
+MICHALOPOULOS DIMITRIS,Π.ΝΤΟΥΝΙΑΣ & ΣΙΑ Ε.Ε (my kiosk),Athina,26 Melissou,116 35, 6
+MICHALOPOULOS DIMITRIS,ΠΑΝΑΓΟΥΛΙΑ Ν.ΜΑΡΙΑ,Zografou,22 Grigoriou Kousidi,157 72, 4
+MICHALOPOULOS DIMITRIS,PAGRATI NOBACCO SHOP,Athina,122 Imittou,156 69, 3
+MICHALOPOULOS DIMITRIS,ΚΟΥΜΗ ΑΛΕΞΙΑ,Athina,2 Platia Gkizi,114 75, 3
+MICHALOPOULOS DIMITRIS,ΥΙΟΙ Κ Ε ΑΝΑΣΤΑΣΟΠΟΥΛΟΙ ΣΥΝ Ε. Ε,Gerakas,18 Evritanias,15344, 3
+MICHALOPOULOS DIMITRIS,ΔΑΚΟΠΟΥΛΟΣ ΓΕΩΡΓΙΟΣ,Athina,10 Thivon,115 27, 3
+MICHALOPOULOS DIMITRIS,ΚΑΡΔΟΥΤΣΟΣ ΑΘΑΝΑΣΙΟΣ,Vironas,101 Agias Sofias,162 32, 2
+MICHALOPOULOS DIMITRIS,ΤΑΙΡΙΔΗΣ ΠΑΝΑΓΙΩΤΗΣ,Athina,50 Roumpesi,117 44, 4
+MICHALOPOULOS DIMITRIS,ΤΟ ΣΗΜΕΙΟ Ι. Κ. Ε,Athina,32 Agiou Thoma,115 27, 4
+MICHALOPOULOS DIMITRIS,ΨΥΧΙΑΣ ΣΠΥΡΙΔΩΝ,Galatsi,3 Karaiskaki,111 46, 2
+MICHALOPOULOS DIMITRIS,IQOS Corner Germanos Kaisariani,Kesariani,90 Leoforos Ethnikis Antistaseos,161 21, 1
+MICHALOPOULOS DIMITRIS,VAPE 84,Athina,84 Filolaou,116 33, 1
+MICHALOPOULOS DIMITRIS,Γ. ΑΝΑΣΤΑΣΟΠΟΥΛΟΣ & ΣΥΝΕΡΓΑΤΕΣ ΕΕ,Kesariani,103 Formionos,161 21, 1
+MICHALOPOULOS DIMITRIS,ΚΑΡΑΙΝΔΡΟΥ ΜΑΡΙΑ ΑΝΔΡΟΥΛΑΚΗΣ ΖΑΧΑΡΙΑΣ Ο.,Galatsi,85 Tralleon,111 46, 1
+MICHALOPOULOS DIMITRIS,ΛΕΚΑΣ ΓΕΩΡΓΙΟΣ,Athina,13 Kakavaki,117 44, 1
+MICHALOPOULOS DIMITRIS,ΜΑΝΟΣ ΙΩΑΝΝΗΣ,BYRON,Formionos & Kristalli,162 31, 1
+MICHALOPOULOS DIMITRIS,ΣΑΚΑΡΗ ΕΥΤΥΧΙΑ,Galatsi,6 Ersis,111 46, 1
+MICHALOPOULOS DIMITRIS,ΣΩΤΗΡΟΠΟΥΛΟΣ ΠΑΝΑΓΙΩΤΗΣ - ΑΛΕΞΑΝΔΡΟΣ ΜΟΝ,Athina,8 Leoforos Vouliagmenis,117 43, 1
+MICHALOPOULOS DIMITRIS,ERIGERT RUKO,Zografou,80 Grigoriou Afxentiou,157 71, 0
+MICHALOPOULOS DIMITRIS,IQOS Corner Germanos Galatsi 2,Galatsi,18 Leoforos Veikou,111 47, 0
+MICHALOPOULOS DIMITRIS,IQOS Corner Germanos Pagrati 2,Athina,84 Imittou,116 34, 0
+MICHALOPOULOS DIMITRIS,IQOS Corner Germanos Vyronas,Vironas,102 Leoforos Kiprou,162 32, 1
+MICHALOPOULOS DIMITRIS,ΒΕΡΜΠΗ ΑΛΙΚΗ,Vironas,13 Panagi Tsaldari,162 32, 2
+MICHALOPOULOS DIMITRIS,ΓΑΛΑΝΗΣ Β. - ΠΙΤΣΙΝΗΣ Η. ΟΕ,Zografou,10 Georgiou Zografou,157 72, 0
+MICHALOPOULOS DIMITRIS,ΚΑΤΣΙΓΙΑΝΝΗΣ ΑΘ. ΝΙΚΟΛΑΟΣ,Zografou,57 Iasona Maratou,157 71, 0
+MICHALOPOULOS DIMITRIS,ΠΟΛΥΖΟΥ ΓΕΩΡΓΙΑ,Athina,28 Arrianou,116 35, 0
+MICHALOPOULOS DIMITRIS,ΨΥΧΙΑΣ Κ. ΣΠΥΡΙΔΩΝ,Athina,105 Taigetou,111 41, 1
+Karagiannis Dimitris,YES STORES Λ. ΑΛΕΞΑΝΔΡΑΣ 158 ΟΕ,Athina,158 Leoforos Alexandras,104 33, 96
+Karagiannis Dimitris,ΠΑΠΑΖΙΚΟΣ Ι. ΝΙΚΟΛΑΟΣ,Μενεμένη,54 Dimitsanas,115 22, 42
+Karagiannis Dimitris,ΛΟΥΚΑΤΖΙΚΟΥ ΑΛΕΞΑΝΔΡΑ,Athina,64 Spirou Patsi,118 55, 33
+Karagiannis Dimitris,ΜΕΝΤΕΝΗΣ ΙΟΡΔΑΝΗΣ ΚΑΙ ΣΙΑ ΕΕ,Athina,19 Millerou,104 36, 27
+Karagiannis Dimitris,ΠΕΡΙΠΤΕΡΟ ΔΡΑΚΟΥ ΕΕ,Athina,12 Drakou,11742, 24
+Karagiannis Dimitris,Γ.ΑΝΑΣΤΑΣΟΠΟΥΛΟΣ-Σ.ΑΝΑΣΤΑΣΟΠΟΥΛΟΣ ΟΕ,Athina,6 Platia Filikis Eterias,106 73, 19
+Karagiannis Dimitris,ΚΑΦΕ ΠΑΝΟΡΜΟΥ ΙΚΕ,Μενεμένη,20 Larisis,115 23, 17
+Karagiannis Dimitris,YES STORES KATEXAKH ΟΕ,Athina,2 Leoforos Mesogeion,115 27,19
+Karagiannis Dimitris,ABELOKIPOI NOBACCO SHOP,Athina,81 Kifisias ,11523, 16
+Karagiannis Dimitris,ΓΕΩΡΓΑΤΖΗΣ ΠΑΝΤΕΛΗΣ,Athina,11 Miaouli,105 54, 15
+Karagiannis Dimitris,ΠΑΠΑΓΕΩΡΓΙΟΥ ΑΠΟΣΤΟΛΟΣ,Athina,2 Platia Sintagmatos,105 57, 17
+Karagiannis Dimitris,ΠΑΠΑΓΕΩΡΓΙΟΥ ΧΡΗΣΤΟΣ,Athina,4 Platia Sintagmatos,105 63, 16
+Karagiannis Dimitris,ΠΑΠΑΔΟΓΙΑΝΝΗΣ ΓΕΩΡΓΙΟΣ,Chania,130 Efedron Polemiston,731 36, 10
+Karagiannis Dimitris,KOLONAKI NOBACCO SHOP,Athina,17 Irodotou Str.,10674, 7
+Karagiannis Dimitris,OMONOIA NOBACCO SHOP,Athina,65 Panepistimiou,10564, 7
+Karagiannis Dimitris,SYNTAGMA NOBACCO SHOP,Athina,14 Voulis,10563, 7
+Karagiannis Dimitris,ΓΙΩΤΗΣ ΕΛΒΙΝ,Athina,105 Panormou,115 24, 5
+Karagiannis Dimitris,ΣΙΑΠΛΑΟΥΡΑΣ ΓΕΩΡΓΙΟΣ,Athina,Platia Merkouri,118 52, 5
+Karagiannis Dimitris,ACROPOL KIOSKYS ΕΕ,Athina,10 Rovertou Galli,117 42, 6
+Karagiannis Dimitris,PICK IT ΓΕΩΡΓΙΟΣ ΠΕΤΡΗΣ,Athina,23 Lamias,11523, 4
+Karagiannis Dimitris,Η ΑΓΟΡΑ DCT ΙΚΕ,Athina,23 Georgiou Vlachou,115 , 3
+Karagiannis Dimitris,Π. ΝΤΟΥΝΙΑΣ & ΣΙΑ ΕΕ,Athina,93 Ippokratous,106 80, 5
+Karagiannis Dimitris,ΤΣΙΡΔΗΜΟΣ ΦΙΛΙΠΠΟΣ,Athina,3 Keiriadon,118 54 ,3
+Karagiannis Dimitris,IQOS Corner Germanos Kolonaki,Athina,26 Kanari,106 74, 2
+Karagiannis Dimitris,IQOS Corner Germanos Stadiou,Athina,10 Stadiou,105 64, 2
+Karagiannis Dimitris,ΑΓΓΕΛΟΥ ΕΛΕΥΘΕΡΙΟΣ,Athina,3 Karatheodori,115 25, 2
+Karagiannis Dimitris,ΔΟΥΚΑΚΗΣ ΑΓΓΕΛΟΣ,Athina,81 Louizis Riankour,115 24, 2
+Karagiannis Dimitris,ΚΡΕΜΜΥΔΑ ΕΛΛΗ,Athina,63 Megalou Alexandrou,104 35, 2
+Karagiannis Dimitris,ΧΑΜΛΑΤΖΗΣ Κ. ΔΗΜΗΤΡΙΟΣ,Athina,16 Erythrou Stavrou,115 26, 2
+Karagiannis Dimitris,IQOS Corner Germanos Mpenaki,Athina,6 Emmanouil Benaki,105 64, 1
+Karagiannis Dimitris,ΑΝΤΩΝΟΠΟΥΛΟΣ ΝΙΚΟΛΑΟΣ,Athina,51 Papada,115 26, 2
+Karagiannis Dimitris,ΚΟΚΚΑΣ ΝΙΚΟΛ.ΔΗΜΗΤΡΙΟΣ,Athina,147 Ippokratous,114 72 ,1
+Karagiannis Dimitris,ΚΟΥΜΗΣ ΓΡΗΓΟΡΙΟΣ,Athina,20 Xenokratous,106 75, 1
+Karagiannis Dimitris,ΜΑΤΣΟΥΚΑΣ ΧΡΗΣΤΟΣ & ΣΙΑ ΕΕ,Athina,6 Apollonos,105 57, 1
+Karagiannis Dimitris,ΣΤΑΣΙΝΟΣ Θ.ΠΑΝΑΓΙΩΤΗΣ,Athina,185 Ippokratous,114 72, 1
+Karagiannis Dimitris,ΨΑΡΡΟΥ ΕΜΜ. ΣΟΦΙΑ,Athina,155 Pireos,118 54, 1
+Karagiannis Dimitris,A.O.V. 67 O.E.,Athina,67 Panepistimiou,105 64, 0
+Karagiannis Dimitris,IQOS Corner Germanos N. Kosmos,Athina,76 Leoforos Andrea Siggrou,117 42, 0
+Karagiannis Dimitris,IQOS Corner Germanos Petralona,Moschato,147 Thessalonikis,183 46, 0
+Karagiannis Dimitris,UZO DILAVER NDRICIM,Athina,108 Keiriadon,118 53, 0
+Karagiannis Dimitris,ΛΙΤΗ ΕΥΑΓΓ. ΒΙΟΛΕΤΑ,Athina,56 Ious,11853, 0
+Karagiannis Dimitris,ΣΠΑΝΟΣ ΧΡΗΣΤΟΣ,Athina,113 Trion Ierarchon,118 51, 1
+Karagiannis Dimitris,ΦΟΥΚΟΣ ΧΡΗΣΤΟΣ ΝΕΚΤΑΡΙΟΣ,Athina,110 Solonos,106 81, 0

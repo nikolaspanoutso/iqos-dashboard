@@ -12,7 +12,11 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
   const { data, updateDailySales, updateUserStatus, specialists, schedules } = useSales();
   const { user } = useAuth();
   
-  const [selectedMonth, setSelectedMonth] = useState('02'); // Default to February
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonthNum = (now.getMonth() + 1).toString().padStart(2, '0');
+
+  const [selectedMonth, setSelectedMonth] = useState(currentMonthNum);
   const [viewedUser, setViewedUser] = useState(
     (user?.role === 'specialist') ? user.name : (specialists[0] || 'Maria Tasiou')
   );
@@ -28,21 +32,35 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
 
   // Helper to generate all days of the selected month
   const generateMonthDays = (month: string) => {
-    const year = 2026; // Current operating year
+    const year = new Date().getFullYear();
     const now = new Date();
     const currentMonthNum = (now.getMonth() + 1).toString().padStart(2, '0');
     
     const daysInMonth = new Date(year, parseInt(month), 0).getDate();
-    // If month is current, limit to current day
-    const limit = (month === currentMonthNum) ? now.getDate() : daysInMonth;
+    // If month is current, limit to current day. If past month, show all days.
+    let limit = daysInMonth;
+    if (month === currentMonthNum) {
+        limit = now.getDate();
+    } else if (parseInt(month) > parseInt(currentMonthNum)) {
+        limit = 0; // Don't show future months if somehow selected
+    }
 
     const days = [];
     for (let i = 1; i <= limit; i++) {
         const dayStr = i.toString().padStart(2, '0');
+        // Use consistent formatting: DD/MM/YYYY
         days.push(`${dayStr}/${month}/${year}`);
     }
-    return days;
+    // Return newest days first (reversed)
+    return days.reverse();
   };
+
+  // Generate available months (from Jan to current)
+  const availableMonths = Array.from({ length: now.getMonth() + 1 }, (_, i) => {
+    const m = (i + 1).toString().padStart(2, '0');
+    const name = new Date(currentYear, i).toLocaleString('en-GB', { month: 'long' });
+    return { value: m, label: name };
+  });
 
   // Filter Data based on Month and User
   const allMonthDates = generateMonthDays(selectedMonth);
@@ -152,19 +170,16 @@ export default function HistoryModal({ onClose }: HistoryModalProps) {
         </div>
 
         {/* Month Tabs */}
-        <div className="flex bg-gray-100 border-b">
-          <button 
-            onClick={() => setSelectedMonth('01')}
-            className={`px-6 py-2 text-sm font-bold transition-colors border-r ${selectedMonth === '01' ? 'bg-white text-teal-700 border-t-2 border-t-teal-600' : 'text-gray-500 hover:bg-gray-50'}`}
-          >
-            January
-          </button>
-          <button 
-            onClick={() => setSelectedMonth('02')}
-            className={`px-6 py-2 text-sm font-bold transition-colors border-r ${selectedMonth === '02' ? 'bg-white text-teal-700 border-t-2 border-t-teal-600' : 'text-gray-500 hover:bg-gray-50'}`}
-          >
-            February
-          </button>
+        <div className="flex bg-gray-100 border-b overflow-x-auto thin-scrollbar">
+          {availableMonths.map((m) => (
+            <button 
+              key={m.value}
+              onClick={() => setSelectedMonth(m.value)}
+              className={`px-6 py-2 text-sm font-bold transition-colors border-r whitespace-nowrap ${selectedMonth === m.value ? 'bg-white text-teal-700 border-t-2 border-t-teal-600' : 'text-gray-500 hover:bg-gray-50'}`}
+            >
+              {m.label}
+            </button>
+          ))}
         </div>
 
         {/* Excel Table */}
