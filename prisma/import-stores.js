@@ -145,13 +145,12 @@ async function main() {
 
     // 1. Clear Database
 
-    // 2. Clear Database
-    console.log('🗑️ Emptying the base...');
-    await prisma.sale.deleteMany({});
-    await prisma.comment.deleteMany({});
-    await prisma.schedule.deleteMany({});
-    await prisma.store.deleteMany({});
-    console.log('✅ Base cleared.');
+    // 2. Mark all existing stores as inactive (we will reactivate those found in the CSV)
+    console.log('🔄 Syncing stores (avoiding full wipe)...');
+    await prisma.store.updateMany({
+        data: { isActive: false }
+    });
+    console.log('✅ Status reset. Syncing from CSV...');
 
     // 3. User Map
     const users = await prisma.user.findMany();
@@ -200,10 +199,22 @@ async function main() {
 
         console.log(`[${i + 1}/${dataRows.length}] ${status.padEnd(16)} | 🏪 ${ptpName.substring(0, 30).padEnd(30)} | Acq: ${totalAcquisition.toString().padEnd(4)}`);
 
-        // Save
+        // Save/Sync Store
         try {
-            await prisma.store.create({
-                data: {
+            await prisma.store.upsert({
+                where: { name: ptpName },
+                update: {
+                    activatorName: taName,
+                    activatorId: activatorId,
+                    area: city,
+                    address: address,
+                    postCode: zip,
+                    // We preserve the current totalAcquisition if it's already in the DB
+                    // to avoid losing UI-based sales during sync.
+                    isActive: true,
+                    type: ptpName.toLowerCase().includes('kiosk') || ptpName.toLowerCase().includes('periptero') ? 'Kiosk' : 'Store'
+                },
+                create: {
                     name: ptpName,
                     activatorName: taName,
                     activatorId: activatorId,
@@ -218,7 +229,7 @@ async function main() {
                 }
             });
         } catch (e) {
-            console.error(`   ❌ DB Error: ${e.message}`);
+            console.error(`   ❌ DB Error for ${ptpName}: ${e.message}`);
         }
 
         // Delay between stores to respect Nominatim limits (1.5 - 2s)

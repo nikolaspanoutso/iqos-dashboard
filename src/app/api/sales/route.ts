@@ -23,10 +23,8 @@ export async function GET() {
       take: 100
     });
 
-    // Aggregate Data for the Team Performance Modal (Current Month Only)
+    // Aggregate Data for the Team Performance Modal (All Time per Specialist)
     const aggregatedStats: any = {};
-    const now = new Date();
-    const currentMonthSuffix = `${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
     
     dailyStats.forEach(stat => {
       if (!aggregatedStats[stat.userId]) {
@@ -38,13 +36,11 @@ export async function GET() {
         };
       }
       
-      // Only add to aggregated totals if within current month
-      if (stat.date.endsWith(currentMonthSuffix)) {
-          aggregatedStats[stat.userId].acquisitionP1 += stat.acquisitionP1;
-          aggregatedStats[stat.userId].acquisitionP4 += stat.acquisitionP4;
-          aggregatedStats[stat.userId].offtakeP5 += stat.offtakeP5;
-          aggregatedStats[stat.userId].workingDays += stat.workingDays;
-      }
+      // All-time sum for specialist cards (no current month filter here)
+      aggregatedStats[stat.userId].acquisitionP1 += stat.acquisitionP1;
+      aggregatedStats[stat.userId].acquisitionP4 += stat.acquisitionP4;
+      aggregatedStats[stat.userId].offtakeP5 += stat.offtakeP5;
+      aggregatedStats[stat.userId].workingDays += stat.workingDays;
     });
 
     // Add recent sales to the live totals? 
