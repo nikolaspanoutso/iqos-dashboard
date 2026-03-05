@@ -32,7 +32,8 @@ function DashboardContent() {
     }
   }, [searchParams]);
   const [stores, setStores] = useState<any[]>([]);
-  const [selectedStore, setSelectedStore] = useState<any>(null);
+  const [selectedStoreMap, setSelectedStoreMap] = useState<any>(null);
+  const [selectedStoreList, setSelectedStoreList] = useState<any>(null);
   
   const [showAddStore, setShowAddStore] = useState(false);
   const { user } = useAuth(); // Get logged in user
@@ -71,8 +72,8 @@ function DashboardContent() {
     if (storeId && stores.length > 0) {
         const store = stores.find(s => s.id === storeId);
         if (store) {
-            setSelectedStore(store);
-            // Also ensure we are in map view if a store is selected
+            setSelectedStoreMap(store);
+            // Also ensure we are in map view if a store is selected via URL
             if (currentView !== 'map') setCurrentView('map');
         }
     }
@@ -123,23 +124,23 @@ function DashboardContent() {
         {currentView === 'map' ? (
            <Map 
              stores={filteredStores} 
-             selectedStore={selectedStore}
-             onSelectStore={setSelectedStore} 
+             selectedStore={selectedStoreMap}
+             onSelectStore={setSelectedStoreMap} 
            />
         ) : (
            <StoresList 
                 stores={filteredStores} 
-                onSelectStore={setSelectedStore} 
+                onSelectStore={setSelectedStoreList} 
                 onAddStore={() => setShowAddStore(true)}
                 canAddStore={canAddStore}
            />
         )}
 
-        {/* Drawer is GLOBAL now - works for both views */}
+        {/* Drawer is GLOBAL now - works for both views independently */}
         <Drawer 
-          isOpen={!!selectedStore} 
-          onClose={() => setSelectedStore(null)} 
-          data={selectedStore}
+          isOpen={currentView === 'map' ? !!selectedStoreMap : !!selectedStoreList} 
+          onClose={() => currentView === 'map' ? setSelectedStoreMap(null) : setSelectedStoreList(null)} 
+          data={currentView === 'map' ? selectedStoreMap : selectedStoreList}
           onStoreUpdate={fetchStores}
         />
         
