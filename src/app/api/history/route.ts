@@ -18,45 +18,12 @@ export async function PUT(request: Request) {
 
     // Case 1: Updating Sales Stats (P1, P4, P5)
     if (p1 !== undefined && p4 !== undefined && p5 !== undefined) {
-        // 1. Get current value to calculate delta for P1
-        const currentStat = await prisma.dailyStat.findUnique({
-          where: { date_userId: { date, userId } }
-        });
-
-        const oldP1 = currentStat?.acquisitionP1 || 0;
-        const deltaP1 = p1 - oldP1;
-
-        // 2. Upsert the daily stat override
+        // 1. Upsert the daily stat override
         await prisma.dailyStat.upsert({
           where: { date_userId: { date, userId } },
           update: { acquisitionP1: p1, acquisitionP4: p4, offtakeP5: p5 },
           create: { date, userId, acquisitionP1: p1, acquisitionP4: p4, offtakeP5: p5, workingDays: 1 }
         });
-
-        // 3. Sync the delta with a virtual "System - Specialist Adjustments" store
-        if (deltaP1 !== 0) {
-            const adjustmentStore = await prisma.store.findFirst({
-                where: { name: 'System - Specialist Adjustments' }
-            });
-
-            if (adjustmentStore) {
-                await prisma.store.update({
-                    where: { id: adjustmentStore.id },
-                    data: { totalAcquisition: { increment: deltaP1 } }
-                });
-            } else {
-                await prisma.store.create({
-                    data: {
-                        name: 'System - Specialist Adjustments',
-                        type: 'SYSTEM',
-                        lat: 0,
-                        lng: 0,
-                        totalAcquisition: deltaP1,
-                        isActive: true
-                    }
-                });
-            }
-        }
 
         // 4. AUTO-WORK: If total sales > 0, set status to 'Work'
         if (p1 + p4 + p5 > 0) {

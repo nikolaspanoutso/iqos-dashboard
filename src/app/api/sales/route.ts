@@ -67,7 +67,10 @@ export async function GET() {
     
     // Fetch all ACTIVE stores to aggregate acquisitions by activator
     const stores = await prisma.store.findMany({
-        where: { isActive: true },
+        where: { 
+            isActive: true,
+            name: { not: 'System - Specialist Adjustments' } 
+        },
         select: {
             totalAcquisition: true,
             activatorId: true,
@@ -85,20 +88,21 @@ export async function GET() {
         activatorTotals[a.id] = { name: a.name, total: 0 };
     });
 
-    // Also include a slot for Unassigned or System stores to ensure sum matches Team Total
-    activatorTotals["unassigned"] = { name: "System", total: 0 };
+    // Also include a slot for Unassigned stores to ensure sum matches Team Total
+    // (Excluding system adjustments entirely now)
+    activatorTotals["unassigned"] = { name: "Unassigned", total: 0 };
 
 
     stores.forEach(store => {
         if (store.activatorId && activatorTotals[store.activatorId]) {
             activatorTotals[store.activatorId].total += store.totalAcquisition || 0;
         } else {
-            // Include System - Specialist Adjustments or orphan stores here
+            // Include orphan stores here
             activatorTotals["unassigned"].total += store.totalAcquisition || 0;
         }
     });
 
-    // Filter out unassigned if it's 0 to keep UI clean for common cases
+    // Filter out unassigned if it's 0 to keep UI clean
     if (activatorTotals["unassigned"].total === 0) {
         delete activatorTotals["unassigned"];
     }
