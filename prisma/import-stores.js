@@ -31,41 +31,6 @@ function normalizeCity(city) {
     return AREA_MAPPING[low] || low;
 }
 
-const COORDINATE_OVERRIDES = {
-    "bee market": { lat: 37.9736, lng: 23.7707 },
-    "dikis": { lat: 37.9736, lng: 23.7707 },
-    "nobacco shop vironas": { lat: 37.9545, lng: 23.7583 },
-    "neas elvetias 11": { lat: 37.9545, lng: 23.7583 },
-    "panagi tsaldari 68": { lat: 37.9614, lng: 23.7529 },
-    "agias sofias 101": { lat: 37.9545, lng: 23.7583 },
-    "trion ierarchon 113": { lat: 37.9667, lng: 23.7088 },
-    "ethnikis antistaseos 74": { lat: 37.9683, lng: 23.7583 },
-    "rovertou galli 10": { lat: 37.9691, lng: 23.7277 },
-    "acropol kioskys": { lat: 37.9691, lng: 23.7277 },
-    "andrea siggrou 76": { lat: 37.9644, lng: 23.7277 },
-    "n. kosmos": { lat: 37.9644, lng: 23.7277 },
-    "sintagmatos 2": { lat: 37.9755, lng: 23.7348 },
-    "sintagmatos 4": { lat: 37.9755, lng: 23.7348 },
-    "irodotou 17": { lat: 37.9765, lng: 23.7431 },
-    "nobacco shop kolonaki": { lat: 37.9765, lng: 23.7431 },
-    "vouliagmenis 8": { lat: 37.9644, lng: 23.7277 },
-    "vouliagmenis 135": { lat: 37.9583, lng: 23.7333 },
-    "roumpesi 50": { lat: 37.9583, lng: 23.7333 },
-    "chimarra 1": { lat: 37.9575, lng: 23.7513 },
-    "spirou merkouri 2": { lat: 37.9711, lng: 23.7483 },
-    "iasona maratou 57": { lat: 37.9767, lng: 23.7833 },
-    "evritanias 18": { lat: 38.0167, lng: 23.8500 },
-    "ethnikis antistaseos 25": { lat: 37.9700, lng: 23.7800 },
-    "mavrommateon 22": { lat: 37.9941, lng: 23.7317 },
-    "prigkiponnison 41": { lat: 37.9920, lng: 23.7510 },
-    "nikolaou gkizi 2": { lat: 37.9910, lng: 23.7500 },
-    "formionos 103": { lat: 37.9650, lng: 23.7650 },
-    "formionos & kristalli": { lat: 37.9620, lng: 23.7680 },
-    "panagi tsaldari 13": { lat: 37.9610, lng: 23.7540 },
-    "spirou patsi 64": { lat: 37.9850, lng: 23.7050 },
-    "georgiou vlachou 23": { lat: 38.0030, lng: 23.7780 },
-    "kiprou 102": { lat: 37.9610, lng: 23.7560 }
-};
 
 function normalizeAddress(address) {
     if (!address) return '';
@@ -88,17 +53,6 @@ const getCoordinates = async (address, city, zip, ptpName) => {
     const cleanPtp = ptpName.replace(/"/g, '').replace(/\(.*\)/, '').replace(/O\.?E\.?/i, '').replace(/I\.?K\.?E\.?/i, '').trim().toLowerCase();
     const streetNorm = normalizeAddress(address).toLowerCase();
 
-    // 0. Manual Overrides Check
-    const overrideKey = Object.keys(COORDINATE_OVERRIDES).find(key =>
-        (cleanPtp && (cleanPtp.includes(key) || key.includes(cleanPtp))) ||
-        (cleanAddr && (cleanAddr.includes(key) || key.includes(cleanAddr))) ||
-        (streetNorm && (streetNorm.includes(key) || key.includes(streetNorm)))
-    );
-
-    if (overrideKey) {
-        console.log(`      ⭐ Override Matched: [${overrideKey}]`);
-        return { coords: COORDINATE_OVERRIDES[overrideKey], status: '⭐ Override' };
-    }
 
     const streetOnly = streetNorm.replace(/leoforos\s+/i, '').replace(/l\.\s+/i, '').replace(/platia\s+/i, '').trim();
 
