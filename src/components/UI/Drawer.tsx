@@ -180,7 +180,7 @@ const storeSales = comments
                     className="flex items-center gap-1 bg-white/20 hover:bg-white/40 px-2 py-1 rounded text-[10px] font-bold transition-all border border-white/10 hover:shadow-sm"
                   >
                     <MapPin size={10} />
-                    MAPS
+                    Google Maps
                   </a>
                 )}
               </div>

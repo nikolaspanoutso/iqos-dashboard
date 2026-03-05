@@ -66,7 +66,7 @@ function DashboardContent() {
     }
   }, [user]); // Re-fetch when user changes
 
-  // Auto-select store from URL param
+  // Auto-select store from URL param and "consume" it
   useEffect(() => {
     const storeId = searchParams.get('selectStoreId');
     if (storeId && stores.length > 0) {
@@ -74,10 +74,18 @@ function DashboardContent() {
         if (store) {
             setSelectedStoreMap(store);
             // Also ensure we are in map view if a store is selected via URL
-            if (currentView !== 'map') setCurrentView('map');
+            if (currentView !== 'map') {
+              setCurrentView('map');
+            }
+            
+            // "Consume" the URL parameter so it doesn't force the view again if user switches
+            const params = new URLSearchParams(window.location.search);
+            params.delete('selectStoreId');
+            const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
+            window.history.replaceState({ ...window.history.state, as: newUrl, url: newUrl }, '', newUrl);
         }
     }
-  }, [searchParams, stores, currentView]);
+  }, [searchParams, stores]); // Removed currentView from dependencies to prevent infinite loops
 
   const handleSaveStore = async (newStoreData: any) => {
     try {
